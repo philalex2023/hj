@@ -42,7 +42,9 @@ class BackupRes extends Command
     public function handle()
     {
         $paramTableName = $this->argument('tableName')??'video';
-        $Items = DB::table($paramTableName)->where('sync',1)
+        $Items = DB::table($paramTableName)
+            ->where('id','<=',16000)
+            //->where('sync',1)
             //->take(1)
             ->get(['id','url']);
         $bar = $this->output->createProgressBar(count($Items));
