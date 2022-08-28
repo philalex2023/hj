@@ -101,8 +101,8 @@ return [
         'ftps1' => [
             'driver' => 'sftp',
             'host' => env('SFTP_HOST1',''),
-            'username' => env('SFTP_USERNAME',''),
-            'password' => env('SFTP_PASSWORD',''),
+            'username' => env('SFTP_USERNAME1',''),
+            'password' => env('SFTP_PASSWORD1',''),
             'timeout' => 3600,
             'visibility' => 'public',
             'directoryPerm' => 0755,
