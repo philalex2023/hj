@@ -37,10 +37,8 @@ class ProcessBackupRes implements ShouldQueue
     public function handle()
     {
         //
-        $dir_name = pathinfo($this->row->url,PATHINFO_FILENAME);
-        $slice_dir = env('SLICE_DIR','/slice');
-        $hls_directory = '/public'.$slice_dir.'/hls/'.$dir_name;
-        $cover_img_dir = '/public'.$slice_dir.'/coverImg/'.$dir_name;
+        $hls_directory = pathinfo(str_replace('/storage','/public',$this->row->hls_url),PATHINFO_DIRNAME);
+        $cover_img_dir = pathinfo(str_replace('/storage','/public',$this->row->cover_img),PATHINFO_DIRNAME);
         $hls_files = Storage::disk('ftps1')->files($hls_directory);
         $cover_img = Storage::disk('ftps1')->files($cover_img_dir);
         foreach ($hls_files as $file){
