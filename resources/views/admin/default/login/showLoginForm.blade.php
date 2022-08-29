@@ -41,7 +41,7 @@
                         </div>
                         <div class="layui-col-xs5">
                             <div class="ml-10 border-default">
-                                <img src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE','admin')]) }}"
+                                <img src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE','admin')]).'?t='.time() }}"
                                      data-src="{{ route('api.captcha',['type'=>env('ADMIN_CAPTCHA_TYPE','admin')]) }}"
                                      class="layadmin-user-login-codeimg" id="LAY-user-get-vercode">
                             </div>
