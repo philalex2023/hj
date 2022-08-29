@@ -82,7 +82,7 @@ return [
             // 'password' => 'encryption-password',
 
             // Optional SFTP Settings...
-            // 'port' => 22,
+             'port' => 21,
             // 'root' => '',
             'timeout' => 3600,
             'visibility' => 'public',
@@ -100,9 +100,9 @@ return [
         ],
         'ftps1' => [
             'driver' => 'sftp',
-            'host' => env('SFTP_HOST1',''),
-            'username' => env('SFTP_USERNAME1',''),
-            'password' => env('SFTP_PASSWORD1',''),
+            'host' => env('SFTP_HOST_ORIGIN',''),
+            'username' => env('SFTP_USERNAME_ORIGIN',''),
+            'password' => env('SFTP_PASSWORD_ORIGIN',''),
             'port' => 22,
             'timeout' => 3600,
             'visibility' => 'public',
@@ -129,7 +129,7 @@ return [
             // 'password' => 'encryption-password',
 
             // Optional SFTP Settings...
-            // 'port' => 22,
+             'port' => 21,
             // 'root' => '',
             'timeout' => 3600,
             'visibility' => 'public',
@@ -174,16 +174,16 @@ return [
         ],
         'sftp1' => [
             'driver' => 'ftp',
-            'host' => env('SFTP_HOST1',''),
-            'username' => env('SFTP_USERNAME1',''),
-            'password' => env('SFTP_PASSWORD1',''),
+            'host' => env('SFTP_HOST_SFTP_HOST_ORIGIN',''),
+            'username' => env('SFTP_USERNAME_SFTP_HOST_ORIGIN',''),
+            'password' => env('SFTP_PASSWORD_SFTP_HOST_ORIGIN',''),
 
             // Settings for SSH key based authentication...
             // 'privateKey' => '/path/to/privateKey',
             // 'password' => 'encryption-password',
 
             // Optional SFTP Settings...
-            // 'port' => 22,
+             'port' => 21,
             // 'root' => '',
             'timeout' => 3600,
             'visibility' => 'public',
