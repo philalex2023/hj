@@ -174,9 +174,9 @@ return [
         ],
         'sftp1' => [
             'driver' => 'ftp',
-            'host' => env('SFTP_HOST_SFTP_HOST_ORIGIN',''),
-            'username' => env('SFTP_USERNAME_SFTP_HOST_ORIGIN',''),
-            'password' => env('SFTP_PASSWORD_SFTP_HOST_ORIGIN',''),
+            'host' => env('SFTP_HOST_ORIGIN',''),
+            'username' => env('SFTP_USERNAME_ORIGIN',''),
+            'password' => env('SFTP_PASSWORD_ORIGIN',''),
 
             // Settings for SSH key based authentication...
             // 'privateKey' => '/path/to/privateKey',
