@@ -76,7 +76,7 @@ class ProcessStatisticsChannelByDay implements ShouldQueue
                     $redis->hMSet($channel_day_statistics_key, $insertData);
                 }
             }else{
-                $has = (object) $redis->hGetAll(str_replace('laravel_database_','',$channel_day_statistics_key));
+                $has = (object) $redis->hGetAll($channel_day_statistics_key);
                 $order_index = ($has->order_index??0) +1;
                 //是否有纳入统计条目
                 $usage_index = 0;

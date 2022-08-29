@@ -55,7 +55,6 @@ class ClearRedisKey extends Command
         $bar = $this->output->createProgressBar(count($keys));
         $bar->start();
         foreach ($keys as $key){
-            $key = str_replace('laravel_database_','',$key);
             $redis->del($key);
             //$this->info('######key:'.$key.'######');
             $bar->advance();

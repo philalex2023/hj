@@ -15,7 +15,6 @@ trait PHPRedisTrait
     {
         $redis = $redis ?? $this->redis();
         foreach ($keys as $key){
-            $key = str_replace('laravel_database_','',$key);
             $redis->del($key);
         }
     }

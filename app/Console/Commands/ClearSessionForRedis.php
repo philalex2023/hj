@@ -47,7 +47,6 @@ class ClearSessionForRedis extends Command
         $bar = $this->output->createProgressBar(count($keys));
         $bar->start();
         foreach ($keys as $key){
-            $key = str_replace('laravel_database_','',$key);
             $value = $redis->get($key);
             if(str_contains($value,$paramStr)){
                 $redis->del($key);

@@ -318,10 +318,10 @@ class ShortController extends BaseCurlController
         $this->resetRedisVideoShort($model,true);
         $redis = $this->redis();
         foreach ($redis->keys('*shortVideoIdsCollections*') as $key){
-            $redis->del(str_replace('laravel_database_','',$key));
+            $redis->del($key);
         }
         foreach ($redis->keys('*shortVideoForUser*') as $k){
-            $redis->del(str_replace('laravel_database_','',$k));
+            $redis->del($k);
         }
         return $model;
     }

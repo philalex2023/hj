@@ -38,16 +38,6 @@ trait VideoShortTrait
         $redis = $this->redis();
         $redis->hSet($cacheKey, $model->id, json_encode($storeData));
 
-        /*if(!$onlyCache){
-            foreach ($redis->keys('*shortVideoIdsCollections*') as $key){
-                $redis->del(str_replace('laravel_database_','',$key));
-            }
-            foreach ($redis->keys('*shortVideoForUser*') as $k){
-                $redis->del(str_replace('laravel_database_','',$k));
-            }
-//            $this->redisBatchDel('shortVideoIdsCollections');
-//            $this->redisBatchDel('shortVideoForUser');
-        }*/
         return $storeData;
     }
 }

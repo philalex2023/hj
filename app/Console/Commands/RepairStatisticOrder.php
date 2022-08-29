@@ -53,7 +53,7 @@ class RepairStatisticOrder extends Command
         foreach ($rechargeItems as $item)
         {
             $channel_day_statistics_key = 'channel_day_statistics:'.$item->channel_id.':'.$item->date_at;
-            $share_ratio = (int)$redis->hGet(str_replace('laravel_database_','',$channel_day_statistics_key),'share_ratio');
+            $share_ratio = (int)$redis->hGet($channel_day_statistics_key,'share_ratio');
             $hashKeys = [
                 'date_at' => $item->date_at,
                 'channel_id' => $item->channel_id,

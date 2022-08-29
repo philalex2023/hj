@@ -45,8 +45,7 @@ class SaveStatisticsDataFromRedis extends Command
         $statistic_day_collection_key = 'statistic_day_collection';
         if(!$redis->exists($statistic_day_collection_key)){
             $statistic_day_keys = $redis->keys('*statistic_day:*');
-            foreach ($statistic_day_keys as &$day_key){
-                $day_key = str_replace('laravel_database_','',$day_key);
+            foreach ($statistic_day_keys as $day_key){
                 $redis->sAdd($statistic_day_collection_key,$day_key);
             }
         }else{
@@ -54,7 +53,6 @@ class SaveStatisticsDataFromRedis extends Command
         }
         $yesterdayTime = strtotime(date('Y-m-d',strtotime('-1 day')));
         foreach ($statistic_day_keys as $statistic_day_key){
-            //$realKey = str_replace('laravel_database_','',$statistic_day_key);
             $channelStatisticItem = $redis->hGetAll($statistic_day_key);
             $channel_id = $channelStatisticItem['channel_id'] ?? 0;
             $device_system = $channelStatisticItem['device_system'] ?? 0;
@@ -76,8 +74,7 @@ class SaveStatisticsDataFromRedis extends Command
         $channel_day_statistics_collection_key = 'channel_day_statistics_collection';
         if(!$redis->exists($channel_day_statistics_collection_key)){
             $channel_day_statistics_keys = $redis->keys('*channel_day_statistics:*');
-            foreach ($channel_day_statistics_keys as &$channel_day_key){
-                $channel_day_key = str_replace('laravel_database_','',$channel_day_key);
+            foreach ($channel_day_statistics_keys as $channel_day_key){
                 $redis->sAdd($channel_day_statistics_collection_key,$channel_day_key);
             }
         }else{

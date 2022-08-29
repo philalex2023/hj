@@ -35,8 +35,7 @@ class ChannelReferController extends BaseCurlController
                 $channelData = [];
                 //$keys = array_slice($keys,0,1000);
                 foreach ($keys as $key){
-                    $originalKey = str_replace('laravel_database_','',$key);
-                    $hashData = $redis->hGetAll($originalKey);
+                    $hashData = $redis->hGetAll($key);
                     isset($hashData['refer']) && $channelData[$hashData['refer']] = $hashData['download_url'];
                 }
 

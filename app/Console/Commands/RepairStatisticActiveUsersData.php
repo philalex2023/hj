@@ -56,7 +56,7 @@ class RepairStatisticActiveUsersData extends Command
         {
             //$channel_day_statistics_key = 'channel_day_statistics:'.$item->channel_id.':'.$item->date_at;
             $statistic_day_key = 'statistic_day:'.$item->channel_id.':'.$item->device_system.':'.$date_time;
-            //$share_ratio = (int)$redis->hGet(str_replace('laravel_database_','',$statistic_day_key),'share_ratio');
+            //$share_ratio = (int)$redis->hGet(str_replace($statistic_day_key),'share_ratio');
             /* $hashKeys = [
                 'date_at' => $item->date_at,
                 'channel_id' => $item->channel_id,

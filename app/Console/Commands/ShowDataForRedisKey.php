@@ -50,11 +50,10 @@ class ShowDataForRedisKey extends Command
         $keys = $redis->keys('*'.$paramKey.'*');
         $channelData = [];
         foreach ($keys as $key){
-            $originalKey = str_replace('laravel_database_','',$key);
-            $type = $redis->type($originalKey);
+            $type = $redis->type($key);
 
             if($type==5){
-                $hashData = $redis->hGetAll($originalKey);
+                $hashData = $redis->hGetAll($key);
                 $channelData[$hashData['refer']] = $hashData['download_url'];
                 /*$line = '';
                 foreach ($hashData as $k=>$v)
