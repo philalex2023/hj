@@ -103,7 +103,7 @@ return [
             'host' => env('SFTP_HOST1',''),
             'username' => env('SFTP_USERNAME1',''),
             'password' => env('SFTP_PASSWORD1',''),
-            'port' => 22988,
+            'port' => 22,
             'timeout' => 3600,
             'visibility' => 'public',
             'directoryPerm' => 0755,
