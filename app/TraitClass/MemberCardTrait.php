@@ -158,13 +158,13 @@ trait MemberCardTrait
         }
         $types = explode(',',$user->member_card_type);
         if(!empty($types)){
-            $memberCardTypeId = $types[0];
             $hasMemberCards = Cache::get('member_card_key') ?? [];
             foreach ($hasMemberCards as $memberCard){
-                if($memberCard->id == $memberCardTypeId){
-                    $rightIds = array_flip($this->numToRights($memberCard->rights));
+                if(in_array($memberCard->id,$types)){
+                    $rightIds = [...$rightIds,...$this->numToRights($memberCard->rights)];
                 }
             }
+            $rightIds = array_flip($rightIds);
         }
         return $rightIds;
     }

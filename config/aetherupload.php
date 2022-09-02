@@ -16,17 +16,17 @@ return [
 
     'distributed_deployment' => [
 
-        'enable' => false, # 是否启用
+        'enable' => true, # 是否启用
 
-        'role' => 'web', # 服务器角色，支持选项: 'web', 'storage'
+        'role' => 'storage', # 服务器角色，支持选项: 'web', 'storage'
 
         'web' => [ # 角色为应用服务器
             'storage_host' => '', # 储存服务器的host，如'http://storage.example.com'
         ],
 
         'storage' => [ # 角色为储存服务器
-            'middleware_cors' => '', # 跨域中间件AetherUploadCORS类在Kernel.php中注册的名称
-            'allow_origin'    => [], # 跨域中间件允许的应用服务器来源host，如['http://www.example.com']
+            'middleware_cors' => 'aetherUploadCors', # 跨域中间件AetherUploadCORS类在Kernel.php中注册的名称
+            'allow_origin'    => [env('AETHER_APP_HOST', 'http://localhost:88'),'http://localhost:88','*'], # 跨域中间件允许的应用服务器来源host，如['http://www.example.com']
         ],
 
     ],

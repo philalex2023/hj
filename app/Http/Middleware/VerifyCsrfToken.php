@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken as Middleware;
 
 class VerifyCsrfToken extends Middleware
 {
+
     /**
      * The URIs that should be excluded from CSRF verification.
      * 将要排除的 URL 添加到 $except 属性数组

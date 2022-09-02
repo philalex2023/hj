@@ -4,6 +4,7 @@ namespace App\Http;
 
 use App\ExtendClass\Plugin;
 use App\Http\Middleware\AdminAuthMiddleware;
+use App\Http\Middleware\AetherUploadCORS;
 use App\Http\Middleware\CheckPermission;
 //use App\Http\Middleware\InstallMiddleware;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
@@ -25,7 +26,7 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
-//        \App\Http\Middleware\EnableCrossRequestMiddleware::class
+        \App\Http\Middleware\EnableCrossRequestMiddleware::class
     ];
 
     /**
@@ -40,7 +41,7 @@ class Kernel extends HttpKernel
             \Illuminate\Session\Middleware\StartSession::class,
             \Illuminate\Session\Middleware\AuthenticateSession::class,
             \Illuminate\View\Middleware\ShareErrorsFromSession::class,
-            \App\Http\Middleware\VerifyCsrfToken::class,
+//            \App\Http\Middleware\VerifyCsrfToken::class,
             \Illuminate\Routing\Middleware\SubstituteBindings::class,
             \Laravel\Passport\Http\Middleware\CreateFreshApiToken::class, //一定要放在最后
         ],
@@ -85,6 +86,7 @@ class Kernel extends HttpKernel
         'admin_auth' => AdminAuthMiddleware::class,
         'permission' => CheckPermission::class,
         'secret' => \App\Http\Middleware\SecretMiddleware::class,
+        'aetherUploadCors' => \App\Http\Middleware\AetherUploadCORS::class,
     ];
 
     /**
