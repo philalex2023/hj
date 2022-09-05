@@ -521,13 +521,15 @@ class VideoController extends BaseCurlController
         $cid = $this->rq->input('cid');
         $cat = $this->rq->input('cat');
         $tag = $this->rq->input('tag');
-        $type = (int)$this->rq->input('type',0);
+        $type = (int)$this->rq->input('type',0); //来源
+        $devType = (int)$this->rq->input('dev_type',0);//视频类型
         $page = $this->rq->input('page', 1);
         $pagesize = $this->rq->input('limit', 30);
         $order_by_name = $this->orderByName();
         $order_by_type = $this->orderByType();
 
         $type>0 && $model=$model->where('type',$type);
+        $devType>0 && $model=$model->where('dev_type',$devType);
         $model = $this->orderBy($model, $order_by_name, $order_by_type);
 
 
