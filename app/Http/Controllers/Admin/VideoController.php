@@ -161,9 +161,16 @@ class VideoController extends BaseCurlController
                 'hide' => true
             ],*/
             [
-                'field' => 'type',
+                'field' => 'dev_type',
                 'minWidth' => 80,
                 'title' => '视频类型',
+                'align' => 'center',
+                'hide' => true
+            ],
+            [
+                'field' => 'type',
+                'minWidth' => 80,
+                'title' => '视频来源',
                 'align' => 'center',
                 'hide' => true
             ],
@@ -391,7 +398,15 @@ class VideoController extends BaseCurlController
         $item->tag_name = $this->getTagName($item->tag_kv??[]);
         $item->status = UiService::switchTpl('status', $item,'','上架|下架');
         $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
-        $item->type = UiService::switchTpl('type', $item,'','长|短');
+        $item->dev_type = match ($item->dev_type){
+            0 => '横屏',
+            1 => '竖屏'
+        };
+        $item->type = match ($item->type){
+            3 => '萌堆采集',
+            4 => 'up主',
+            default => '上传'
+        };
         $item->restricted = $this->restrictedType[$item->restricted]['name'];
         $item->gold = $item->gold/$this->goldUnit;
         return $item;
@@ -602,6 +617,17 @@ class VideoController extends BaseCurlController
                     ''=>['id'=>'','name'=>'全部'],
                     1=>['id'=>1,'name'=>'上传'],
                     3=>['id'=>3,'name'=>'萌堆采集'],
+                ]
+            ],
+            [
+                'field' => 'dev_type',
+                'type' => 'select',
+                'name' => '视频类型',
+                'default' => '',
+                'data' => [
+                    ''=>['id'=>'','name'=>'全部'],
+                    0=>['id'=>0,'name'=>'横屏'],
+                    1=>['id'=>1,'name'=>'竖屏'],
                 ]
             ],
         ];
