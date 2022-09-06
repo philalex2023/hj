@@ -41,14 +41,17 @@ class ProcessBackupRes implements ShouldQueue
         $cover_img_dir = pathinfo(str_replace('/storage','/public',$this->row->cover_img),PATHINFO_DIRNAME);
         $hls_files = Storage::disk('ftps1')->files($hls_directory);
         $cover_img = Storage::disk('ftps1')->files($cover_img_dir);
-        foreach ($hls_files as $file){
-            $content = Storage::disk('ftps1')->get($file);
-            Storage::disk('ftps')->put($file,$content);
+        if(!is_dir(Storage::disk('ftps')->path($hls_directory))){
+            foreach ($hls_files as $file){
+                $content = Storage::disk('ftps1')->get($file);
+                Storage::disk('ftps')->put($file,$content);
+            }
+            foreach ($cover_img as $img)
+            {
+                $content = Storage::disk('ftps1')->get($img);
+                Storage::disk('ftps')->put($img,$content);
+            }
         }
-        foreach ($cover_img as $img)
-        {
-            $content = Storage::disk('ftps1')->get($img);
-            Storage::disk('ftps')->put($img,$content);
-        }
+
     }
 }

@@ -43,7 +43,7 @@ class BackupRes extends Command
     {
         $paramTableName = $this->argument('tableName')??'video';
         $Items = DB::table($paramTableName)
-            ->where('id','<=',16000)
+            ->where('id','<=',16009)
 //            ->where('id','<=',5)
             //->where('sync',1)
             //->take(1)
