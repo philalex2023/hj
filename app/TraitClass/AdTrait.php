@@ -182,6 +182,7 @@ trait AdTrait
         $ads = [];
         $nowTime = time();
         if($Items){
+            $Items = (array)$Items;
             foreach ($Items as $ad){
                 if($ad['status']==1){
                     if(!$ad['end_at']){
