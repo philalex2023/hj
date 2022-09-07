@@ -15,7 +15,7 @@ class ConfigController extends Controller
     {
         $configKey = 'api_config';
         $configData = $this->redis()->get($configKey);
-        $res = $configData ? json_decode($configData,true) : $this->getConfigDataFromDb();
+        $res = $configData ? (array)json_decode($configData,true) : $this->getConfigDataFromDb();
         $this->frontFilterAd($res['open_screen_ads']);
         $this->frontFilterAd($res['activity_ads']);
         return response()->json([

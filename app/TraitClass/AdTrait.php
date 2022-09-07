@@ -181,17 +181,14 @@ trait AdTrait
     {
         $ads = [];
         $nowTime = time();
-        if($Items){
-            $Items = (array)$Items;
-            foreach ($Items as $ad){
-                if($ad['status']==1){
-                    if(!$ad['end_at']){
-                        $ad['img'] = $domain . $ad['img'];
-                        $ads[] = $ad;
-                    } elseif ($nowTime < strtotime($ad['end_at'])){
-                        $ad['img'] = $domain . $ad['img'];
-                        $ads[] = $ad;
-                    }
+        foreach ($Items as $ad){
+            if($ad['status']==1){
+                if(!$ad['end_at']){
+                    $ad['img'] = $domain . $ad['img'];
+                    $ads[] = $ad;
+                } elseif ($nowTime < strtotime($ad['end_at'])){
+                    $ad['img'] = $domain . $ad['img'];
+                    $ads[] = $ad;
                 }
             }
         }
