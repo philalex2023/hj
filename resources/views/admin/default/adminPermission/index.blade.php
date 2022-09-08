@@ -13,7 +13,7 @@
         layui.use(['treeListTable',], function () {
             var treeListTable = layui.treeListTable;
             var cols = @json($cols);
-            treeListTable.render(listConfig.index_url, cols,{treeDefaultClose:1});
+            treeListTable.render(listConfig.index_url+"?t={{ date('YmdHim') }}", cols,{treeDefaultClose:1});
 
         });
     </script>
