@@ -14,11 +14,14 @@ layui.define(['layer', 'utable', 'listTable'], function (exports) {
         return;
       }
       // 获取数据
-      console.log(param);
+      //console.log(param);
       if (param.data) {
         treetable.init(param, param.data);
       } else {
-        $.getJSON(param.url, param.where, function (res) {
+        /*$.getJSON(param.url, param.where, function (res) {
+          treetable.init(param, res.data);
+        });*/
+        $.getJSON(param.reload_url, param.where, function (res) {
           treetable.init(param, res.data);
         });
       }
