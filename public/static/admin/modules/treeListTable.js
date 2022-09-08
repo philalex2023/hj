@@ -47,7 +47,7 @@ layui.define(['treetable'], function (exports) {
     console.log(render_config);
     //渲染
     // var tree = treetable.render(render_config);
-    var tree = treetable.render(defatul_config);
+    var tree = treetable.render(render_config);
 
     $('#btn-expand').click(function () {
       treetable.expandAll("#" + tableNameId);
@@ -58,7 +58,7 @@ layui.define(['treetable'], function (exports) {
     });
     //开启监听添加，表格内事件
     treetable.listenFun();
-    return tree;
+    // return tree;
 
 
   }
