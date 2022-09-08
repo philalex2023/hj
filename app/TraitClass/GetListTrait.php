@@ -19,7 +19,7 @@ trait GetListTrait
     public function getList(Request $request)
     {
         $this->rq = $request;
-
+        $request->header('Cache-Control','no-cache');
         $debug = $request->input('debug', 0);
         //如果开始没有数据，直接返回空的
         if (!method_exists($this, 'getModel')) {
