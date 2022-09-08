@@ -53,6 +53,7 @@ layui.define(['layerOpen', 'request', 'utable', 'uploader', 'laydate', 'colorpic
       if (callFun) {
         yesFun = callFun;
       }
+      console.log(url);
       layerOpen.show(url, config, yesFun, btn);
     },
 
