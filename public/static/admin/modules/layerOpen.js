@@ -59,7 +59,7 @@ layui.define(['layer', 'request', 'utable', 'loader'], function (exports) {
     $.get(config.url,{},function (str) {
       currentLayerIndex = layer.open({
 
-        type: config.type,
+        type: 1,
         title: config.title,
         content: str,
         area: [rep_px[0], rep_px[1]],
