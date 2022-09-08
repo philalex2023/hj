@@ -14,7 +14,7 @@ layui.define(['layer', 'utable', 'listTable'], function (exports) {
         return;
       }
       // 获取数据
-      console.log(param.data);
+      console.log(param);
       if (param.data) {
         treetable.init(param, param.data);
       } else {

@@ -46,7 +46,7 @@ layui.define(['treetable'], function (exports) {
     render_config.where._token = $('[name="csrf-token"]').attr('content');
     //渲染
     // var tree = treetable.render(render_config);
-    var tree = treetable.render(render_config);
+    treetable.render(render_config);
 
     $('#btn-expand').click(function () {
       treetable.expandAll("#" + tableNameId);
