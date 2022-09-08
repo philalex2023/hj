@@ -161,16 +161,9 @@ class VideoController extends BaseCurlController
                 'hide' => true
             ],*/
             [
-                'field' => 'dev_type',
-                'minWidth' => 80,
-                'title' => '视频类型',
-                'align' => 'center',
-                'hide' => true
-            ],
-            [
                 'field' => 'type',
                 'minWidth' => 80,
-                'title' => '视频来源',
+                'title' => '视频类型',
                 'align' => 'center',
                 'hide' => true
             ],
@@ -398,15 +391,7 @@ class VideoController extends BaseCurlController
         $item->tag_name = $this->getTagName($item->tag_kv??[]);
         $item->status = UiService::switchTpl('status', $item,'','上架|下架');
         $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
-        $item->dev_type = match ($item->dev_type){
-            0 => '横屏',
-            1 => '竖屏'
-        };
-        $item->type = match ($item->type){
-            3 => '萌堆采集',
-            4 => 'up主',
-            default => '上传'
-        };
+        $item->type = UiService::switchTpl('type', $item,'','长|短');
         $item->restricted = $this->restrictedType[$item->restricted]['name'];
         $item->gold = $item->gold/$this->goldUnit;
         return $item;
@@ -435,8 +420,7 @@ class VideoController extends BaseCurlController
         $model->cat = json_encode($cats);
         $tags = $this->rq->input('tags',[]);
         $model->tag = json_encode($tags);
-        $tagsArr = DB::table('tag')->where('usage',1)->whereIn('id',$tags)->pluck('name','id')->all();
-        $model->tag_kv = json_encode($tagsArr);
+
         $model->author = admin('nickname');
         $model->gold = $this->rq->input('gold',0);
         $model->gold *= $this->goldUnit;
@@ -478,8 +462,10 @@ class VideoController extends BaseCurlController
             if(!empty($tagArr)){
                 $model->tag = json_encode($tagArr);
             }
+            $tags = $tagArr;
         }
-
+        $tagsArr = DB::table('tag')->where('usage',1)->whereIn('id',$tags)->pluck('name','id')->all();
+        $model->tag_kv = json_encode($tagsArr);
     }
 
     /*public function afterEditTableSuccessEvent($field, array $ids)
@@ -521,15 +507,13 @@ class VideoController extends BaseCurlController
         $cid = $this->rq->input('cid');
         $cat = $this->rq->input('cat');
         $tag = $this->rq->input('tag');
-        $type = (int)$this->rq->input('type',0); //来源
-        $devType = (int)$this->rq->input('dev_type',0);//视频类型
+        $type = (int)$this->rq->input('type',0);
         $page = $this->rq->input('page', 1);
         $pagesize = $this->rq->input('limit', 30);
         $order_by_name = $this->orderByName();
         $order_by_type = $this->orderByType();
 
         $type>0 && $model=$model->where('type',$type);
-        $devType>0 && $model=$model->where('dev_type',$devType);
         $model = $this->orderBy($model, $order_by_name, $order_by_type);
 
 
@@ -619,17 +603,6 @@ class VideoController extends BaseCurlController
                     ''=>['id'=>'','name'=>'全部'],
                     1=>['id'=>1,'name'=>'上传'],
                     3=>['id'=>3,'name'=>'萌堆采集'],
-                ]
-            ],
-            [
-                'field' => 'dev_type',
-                'type' => 'select',
-                'name' => '视频类型',
-                'default' => '',
-                'data' => [
-                    ''=>['id'=>'','name'=>'全部'],
-                    0=>['id'=>0,'name'=>'横屏'],
-                    1=>['id'=>1,'name'=>'竖屏'],
                 ]
             ],
         ];
