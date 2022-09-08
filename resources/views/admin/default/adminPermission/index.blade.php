@@ -13,13 +13,8 @@
         layui.use(['treeListTable',], function () {
             var treeListTable = layui.treeListTable;
             var cols = @json($cols);
-            $.ajax({
-                url:listConfig.index_url,
-                type:'post',
-                success:function (res){
-                    treeListTable.render(listConfig.index_url, res.data,{treeDefaultClose:1});
-                },
-            });
+            treeListTable.render(listConfig.index_url, cols,{treeDefaultClose:1});
+
         });
     </script>
 @endsection
