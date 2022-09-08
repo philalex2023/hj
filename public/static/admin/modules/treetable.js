@@ -29,9 +29,12 @@ layui.define(['layer', 'utable', 'listTable'], function (exports) {
     //刷新页面，重载入
     reload: function (that, res) {
       var param = that.param;
-      $.getJSON(param.reload_url, param.where, function (res) {
+      /*$.getJSON(param.reload_url, param.where, function (res) {
         that.init(param, res.data);
 
+      });*/
+      $.post(param.reload_url, param.where, function (res) {
+        that.init(param, res.data);
       });
     },
     // 渲染表格
