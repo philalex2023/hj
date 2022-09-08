@@ -12,6 +12,7 @@ $view = [
     | the usual Laravel view path has already been registered for you.
     |
     */
+    'cache' => false,
 
     'paths' => [
         resource_path('views')
