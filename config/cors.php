@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'paths' => ['admin/*'],
+    'paths' => ['api/*'],
 
     'allowed_methods' => ['*'],
 
@@ -28,8 +28,6 @@ return [
     'exposed_headers' => [],
 
     'max_age' => 0,
-
-    'cache_control' => 'no-cache',
 
     'supports_credentials' => false,
 

@@ -7,6 +7,7 @@
  */
 define('LARAVEL_START', microtime(true));
 
+header('Cache-Control: no-cache');
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader
