@@ -43,7 +43,7 @@ layui.define(['treetable'], function (exports) {
 
     };
     var render_config = $.extend({}, defatul_config, config);
-    render_config.where._token = $('[name="csrf-token"]').attr('content');
+    // render_config.where._token = $('[name="csrf-token"]').attr('content');
     console.log(render_config);
     //渲染
     var tree = treetable.render(render_config);
