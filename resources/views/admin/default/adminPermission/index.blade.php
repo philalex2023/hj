@@ -13,9 +13,7 @@
         layui.use(['treeListTable',], function () {
             var treeListTable = layui.treeListTable;
             var cols = @json($cols);
-            treeListTable.render(listConfig.index_url, cols,{treeDefaultClose:1,where: {
-
-                }});
+            treeListTable.render(listConfig.index_url, cols,{treeDefaultClose:1});
 
         });
     </script>
