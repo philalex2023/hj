@@ -56,7 +56,7 @@ layui.define(['layer', 'request', 'utable', 'loader'], function (exports) {
     var btn = config.btn || [appLang.trans('提交'), appLang.trans('取消')];
     rep_px = layuiPx(config.w, config.h);
 
-    $.get(config.url,{},function (str) {
+    $.post(config.url,{},function (str) {
       currentLayerIndex = layer.open({
 
         type: 1,
