@@ -8,7 +8,7 @@
 define('LARAVEL_START', microtime(true));
 
 header('Cache-Control: no-cache');
-header('X-PPP: zzzz');
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader
