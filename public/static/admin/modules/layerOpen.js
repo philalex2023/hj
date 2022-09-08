@@ -55,46 +55,48 @@ layui.define(['layer', 'request', 'utable', 'loader'], function (exports) {
   function openLayer(config, yesFun, susFuc, cacFun, endFun) {
     var btn = config.btn || [appLang.trans('提交'), appLang.trans('取消')];
     rep_px = layuiPx(config.w, config.h);
+    $.ajax({
+        type:'get',
+        url:config.url,
+        success:function (str) {
+          currentLayerIndex = layer.open({
+            type: 1,
+            title: config.title,
+            content: str,
+            area: [rep_px[0], rep_px[1]],
+            btn: btn,
+            btnAlign: 'c',
+            yes: function (index, layero) {
+              if (typeof(yesFun) == "function") {
+                return yesFun(layero, index);
+              }
+            },
+            btn2: function (index, layero) {
 
-    $.post(config.url,{},function (str) {
-      currentLayerIndex = layer.open({
-
-        type: 1,
-        title: config.title,
-        content: str,
-        area: [rep_px[0], rep_px[1]],
-        btn: btn,
-        btnAlign: 'c',
-        yes: function (index, layero) {
-          if (typeof(yesFun) == "function") {
-            return yesFun(layero, index);
-          }
-        },
-        btn2: function (index, layero) {
-
-          if (typeof(cacFun) == "function") {
-            return cacFun(layero, index);
-          }
-        },
-        success: function (index, layero) {
-          if (typeof(susFuc) == "function") {
-            return susFuc(layero, index);
-          }
+              if (typeof(cacFun) == "function") {
+                return cacFun(layero, index);
+              }
+            },
+            success: function (index, layero) {
+              if (typeof(susFuc) == "function") {
+                return susFuc(layero, index);
+              }
 
 
-        },
-        cancel: function (index, layero) {
+            },
+            cancel: function (index, layero) {
 
-          if (typeof(cacFun) == "function") {
-            return cacFun(layero, index);
-          }
-        },
-        end: function () {
-          if (typeof(endFun) == "function") {
-            return endFun();
-          }
+              if (typeof(cacFun) == "function") {
+                return cacFun(layero, index);
+              }
+            },
+            end: function () {
+              if (typeof(endFun) == "function") {
+                return endFun();
+              }
+            }
+          });
         }
-      });
     });
 
   }
