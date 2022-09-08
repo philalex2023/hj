@@ -9,6 +9,7 @@ layui.define(['layerOpen', 'request', 'utable', 'uploader', 'laydate', 'colorpic
   var custormEvent = {
     openIframePost: function (url, postUrl, w, h, title, btn, tableNameId, callFun) {
       title = appLang.trans(title);
+      console.log(url);
       layerOpen.edit(url, postUrl, {
         w: w,
         h: h,
@@ -53,7 +54,6 @@ layui.define(['layerOpen', 'request', 'utable', 'uploader', 'laydate', 'colorpic
       if (callFun) {
         yesFun = callFun;
       }
-      console.log(url);
       layerOpen.show(url, config, yesFun, btn);
     },
 
