@@ -21,7 +21,7 @@ layui.define(['layer', 'utable', 'listTable'], function (exports) {
         /*$.getJSON(param.url, param.where, function (res) {
           treetable.init(param, res.data);
         });*/
-        $.getJSON(param.reload_url, param.where, function (res) {
+        $.post(param.reload_url, param.where, function (res) {
           treetable.init(param, res.data);
         });
       }
