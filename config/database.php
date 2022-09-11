@@ -226,6 +226,13 @@ return [
             'database' => '4',
             'prefix' => 's:'
         ],
+        'tv' => [
+            'url' => env('TV_REDIS_URL'),
+            'host' => env('TV_REDIS_HOST', '127.0.0.1'),
+            'password' => env('TV_REDIS_PASSWORD', null),
+            'port' => env('TV_REDIS_PORT', '6379'),
+            'database' => env('TV_REDIS_DB', '0'),
+        ],
     ],
 
 ];

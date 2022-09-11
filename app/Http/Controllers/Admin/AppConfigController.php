@@ -83,14 +83,14 @@ class AppConfigController extends BaseCurlController
             [
                 'group_name' => 'APP参数设置',
                 'data' => [
-                    [
+                    /*[
                         'field' => 'open_screen_logo',
                         'type' => 'img',
                         'name' => '开屏LOGO图设置',
 //                        'default' => 3,
                         'verify' => '',
                         'tips' => ''
-                    ],
+                    ],*/
                     [
                         'field' => 'ad_time',
                         'type' => 'number',
@@ -103,6 +103,14 @@ class AppConfigController extends BaseCurlController
                         'field' => 'free_view_long_video_times',
                         'type' => 'number',
                         'name' => '免费观看次数',
+                        'must' => 1,
+                        'verify' => 'rq',
+                        'default' => '',
+                    ],
+                    [
+                        'field' => 'up_master_profit_percentage',
+                        'type' => 'number',
+                        'name' => 'up主收益百分比',
                         'must' => 1,
                         'verify' => 'rq',
                         'default' => '',
@@ -190,9 +198,9 @@ class AppConfigController extends BaseCurlController
         $config_name = $request->input('group_type', 'app');
         $config_values = $request->except(['_token','s']);
         //同步图片到资源服
-        if(isset($config_values['open_screen_logo'])){
+        /*if(isset($config_values['open_screen_logo'])){
             $this->syncUpload($config_values['open_screen_logo']);
-        }
+        }*/
         config_cache($config_name, $config_values);
         //
         cache()->delete('payEnv');

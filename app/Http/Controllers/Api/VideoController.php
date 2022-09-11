@@ -34,6 +34,22 @@ class VideoController extends Controller
         $videoRedis = $this->redis('video');
         $view_history_key = 'view_history_'.$uid;
         DB::table('video')->where('id',$vid)->increment('views'); //增加该视频播放次数
+        //up主统计
+        if($video['type'] == 4){
+            $time = time();
+            $upIncomeBuild = DB::table('up_play_day')->where('uid',$video['uid'])->where('at_time',$time);
+            if(!$upIncomeBuild->exists()){
+                $insertData = [
+                    'uid' => $video['uid'],
+                    'at_time' => $time,
+                    'play_times' => 1,
+                ];
+                $upIncomeBuild->insert($insertData);
+            }else{
+                $upIncomeBuild->increment('play_times');
+            }
+
+        }
         //插入历史记录
         $videoRedis->zAdd($view_history_key,time(),$vid);
         $videoRedis->expire($view_history_key,7*24*3600);
@@ -268,7 +284,28 @@ class VideoController extends Controller
 //        $buyVideoKey = 'buyVideoWithGold_' . $user->id;
         $buyVideoKey = 'buyGoldVideo_' . $user->id;
         $videoRedis->sAdd($buyVideoKey,$one['id']);
-        $videoRedis->expire($buyVideoKey,7*24*3600);
+        $videoRedis->expire($buyVideoKey,30*24*3600);
+        //up主统计
+        if($one['type'] == 4){
+            /*$upBuyVideoKey = 'up_income_'.$one['uid'];
+            $upRedis = $this->redis('tv');*/
+            $configData = config_cache('app');
+            $percentage = round(($configData['up_master_profit_percentage'] ?? 0)/100,2);
+            $goldIncome = round(($percentage * $one['gold']/100));
+            $time = time();
+            $upIncomeBuild = DB::table('up_income_day')->where('uid',$one['uid'])->where('at_time',$time);
+            if(!$upIncomeBuild->exists()){
+                $insertData = [
+                    'uid' => $one['uid'],
+                    'at_time' => $time,
+                    'gold' => $goldIncome,
+                ];
+                $upIncomeBuild->insert($insertData);
+            }else{
+                $upIncomeBuild->increment('gold',$goldIncome);
+            }
+
+        }
         DB::table('video')->where('id',$one['id'])->increment('buyers');
         return true;
     }
