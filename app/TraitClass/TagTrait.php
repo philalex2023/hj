@@ -14,8 +14,7 @@ trait TagTrait
 
     public function getTagName($tag)
     {
-//        $tagData = $this->getTagData($usage);
-        $tagArr = (array)json_decode($tag, true);
+        $tagArr = !is_array($tag) ? (array)json_decode($tag, true) : $tag;
         $name = '';
         $characters = '|';
         foreach ($tagArr as $t)
