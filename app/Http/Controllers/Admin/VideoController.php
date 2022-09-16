@@ -603,6 +603,7 @@ class VideoController extends BaseCurlController
                     ''=>['id'=>'','name'=>'全部'],
                     1=>['id'=>1,'name'=>'上传'],
                     3=>['id'=>3,'name'=>'萌堆采集'],
+                    4=>['id'=>4,'name'=>'up主上传'],
                 ]
             ],
         ];
