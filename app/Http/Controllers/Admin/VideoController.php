@@ -169,7 +169,7 @@ class VideoController extends BaseCurlController
             ],*/
             [
                 'field' => 'type',
-                'minWidth' => 80,
+                'minWidth' => 120,
                 'title' => '视频来源',
                 'align' => 'center',
                 'hide' => true
