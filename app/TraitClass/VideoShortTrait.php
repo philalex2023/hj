@@ -34,6 +34,7 @@ trait VideoShortTrait
             "comments" => $model->comments,
             "cover_img" => $model->cover_img,
             "updated_at" => $model->updated_at,
+            "tag_kv" => $model->tag_kv,
         ];
         $redis = $this->redis();
         $redis->hSet($cacheKey, $model->id, json_encode($storeData));
