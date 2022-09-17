@@ -240,7 +240,7 @@ class UserController extends Controller
             $videoIds = $vidArr ? array_keys($vidArr) : [];
             $vidArrShort = $videoRedis->zRevRange($shortCollectsKey,0,-1,true);
             $shortVideoIds = $vidArrShort ? array_keys($vidArrShort) : [];
-            $videoList = DB::table('video')->select('id','name','gold','cat','sync','title','duration','type','restricted','cover_img','views','updated_at','hls_url','dash_url','comments','likes')
+            $videoList = DB::table('video')->select('id','name','gold','cat','tag_kv','sync','title','duration','type','restricted','cover_img','views','updated_at','hls_url','dash_url','comments','likes')
                 ->whereIn('id',$videoIds)->get()->toArray();
             foreach ($videoList as &$iv){
                 $iv = (array)$iv;
