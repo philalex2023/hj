@@ -355,6 +355,71 @@ class UserController extends Controller
 
     }
 
+    public function overViewHistory(Request $request): JsonResponse
+    {
+        try {
+            if(isset($request->params)){
+                $perPage = 6;
+                $res = [];
+                $params = self::parse($request->params);
+                $user = $request->user();
+                $videoRedis = $this->redis('video');
+                $view_history_key = 'view_history_'.$user->id;
+
+                $page = $params['page'] ?? 1;
+                if(isset($params['pageSize']) && ($params['pageSize']<10)){
+                    $perPage = $params['pageSize'];
+                }
+
+                $vidArr = $videoRedis->zRevRange($view_history_key,0,-1,true);
+                $videoIds = $vidArr ? array_keys($vidArr) : [];
+
+                $offset = ($page-1)*$perPage;
+                $video = DB::table('video')->whereIn('id',$videoIds)->get($this->videoFields)->toArray();
+
+                foreach ($video as &$r){
+                    $r = (array)$r;
+                    $r['usage'] = 1;
+                    $r['score'] = $vidArr[$r['id']];
+                    $r['updated_at'] = date('Y-m-d H:i:s',$r['score']);
+                }
+                //短视频
+                $view_history_key_short = 'viewShortHistory_'.$user->id;
+                $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
+                //Log::info('test==',$vidArrShort);
+                $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
+                $videoShort = DB::table('video_short')->whereIn('id',$videoShortIds)->get([
+                    'video_short.id as vs_id','video_short.name as vs_name','video_short.gold as vs_gold','video_short.cat as vs_cat','video_short.sync as vs_sync','video_short.title as vs_title','video_short.duration as vs_duration','video_short.type as vs_type','video_short.restricted as vs_restricted','video_short.cover_img as vs_cover_img','video_short.views as vs_views','video_short.updated_at as vs_updated_at','video_short.hls_url as vs_hls_url','video_short.dash_url as vs_dash_url','video_short.url as url','video_short.comments as vs_comments','video_short.likes as vs_likes',
+                ])->toArray();
+                foreach ($videoShort as &$sr){
+                    $sr = (array)$sr;
+                    $sr['usage'] = 2;
+                    $sr['score'] = $vidArrShort[$sr['vs_id']];
+                    $sr['updated_at'] = date('Y-m-d H:i:s',$sr['score']);
+                }
+                $result = [...$video,...$videoShort];
+                $score = array_column($result,'score');
+                array_multisort($score,SORT_DESC,$result);
+                $pageLists = array_slice($result,$offset,$perPage);
+                if(!isset($result[0])){
+                    $pageLists = DB::table('video')->whereIn('id',$videoIds)->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
+                }
+                //路径处理
+                $res['list'] = $this->handleVideoItems($pageLists,true, true);
+                //时长转秒
+                $res['list'] = self::transferSeconds($res['list']);
+                return response()->json([
+                    'state'=>0,
+                    'data'=>$res
+                ]);
+            }
+            return response()->json([]);
+        }catch (\Exception $exception){
+            return $this->returnExceptionContent($exception->getMessage());
+        }
+
+    }
+
     public static function transferSeconds($lists)
     {
         foreach ($lists as &$list) {

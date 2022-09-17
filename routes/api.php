@@ -90,6 +90,7 @@ Route::group([
     Route::post('billingClear ', 'UserController@billingClear');     //账单记录
     Route::get('myCollect', 'UserController@myCollect');     //收藏列表
     Route::get('viewHistory', 'UserController@viewHistory');     //观看历史
+    Route::get('overViewHistory', 'UserController@overViewHistory');     //观看历史概览
     Route::post('bindInviteCode','UserController@bindInviteCode'); //手动绑定邀请码
     Route::post('bindPhone','UserController@bindPhone'); //绑定手机
     Route::post('sendSmsCode','UserController@sendSmsCode'); //发送短信验证码
