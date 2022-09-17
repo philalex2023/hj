@@ -262,6 +262,8 @@ class VideoShortController extends Controller
                 $one['cover_img'] = $this->transferImgOut($one['cover_img'],$resourceDomain,$_v);
                 //hls处理
                 $one['hls_url'] = $resourceDomain .$this->transferHlsUrl($one['hls_url'],$one['id'],$_v);
+                //标签
+                isset($one['tag_kv']) && $one['tag_kv'] = json_decode($one['tag_kv'],true);
                 $data[] = $one;
             }
         }
