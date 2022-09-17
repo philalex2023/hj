@@ -116,7 +116,7 @@ class VipController extends \App\Http\Controllers\Controller
         $gold = DB::table('gold')
             ->where('status',1)
             ->orderBy('sort')
-            ->get(['id','money','remark','zfb_action_id','wx_action_id'])->toArray();
+            ->get(['id','money','remark','zfb_action_id','wx_action_id','bonus'])->toArray();
        $rechargeData = $this->getRechargeChannel();
        $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
        foreach ($gold as $mvItem) {
