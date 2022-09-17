@@ -147,12 +147,14 @@ trait PayTrait
     {
         $info = Gold::query()->find($id)?->toArray();
         $proportion = round($info['proportion'],2);
+        $bonus = $info['bonus'];
         $info['money'] = $info['money'] * $proportion;
+        $info['money'] += $bonus;
         User::query()->find($uid)->update(
             ['gold' =>DB::raw("gold + {$info['money']}") ]
         );
         Cache::forget("cachedUser.{$uid}");
-        Log::info('pay_gold_update===', ['用户'.$uid.'新增金额:'.$info['money'].',金币第'.$id.'档-比例:'.$proportion]);
+        Log::info('pay_gold_update===', ['用户'.$uid.'新增金额:'.$info['money'].',金币第'.$id.'档-比例:'.$proportion.' 赠送金币:'.$bonus]);
         return [];
     }
 

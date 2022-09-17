@@ -119,16 +119,16 @@ class VipController extends \App\Http\Controllers\Controller
             ->get(['id','money','remark','zfb_action_id','wx_action_id'])->toArray();
        $rechargeData = $this->getRechargeChannel();
        $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
-       foreach ($gold as $mcKey=>$mvItem) {
+       foreach ($gold as $mvItem) {
            if ($zfb_action_id = $rechargeData[$mvItem->zfb_action_id]) {
-               $gold[$mcKey]->zfb_url = $baseUrl . $zfb_action_id;
+               $mvItem->zfb_url = $baseUrl . $zfb_action_id;
            } else {
-               $gold[$mcKey]->zfb_url = '';
+               $mvItem->zfb_url = '';
            }
            if ($wx_action_id = $rechargeData[$mvItem->wx_action_id]) {
-               $gold[$mcKey]->wx_url = $baseUrl . $wx_action_id;
+               $mvItem->wx_url = $baseUrl . $wx_action_id;
            } else {
-               $gold[$mcKey]->wx_url = '';
+               $mvItem->wx_url = '';
            }
        }
         return response()->json([

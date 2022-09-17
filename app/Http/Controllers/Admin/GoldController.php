@@ -134,10 +134,15 @@ class GoldController extends BaseCurlController
                 'name' => '备注信息',
             ],
             [
+                'field' => 'bonus',
+                'type' => 'text',
+                'name' => '赠送金币',
+            ],
+            /*[
                 'field' => 'proportion',
                 'type' => 'text',
                 'name' => '充值比例',
-            ],
+            ],*/
             [
                 'field' => 'user_type',
                 'type' => 'select',
