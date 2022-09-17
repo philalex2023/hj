@@ -11,6 +11,7 @@ use App\Models\Tag;
 use App\Models\Video;
 use App\Models\VideoShort;
 use App\TraitClass\ApiParamsTrait;
+use App\TraitClass\CommTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\StatisticTrait;
@@ -28,7 +29,7 @@ use Illuminate\Validation\Rule;
 
 class VideoShortController extends Controller
 {
-    use VideoTrait,PHPRedisTrait,VipRights,StatisticTrait,MemberCardTrait,ApiParamsTrait,VideoShortTrait;
+    use VideoTrait,PHPRedisTrait,VipRights,StatisticTrait,MemberCardTrait,ApiParamsTrait,VideoShortTrait,CommTrait;
 
     private array $mainCateAlias = [
         'short_hot',
@@ -55,7 +56,11 @@ class VideoShortController extends Controller
     public function cate(Request $request): JsonResponse
     {
         $cacheData = $this->redis()->get('short_category');
-        $data = $cacheData ? json_decode($cacheData,true) : [];
+        if(!$cacheData){
+            $data = $this->resetShortCate();
+        }else{
+            $data = json_decode($cacheData,true);
+        }
         return response()->json([
             'state' => 0,
             'data' => $data

@@ -110,14 +110,16 @@ trait CommTrait
         //Cache::put('updateHomePage',1);
     }
 
-    public function resetShortCate(): void
+    public function resetShortCate(): array
     {
         $raw = Category::query()->where('parent_id', 10000)
             ->where('is_checked',1)
             ->orderBy('sort', 'desc')
             ->select('id', 'name')
             ->get();
-        $this->redis()->set('short_category',json_encode($raw->toArray(),JSON_UNESCAPED_UNICODE));
+        $rawArr = $raw->toArray();
+        $this->redis()->set('short_category',json_encode($rawArr,JSON_UNESCAPED_UNICODE));
+        return $rawArr;
     }
 
 }
