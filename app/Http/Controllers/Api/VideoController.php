@@ -248,7 +248,7 @@ class VideoController extends Controller
                 }
                 break;
             case 2:
-                if(isset($rights[7])){
+                if(isset($rights[4])){
                     return $one;
                 }
                 $videoRedis = $this->redis('video');
