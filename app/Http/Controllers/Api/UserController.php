@@ -402,7 +402,7 @@ class UserController extends Controller
                 array_multisort($score,SORT_DESC,$result);
                 $pageLists = array_slice($result,$offset,$perPage);
                 if(!isset($result[0])){
-                    $pageLists = DB::table('video')->whereIn('id',$videoIds)->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
+                    $pageLists = DB::table('video')->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
                 }
                 //路径处理
                 $res['list'] = $this->handleVideoItems($pageLists,true, true);
