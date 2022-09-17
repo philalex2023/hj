@@ -140,6 +140,28 @@ trait MemberCardTrait
         return $forever;
     }
 
+    public function getUserCardInfo($memberCardTypeId,$cardIds): array
+    {
+        $hasMemberCards = Cache::get('member_card_key') ?? [];
+        $forever = false;
+        $flipArray = array_flip($cardIds);
+        $n = 0;
+        $rightName = [];
+        foreach ($hasMemberCards as $memberCard){
+            if($memberCard->id == $memberCardTypeId){
+                if($memberCard->expired_hours == 0){ //永久卡
+                    $forever = true;
+                }
+            }
+            $rightName[$memberCard->rights] = $memberCard->name;
+            isset($flipArray[$memberCard->id]) && $memberCard->rights>$n && $n=$memberCard->rights;
+        }
+        return [
+            'forever' => $forever,
+            'name' => !empty($rightName) ? $rightName[$n] : '未开通',
+        ];
+    }
+
     public function getCardRightIds($cards): array
     {
         $rightIds = [];

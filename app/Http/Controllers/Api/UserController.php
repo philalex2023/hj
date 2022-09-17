@@ -79,7 +79,6 @@ class UserController extends Controller
                 ];
                 if($memberCardTypeId>0){
                     $expired_time = '';
-                    $memberCardName = '';
                     $calc = ($user->vip_expired?:0) - (time()-($user->vip_start_last?:time()));
                     $vipDay = ceil((($calc>0)?$calc:0)/(24*60*60));
                     $isVip = 0;
@@ -87,7 +86,9 @@ class UserController extends Controller
                         $isVip = 1;
                     }
 
-                    if($this->isForeverCard($memberCardTypeId)){
+                    $cardInfo = $this->getUserCardInfo($memberCardTypeId,$types);
+                    $memberCardName = $cardInfo['name'];
+                    if($cardInfo['forever']){
                         $vipDay = -1;
                         $isVip = 1;
                     }
