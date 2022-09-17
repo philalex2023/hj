@@ -39,7 +39,7 @@ class VideoController extends BaseCurlController
         4=>['id'=>4,'name'=>'up主上传'],
     ];
 
-    public function setModel()
+    public function setModel(): AdminVideo
     {
         return $this->model = new AdminVideo();
     }
