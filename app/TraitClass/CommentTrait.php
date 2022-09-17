@@ -13,7 +13,7 @@ trait CommentTrait
     {
         //权限控制
         $rights = $this->getUserAllRights($user);
-        if(!isset($rights[6]) || $user->status==0){
+        if(!isset($rights[3]) || $user->status==0){
             return response()->json([
                 'state' => -1,
                 'msg' => "权限不足",

@@ -42,7 +42,7 @@ class CommCommentController extends Controller
             $rights = $this->getUserAllRights($user);
             $commentKey = 'commentForCommBbs';
             $redis = $this->redis();
-            if(isset($rights[6])){
+            if(isset($rights[3])){
                 $cardTypes = explode(',',$user->member_card_type);
                 $comments = intval($redis->hGet($commentKey,$user->id));
                 if(in_array(1,$cardTypes) && $comments>=30){//限制30次

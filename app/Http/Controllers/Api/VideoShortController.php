@@ -240,7 +240,7 @@ class VideoShortController extends Controller
                     $one['limit'] = 1;
                 }
                 if ($one['restricted'] == 2) {
-                    if(!isset($rights[7])){ //如果没有免费观看金币视频的权益
+                    if(!isset($rights[4])){ //如果没有免费观看金币视频的权益
                         $buy = $this->isBuyShortVideo($one,$user);
                         !$buy && $one['limit'] = 2;
                     }
