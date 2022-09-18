@@ -87,7 +87,7 @@
 
                 <div class="links">
                     <a href="https://developer-tools.jwplayer.com/stream-tester/">播放器</a>
-                    <a href="https://saolav.cc/downloadFast?channel_id=xgg">下载</a>
+                    <a href="">下载</a>
                     <a href="https://laravel-news.com">News</a>
                     <a href="https://blog.laravel.com">Blog</a>
                     <a href="https://nova.laravel.com">Nova</a>
