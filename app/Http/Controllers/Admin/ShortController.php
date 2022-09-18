@@ -268,7 +268,7 @@ class ShortController extends BaseCurlController
     }
 
     //表单验证
-    public function checkRule($id = '')
+    /*public function checkRule($id = '')
     {
         $data = [
             'name'=>'required|unique:video,name',
@@ -289,7 +289,7 @@ class ShortController extends BaseCurlController
 //            'cover_img'=>'封面图片',
 //            'cid'=>'分类',
         ];
-    }
+    }*/
 
     public function setListOutputItemExtend($item)
     {
