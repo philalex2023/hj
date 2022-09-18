@@ -73,13 +73,15 @@ class getVideoFromApi extends Command
 
         foreach ($xml->resource as $item){
             $hash = (string)$item['hash'];
-            $play = 'http://154.207.98.131/'.date('Ym',(int)$item['time']).'/'.$hash.'/play.m3u8';
+            $play = 'http://154.207.98.131/'.date('ym',(int)$item['time']).'/'.$hash.'/play.m3u8';
             $itemArr = [
                 'name' => (string)$item,
                 'duration' => (int)$item['duration'],
                 'play' => $play,
                 'hash' => $hash,
             ];
+            /*$this->info('url-'.$play);
+            break;*/
             if(!$redis->sIsMember($mdVideoKey,$itemArr['hash'])){
                 $job = new ProcessGetApiVideo($itemArr);
                 $this->dispatch($job->onQueue('high'));
