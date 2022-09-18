@@ -120,17 +120,11 @@ class PayLogController extends BaseCurlController
 
     public function setListOutputItemExtend($item)
     {
-        $deviceSystems = [
-            0 => '',
-            1 => 'ios轻量版',
-            2 => '安卓',
-            3 => 'ios轻量版',
-        ];
-        $types = [
+        $item->type = match ($item->order?->type){
             1 => '会员卡',
             2 => '骚豆',
-        ];
-        $item->type = $types[$item->order?->type];
+            default => '',
+        };
         $item->amount = $item->order->amount;
         //$item->amount = round($item->amount/100,2);
 
@@ -143,7 +137,12 @@ class PayLogController extends BaseCurlController
         $item->channel_id = $channel_name . '(' . $item->order->channel_id . ')';
         $payChannels = $this->getPayChannels();
         $item->pay_method_name = $payChannels[$item->pay_method]??'-';
-        $item->systemPlatform = $deviceSystems[$item->device_system];
+        $item->systemPlatform = match ($item->device_system){
+            default => '',
+            1 => 'ios',
+            2 => '安卓',
+            3 => 'ios轻量版',
+        };
         return $item;
     }
 
