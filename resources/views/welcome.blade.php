@@ -82,7 +82,7 @@
 
             <div class="content">
                 <div class="title m-b-md">
-                    Saol视频
+                    海角社区
                 </div>
 
                 <div class="links">
