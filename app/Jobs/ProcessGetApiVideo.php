@@ -59,7 +59,7 @@ class ProcessGetApiVideo implements ShouldQueue
             'duration_seconds' => $item['duration'],
             'duration' => $this->formatSeconds($item['duration']),
             'sync' => 2,
-            'type' => 3,
+            'type' => 4,
             'tag' => json_encode([]),
             'cat' => json_encode([]),
             'created_at' => date('Y-m-d H:i:s'),
