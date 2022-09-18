@@ -361,15 +361,16 @@ class UserController extends Controller
             //if(isset($request->params)){
                 $perPage = 6;
                 $res = [];
-                $params = self::parse($request->params??'');
+                //$params = self::parse($request->params??'');
                 $user = $request->user();
                 $videoRedis = $this->redis('video');
                 $view_history_key = 'view_history_'.$user->id;
 
-                $page = $params['page'] ?? 1;
+                $page = 1;
+                /*$page = $params['page'] ?? 1;
                 if(isset($params['pageSize']) && ($params['pageSize']<10)){
                     $perPage = $params['pageSize'];
-                }
+                }*/
 
                 $vidArr = $videoRedis->zRevRange($view_history_key,0,-1,true);
                 $videoIds = $vidArr ? array_keys($vidArr) : [];
