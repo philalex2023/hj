@@ -28,7 +28,7 @@ trait MemberCardTrait
         4 => [
             'id' => 4,
             'icon' => 4,
-            'name' => '金币视频免费看'
+            'name' => '金币视频无限看'
         ],
         5 => [
             'id' => 5,
