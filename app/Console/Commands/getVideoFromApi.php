@@ -46,7 +46,7 @@ class getVideoFromApi extends Command
      */
     public function handle(): int
     {
-        $apiUrl = 'http://154.207.98.131/?mdsq';
+        $apiUrl = 'https://kenb.cloud/?test';
 //        $apiUrl = 'http://192.168.0.155/?mdsq';
         $response = (new Client([
             'headers' => ['Content-Type' => 'application/json']
@@ -57,9 +57,9 @@ class getVideoFromApi extends Command
         $xml=simplexml_load_string($response);
         /*$count = count((array)$xml->resource);
         print_r($count);*/
-        $videos = DB::table('video')->where('type',3)->get(['id','url']);
+        $videos = DB::table('video')->where('type',4)->get(['id','url']);
 
-        $mdVideoKey = 'md_video';
+        $mdVideoKey = 'hj_video';
         $redis = $this->redis('video');
 
         $memberArr = [];
@@ -68,15 +68,17 @@ class getVideoFromApi extends Command
         }
         if(!empty($memberArr)){
             $redis->sAddArray($mdVideoKey,$memberArr);
-            $redis->expire($mdVideoKey,24*3600*30);
+            $redis->expire($mdVideoKey,24*3600*7);
         }
 
         foreach ($xml->resource as $item){
+            $hash = (string)$item['hash'];
+            $play = 'http://154.207.98.131/'.date('Ym',(int)$item['time']).'/'.$hash.'/play.m3u8';
             $itemArr = [
                 'name' => (string)$item,
                 'duration' => (int)$item['duration'],
-                'play' => (string)$item['play'],
-                'hash' => (string)$item['hash'],
+                'play' => $play,
+                'hash' => $hash,
             ];
             if(!$redis->sIsMember($mdVideoKey,$itemArr['hash'])){
                 $job = new ProcessGetApiVideo($itemArr);
