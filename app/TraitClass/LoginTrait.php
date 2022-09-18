@@ -52,7 +52,7 @@ trait LoginTrait
             'nickname' => $user['nickname'],
             'id' => $user['id']
         ]);
-        $user['kf_url'] = 'https://vm.daneviolda.com/1wyai8j871j3z054rryao48w7g?'.$queryParam;
+        $user['kf_url'] = 'https://vm.homeleasyn.com/1mjzi3sh74yrj19xqt1ofbv1ff?'.$queryParam;
         return $user;
     }
 }
