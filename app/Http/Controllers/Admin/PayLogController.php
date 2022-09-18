@@ -130,7 +130,7 @@ class PayLogController extends BaseCurlController
             1 => '会员卡',
             2 => '骚豆',
         ];
-        $item->type = $types[$item->order->type];
+        $item->type = $types[$item->order?->type];
         $item->amount = $item->order->amount;
         //$item->amount = round($item->amount/100,2);
 
