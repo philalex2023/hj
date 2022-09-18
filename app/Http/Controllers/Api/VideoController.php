@@ -165,6 +165,12 @@ class VideoController extends Controller
                 ->where('status', 1)
                 ->where('type', '<', 2)
                 ->get(['id', 'name'])->toArray();
+            if(!isset($domainArr[0])){
+                return response()->json([
+                    'state' => -1,
+                    'msg' => "请配置渠道推广域名",
+                ]);
+            }
             $randKey = array_rand($domainArr);
             $domain = $domainArr[$randKey]['name'];
             $promotion_url = $domain . '?code=' . $code;
