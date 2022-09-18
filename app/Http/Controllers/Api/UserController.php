@@ -358,10 +358,10 @@ class UserController extends Controller
     public function overViewHistory(Request $request): JsonResponse
     {
         try {
-            if(isset($request->params)){
+            //if(isset($request->params)){
                 $perPage = 6;
                 $res = [];
-                $params = self::parse($request->params);
+                $params = self::parse($request->params??'');
                 $user = $request->user();
                 $videoRedis = $this->redis('video');
                 $view_history_key = 'view_history_'.$user->id;
@@ -412,8 +412,8 @@ class UserController extends Controller
                     'state'=>0,
                     'data'=>$res
                 ]);
-            }
-            return response()->json([]);
+            //}
+            //return response()->json([]);
         }catch (\Exception $exception){
             return $this->returnExceptionContent($exception->getMessage());
         }
