@@ -13,12 +13,12 @@ trait MemberCardTrait
         1 => [
             'id' => 1,
             'icon' => 1,
-            'name' => '观看VIP影片'
+            'name' => 'VIP视频无限看'
         ],
         2 => [
             'id' => 2,
             'icon' => 2,
-            'name' => '会员专有标识'
+            'name' => '专属标识'
         ],
         3 => [
             'id' => 3,
@@ -28,7 +28,7 @@ trait MemberCardTrait
         4 => [
             'id' => 4,
             'icon' => 4,
-            'name' => '骚豆影片免费'
+            'name' => 'VIP影片7天'
         ],
         5 => [
             'id' => 5,
@@ -43,7 +43,7 @@ trait MemberCardTrait
         7 => [
             'id' => 7,
             'icon' => 7,
-            'name' => '小视频特权'
+            'name' => '短视频无限看'
         ],
         8 => [
             'id' => 8,
