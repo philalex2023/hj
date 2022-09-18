@@ -28,7 +28,7 @@ trait MemberCardTrait
         4 => [
             'id' => 4,
             'icon' => 4,
-            'name' => 'VIP影片7天'
+            'name' => '金币视频免费看'
         ],
         5 => [
             'id' => 5,

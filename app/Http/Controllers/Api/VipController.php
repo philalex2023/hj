@@ -68,9 +68,9 @@ class VipController extends \App\Http\Controllers\Controller
                     }
                 }
             }
-            if ($item['name_day'] && ($rights_list[0]['id'] == 1)) {
+            /*if ($item['name_day'] && ($rights_list[0]['id'] == 1)) {
                 $rights_list[0]['name'] = $item['name_day'];
-            }
+            }*/
             $item['rights_list'] = $rights_list;
             unset($item['rights']);
             //
