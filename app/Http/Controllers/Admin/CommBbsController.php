@@ -306,6 +306,7 @@ class CommBbsController extends BaseCurlController
         if ($show && ($show->video??false) && $show->video != '[]') {
             $show->url = json_decode($show->video)[0];
         }
+        $officialUsers = $this->getOfficialUsers() ? $this->getOfficialUsers()->toArray() : [];
         $data = [
             [
                 'field' => 'author_id',
@@ -314,7 +315,7 @@ class CommBbsController extends BaseCurlController
                 'must' => 1,
                 'verify' => 'rq',
                 'default' => 0,
-                'data' => $this->getOfficialUsers()->toArray()
+                'data' => $officialUsers
             ],
             [
                 'field' => 'official_type',
