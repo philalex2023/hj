@@ -120,6 +120,9 @@ class PayLogController extends BaseCurlController
 
     public function setListOutputItemExtend($item)
     {
+        if(!$item){
+            return parent::setListOutputItemExtend($item);
+        }
         $deviceSystems = [
             0 => '',
             1 => 'ios轻量版',
