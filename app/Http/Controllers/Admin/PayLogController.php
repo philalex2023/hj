@@ -125,7 +125,7 @@ class PayLogController extends BaseCurlController
             2 => '骚豆',
             default => '',
         };
-        $item->amount = $item->order->amount;
+        $item->amount = $item->order?->amount;
         //$item->amount = round($item->amount/100,2);
 
         /*if ($item->status == 1) {
@@ -134,7 +134,7 @@ class PayLogController extends BaseCurlController
             $item->status = '未付';
         }*/
         $channel_name = $item->channel_name;
-        $item->channel_id = $channel_name . '(' . $item->order->channel_id . ')';
+        $item->channel_id = $channel_name . '(' . $item->order?->channel_id . ')';
         $payChannels = $this->getPayChannels();
         $item->pay_method_name = $payChannels[$item->pay_method]??'-';
         $item->systemPlatform = match ($item->device_system){
