@@ -133,8 +133,10 @@ trait MemberCardTrait
                     $forever = true;
                 }
             }
-            $rightName[$memberCard->rights] = $memberCard->name;
-            isset($flipArray[$memberCard->id]) && $memberCard->rights>$n && $n=$memberCard->rights;
+            if(isset($flipArray[$memberCard->id])){
+                $rightName[$memberCard->rights] = $memberCard->name;
+                $memberCard->rights>$n && $n=$memberCard->rights;
+            }
         }
         return [
             'forever' => $forever,
