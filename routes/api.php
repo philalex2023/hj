@@ -82,7 +82,7 @@ Route::group([
     Route::post('commentReply', 'CommentController@reply');  //回复评论
     Route::get('logout', 'AuthController@logout');   //登出接口
     Route::get('vipInfo', 'VipController@memberCards');     //会员卡
-    Route::get('gold', 'VipController@gold');     //骚豆
+    Route::get('gold', 'VipController@gold');     //金币
     Route::get('userExtendInfo', 'UserController@extendInfo');     //用户扩展信息
     Route::post('user', 'UserController@set');     //用户设置
     Route::get('myShare', 'UserController@myShare');     //我的分享
