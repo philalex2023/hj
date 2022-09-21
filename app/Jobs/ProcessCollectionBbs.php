@@ -78,29 +78,31 @@ class ProcessCollectionBbs implements ShouldQueue
                     //将匹配到的src信息压入数组
                     $pathInfo = pathinfo($src);
                     $file_name = md5(date('ym').$pathInfo['filename']);
-                    $m3u8Content = file_get_contents($src);
+                    $m3u8Content = $this->curlByUrl($src);
 
                     $tmpPath = '/public/slice/hls/'.$file_name.'/tmp.m3u8';
-                    Storage::disk('ftp')->put($tmpPath,$m3u8Content); //save
+                    $put = Storage::disk('ftp')->put($tmpPath,$m3u8Content); //save
                     $localFile = Storage::path($tmpPath);
+                    Log::info('putM3u8TmpFile',[$put]);
                     $texts = file($localFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
                     $m3u8Text = '';
                     foreach ($texts as &$line){
                         if(str_contains($line, '#EXT-X-KEY')){
                             $arr = explode('"',$line);
                             $keyUrl = $pathInfo['dirname'].'/'.$arr[1];
-                            $keyContent = file_get_contents($keyUrl);
+                            $keyContent = $this->curlByUrl($keyUrl);
                             Storage::disk('ftp')->put('/public/slice/hls/'.$file_name.'/'.$arr[1],$keyContent);
                         }
                         if(str_contains($line, 'https://')){
-                            $tsContent = file_get_contents($line);
+                            $tsContent = $this->curlByUrl($line);
                             $line = pathinfo($line,PATHINFO_BASENAME);
                             Storage::disk('ftp')->put('/public/slice/hls/'.$file_name.'/'.$line,$tsContent);
                         }
                         $m3u8Text .= $line."\r\n";
                     }
                     $m3u8File = '/public/slice/hls/'.$file_name.'/'.$file_name.'.m3u8';
-                    Storage::disk('ftp')->put($m3u8File,$m3u8Text); //save
+                    $put2 = Storage::disk('ftp')->put($m3u8File,$m3u8Text); //save
+                    Log::info('putM3u8File',[$put2]);
                     Storage::disk('ftp')->delete($tmpPath);
                     $srcArr[] = $m3u8File;
                 }
