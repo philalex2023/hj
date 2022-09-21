@@ -358,7 +358,7 @@ class CommBbsController extends BaseCurlController
             ],
             [
                 'field' => 'thumbs',
-                'type' => 'imgMoreEnc',
+                'type' => 'imgMore',
                 'default' => '',
                 'name' => '相册',
                 'must' => 0,
