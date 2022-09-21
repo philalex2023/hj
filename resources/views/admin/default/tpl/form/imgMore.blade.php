@@ -63,6 +63,7 @@
         xhr.onload = function () {
             let src = window.URL.createObjectURL(xhr.response);
             imgArr.eq(k).attr("data-src",src);
+            imgArr.eq(k).style("background-image",src);
         }
         xhr.send();
     }
