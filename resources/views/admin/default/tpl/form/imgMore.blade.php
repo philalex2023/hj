@@ -57,11 +57,12 @@
     let imgArr =$('.preview-img');
     for (let k in imgArr) {
         let xhr = new XMLHttpRequest();
-        let src = "{{ \App\TraitClass\VideoTrait::getDomain(2) }}"+imgArr.eq(k).attr("data-src");
-        xhr.open('get',src);
+        let url = "{{ \App\TraitClass\VideoTrait::getDomain(2) }}"+imgArr.eq(k).attr("data-src");
+        xhr.open('get',url);
         xhr.responseType = 'blob';
         xhr.onload = function () {
-            imgArr.eq(k).attr("data-src",window.URL.createObjectURL(xhr.response));
+            let src = window.URL.createObjectURL(xhr.response);
+            imgArr.eq(k).attr("data-src",src);
         }
         xhr.send();
     }
