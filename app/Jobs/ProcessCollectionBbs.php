@@ -49,7 +49,7 @@ class ProcessCollectionBbs implements ShouldQueue
         return base64_decode($con);
     }
 
-    public function getImgSrcValue($matchIMG): array
+    /*public function getImgSrcValue($matchIMG): array
     {
         $srcArr = [];
         foreach ($matchIMG[0] as $key => $imgTag){
@@ -70,6 +70,18 @@ class ProcessCollectionBbs implements ShouldQueue
             }
         }
         return $srcArr;
+    }*/
+
+    public function getImgSrcValue($src): string
+    {
+        //将匹配到的src信息压入数组
+        $res = file_get_contents($src);
+        Log::info('getImgSrcValue',[$src]);
+        $imgContent = $this->decodeImgUrl($res);
+        $file_name = md5(date('ym').pathinfo($src,PATHINFO_FILENAME));
+        $imgFile = '/upload/collection/'.$file_name.'/'.$file_name.'.htm';
+        Storage::disk('ftp')->put($imgFile,$imgContent); //save
+        return $imgFile;
     }
 
     public function getVideoSrcValue($src): string
@@ -216,6 +228,12 @@ class ProcessCollectionBbs implements ShouldQueue
                     //视频
                     $this->getVideoSrcValue($attachment['remoteUrl']);
                 }
+
+                if($attachment['category']=='images'){
+                    //图片
+                    $r['thumbs'][] = $this->getImgSrcValue($attachment['remoteUrl']);
+
+                }
             }
         }
         //提取文字、图片和视频
@@ -226,17 +244,15 @@ class ProcessCollectionBbs implements ShouldQueue
             foreach ($matchIMG as $imgEle){
                 $r['content'] = str_replace($imgEle,'',$r['content']);
             }
-            $r['thumbs'] = $this->getImgSrcValue($matchIMG);
         }
         //视频
-        /*$pattern_VideoTag = '/<video\b.*?(?:\>|\/>)/i';
+        $pattern_VideoTag = '/<video\b.*?(?:\>|\/>)/i';
         preg_match_all($pattern_VideoTag,$r['content'],$matchVideo);
         if(isset($matchVideo[0])){
             foreach ($matchVideo as $videoEle){
                 $r['content'] = str_replace($videoEle,'',$r['content']);
             }
-            $r['videos'] = $this->getVideoSrcValue($matchVideo);
-        }*/
+        }
         //文字
         $r['content'] = strip_tags($r['content']);
 
