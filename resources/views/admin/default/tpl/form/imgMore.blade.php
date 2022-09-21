@@ -56,11 +56,11 @@
     let xhr = new XMLHttpRequest();
     let imgArr =$('.preview-img');
     for (let k in imgArr) {
-        let src = "{{ \App\TraitClass\VideoTrait::getDomain(2) }}"+imgArr[k].attr("data-src");
+        let src = "{{ \App\TraitClass\VideoTrait::getDomain(2) }}"+imgArr.eq(k).attr("data-src");
         xhr.open('get',src);
         xhr.responseType = 'blob';
         xhr.onload = function () {
-            imgArr[k].attr("data-src",window.URL.createObjectURL(xhr.response));
+            imgArr.eq(k).attr("data-src",window.URL.createObjectURL(xhr.response));
         }
         xhr.send();
     }
