@@ -176,7 +176,7 @@ class ProcessCollectionBbs implements ShouldQueue
             'thumbs' => json_encode($r['thumbs']),
             'content' => json_encode($r['content']),
             'title' => json_encode($r['title']),
-            'video' => json_encode($r['video']),
+            'video' => json_encode($r['videos']),
             'video_picture' => json_encode($r['video_picture']),
             'created_at' => date('Y-m-d H:i:s'),
             'updated_at' => date('Y-m-d H:i:s'),
