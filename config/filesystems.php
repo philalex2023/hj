@@ -47,6 +47,10 @@ return [
             'driver' => 'local',
             'root' => storage_path('app'),
         ],
+        'res' => [
+            'driver' => 'res',
+            'root' => env('RES_ROOT'),
+        ],
         // 通过将头文件的文件系统由本地硬盘改为Redis，提高头文件读写效率。
         'redis' => [
             'driver' => 'redis',
