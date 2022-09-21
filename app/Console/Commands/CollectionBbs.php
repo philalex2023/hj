@@ -63,13 +63,13 @@ class CollectionBbs extends Command
 //        print_r(json_decode($response,true));
             $resArr = json_decode($response,true);
             if($resArr['success']==1){
+                $this->info('doing ID:'.$i);
                 $job = new ProcessCollectionBbs($resArr,$i);
                 $this->dispatch($job->onQueue('high'));
                 ++$calc;
                 if($calc==$limit){
                     break;
                 }
-                $this->info('doing ID:'.$i);
             }else{
                 $this->info('error:'.$response);
             }
