@@ -68,6 +68,7 @@ class CollectionBbs extends Command
                 if($calc==$limit){
                     break;
                 }
+                $this->info('doing ID:'.$i);
             }else{
                 $this->info('error:'.$response);
             }
