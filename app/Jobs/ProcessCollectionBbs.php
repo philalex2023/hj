@@ -178,6 +178,7 @@ class ProcessCollectionBbs implements ShouldQueue
 
         $insertData = [
             'author_id' => $r['id'],
+            'category_id' => 12,
             'thumbs' => json_encode($r['thumbs'],JSON_UNESCAPED_UNICODE),
             'content' => trim(json_encode($r['content'],JSON_UNESCAPED_UNICODE),'"'),
             'title' => trim(json_encode($r['title'],JSON_UNESCAPED_UNICODE),'"'),
