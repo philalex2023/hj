@@ -52,7 +52,7 @@ class ProcessCollectionBbs implements ShouldQueue
             if (isset($matchSrc[1])){
                 foreach ($matchSrc[1] as $src){
                     //将匹配到的src信息压入数组
-                    $res = $this->curlByUrl($src);
+                    $res = file_get_contents($src);
                     Log::info('getImgSrcValue',[$res]);
                     $imgContent = $this->decodeImgUrl($res);
                     $file_name = md5(date('ym').pathinfo($src,PATHINFO_FILENAME));
@@ -144,8 +144,8 @@ class ProcessCollectionBbs implements ShouldQueue
         if(isset($resArr['data']['attachments']) && !empty($resArr['data']['attachments'])){
             foreach ($resArr['data']['attachments'] as $attachment){
                 if($attachment['category']=='video'){
-                    $coverSourceCon = $this->curlByUrl($attachment['coverUrl']);
-                    Log::info('getImgSrcValue',[$coverSourceCon]);
+                    $coverSourceCon = file_get_contents($attachment['coverUrl']);
+                    //Log::info('getImgSrcValue',[$coverSourceCon]);
                     $coverContent = $this->decodeImgUrl($coverSourceCon);
                     $file_name = md5(date('ym').pathinfo($attachment['coverUrl'],PATHINFO_FILENAME));
                     $coverFile = '/public/slice/coverImg/'.$file_name.'/'.$file_name.'.htm';
@@ -179,8 +179,8 @@ class ProcessCollectionBbs implements ShouldQueue
         $insertData = [
             'author_id' => $r['id'],
             'thumbs' => json_encode($r['thumbs'],JSON_UNESCAPED_UNICODE),
-            'content' => json_encode($r['content'],JSON_UNESCAPED_UNICODE),
-            'title' => json_encode($r['title'],JSON_UNESCAPED_UNICODE),
+            'content' => trim(json_encode($r['content'],JSON_UNESCAPED_UNICODE),'"'),
+            'title' => trim(json_encode($r['title'],JSON_UNESCAPED_UNICODE),'"'),
             'video' => json_encode($r['videos'],JSON_UNESCAPED_UNICODE),
             'video_picture' => json_encode($r['video_picture'],JSON_UNESCAPED_UNICODE),
             'created_at' => date('Y-m-d H:i:s'),
