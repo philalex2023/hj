@@ -51,15 +51,18 @@
             data-target="#{{ (md5($form_item['field']))  }}" class="layui-btn   layui-btn-sm"><i class="layui-icon layui-icon-picture"></i> {{ lang('库选择') }}</button>--}}
 
 </div>
+<script></script>
 <script>
     let xhr = new XMLHttpRequest();
-    $('.preview-img').forEach(item)
+    let ele = document.getElementsByClassName('preview-img');
+    ele.forEach(item)
     {
-        let src = "{{ \App\TraitClass\VideoTrait::getDomain(2) }}"+$(item).attr('data-src');
+        let src = "{{ \App\TraitClass\VideoTrait::getDomain(2) }}"+item["data-src"];
         xhr.open('get',src);
         xhr.responseType = 'blob';
         xhr.onload = function () {
-            $(item).attr('data-src',window.URL.createObjectURL(xhr.response));
+            //$(item).attr('data-src',window.URL.createObjectURL(xhr.response));
+            item["data-src"] = window.URL.createObjectURL(xhr.response);
         }
         xhr.send();
     }
