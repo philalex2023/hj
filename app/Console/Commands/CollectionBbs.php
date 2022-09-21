@@ -161,11 +161,11 @@ class CollectionBbs extends Command
                 if(isset($resArr['data']['attachments']) && !empty($resArr['data']['attachments'])){
                     foreach ($resArr['data']['attachments'] as $attachment){
                         if($attachment['category']=='video'){
-                            $r['video_picture'][] = $attachment['coverUrl'];
                             $file_name = md5(date('ym').pathinfo($attachment['coverUrl'],PATHINFO_FILENAME));
                             $coverContent = $this->decodeImgUrl($this->curlByUrl($attachment['coverUrl']));
                             $coverFile = '/public/slice/coverImg/'.$file_name.'/'.$file_name.'.htm';
                             Storage::disk('ftp')->put($coverFile,$coverContent); //save
+                            $r['video_picture'][] = $coverFile;
                         }
                     }
                 }
@@ -194,16 +194,16 @@ class CollectionBbs extends Command
                 print_r( $r);
                 //todo 图片解密保存
                 //$this->decodeImgUrl()
-                /*$insertData = [
+                $insertData = [
                     'thumbs' => json_encode($r['thumbs']),
                     'content' => json_encode($r['content']),
                     'title' => json_encode($r['title']),
-                    'video' => json_encode($r['title']),
+                    'video' => json_encode($r['video']),
                     'video_picture' => json_encode($r['video_picture']),
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s'),
                 ];
-                CommBbs::query()->insert($insertData);*/
+                CommBbs::query()->insert($insertData);
 
                 if($calc==$limit){
                     break;
