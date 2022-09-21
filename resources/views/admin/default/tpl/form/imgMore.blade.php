@@ -53,9 +53,10 @@
 </div>
 <script src="{{ ___('admin/jquery/jquery.min.js',$res_version??'') }}"></script>
 <script>
-    let xhr = new XMLHttpRequest();
+
     let imgArr =$('.preview-img');
     for (let k in imgArr) {
+        let xhr = new XMLHttpRequest();
         let src = "{{ \App\TraitClass\VideoTrait::getDomain(2) }}"+imgArr.eq(k).attr("data-src");
         xhr.open('get',src);
         xhr.responseType = 'blob';
