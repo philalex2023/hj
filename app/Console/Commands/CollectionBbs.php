@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use App\Jobs\ProcessGetApiVideo;
 use App\Models\CommBbs;
+use App\TraitClass\CurlTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
 use AWS\CRT\Log;
@@ -15,7 +16,7 @@ use Illuminate\Support\Facades\Storage;
 
 class CollectionBbs extends Command
 {
-    use PHPRedisTrait,DispatchesJobs;
+    use PHPRedisTrait,DispatchesJobs,CurlTrait;
     /**
      * The name and signature of the console command.
      *
@@ -65,7 +66,7 @@ class CollectionBbs extends Command
         return base64_decode($con);
     }
 
-    public function getSrcValue($matchIMG): array
+    public function getImgSrcValue($matchIMG): array
     {
         $srcArr = [];
         foreach ($matchIMG[0] as $key => $imgTag){
@@ -75,12 +76,60 @@ class CollectionBbs extends Command
             if (isset($matchSrc[1])){
                 foreach ($matchSrc[1] as $src){
                     //将匹配到的src信息压入数组
-                    $srcArr[] = $src;
+                    $file_name = md5(date('ym').pathinfo($src,PATHINFO_FILENAME));
+                    $imgContent = $this->decodeImgUrl($this->curlByUrl($src));
+                    $imgFile = '/upload/collection/'.$file_name.'/'.$file_name.'.htm';
+                    Storage::disk('ftp')->put($imgFile,$imgContent); //save
+                    $srcArr[] = $imgFile;
                 }
             }
         }
         return $srcArr;
     }
+
+    public function getVideoSrcValue($matchIMG): array
+    {
+        $srcArr = [];
+        foreach ($matchIMG[0] as $key => $imgTag){
+            //进一步提取 img标签中的 src属性信息
+            $pattern_src = '/\bsrc\b\s*=\s*[\'\"]?([^\'\"]*)[\'\"]?/i';
+            preg_match_all($pattern_src,$imgTag,$matchSrc);
+            if (isset($matchSrc[1])){
+                foreach ($matchSrc[1] as $src){
+                    //将匹配到的src信息压入数组
+                    $pathInfo = pathinfo($src);
+                    $file_name = md5(date('ym').$pathInfo['filename']);
+                    $m3u8Content = $this->curlByUrl($src);
+
+                    $tmpPath = '/public/slice/hls/'.$file_name.'/tmp.m3u8';
+                    Storage::disk('ftp')->put($tmpPath,$m3u8Content); //save
+                    $localFile = Storage::path($tmpPath);
+                    $texts = file($localFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                    $m3u8Text = '';
+                    foreach ($texts as &$line){
+                        if(str_contains($line, '#EXT-X-KEY')){
+                            $arr = explode('"',$line);
+                            $keyUrl = $pathInfo['dirname'].'/'.$arr[1];
+                            $keyContent = $this->curlByUrl($keyUrl);
+                            Storage::disk('ftp')->put('/public/slice/hls/'.$file_name.'/'.$arr[1],$keyContent);
+                        }
+                        if(str_contains($line, 'https://')){
+                            $tsContent = $this->curlByUrl($line);
+                            $line = pathinfo($line,PATHINFO_BASENAME);
+                            Storage::disk('ftp')->put('/public/slice/hls/'.$file_name.'/'.$line,$tsContent);
+                        }
+                        $m3u8Text .= $line."\r\n";
+                    }
+                    $m3u8File = '/public/slice/hls/'.$file_name.'/'.$file_name.'.m3u8';
+                    Storage::disk('ftp')->put($m3u8File,$m3u8Text); //save
+                    Storage::disk('ftp')->delete($tmpPath);
+                    $srcArr[] = $m3u8File;
+                }
+            }
+        }
+        return $srcArr;
+    }
+
     /**
      * Execute the console command.
      *
@@ -111,7 +160,13 @@ class CollectionBbs extends Command
                 ];
                 if(isset($resArr['data']['attachments']) && !empty($resArr['data']['attachments'])){
                     foreach ($resArr['data']['attachments'] as $attachment){
-                        $attachment['category']=='video' && $r['video_picture'][] = $attachment['coverUrl'];
+                        if($attachment['category']=='video'){
+                            $r['video_picture'][] = $attachment['coverUrl'];
+                            $file_name = md5(date('ym').pathinfo($attachment['coverUrl'],PATHINFO_FILENAME));
+                            $coverContent = $this->decodeImgUrl($this->curlByUrl($attachment['coverUrl']));
+                            $coverFile = '/public/slice/coverImg/'.$file_name.'/'.$file_name.'.htm';
+                            Storage::disk('ftp')->put($coverFile,$coverContent); //save
+                        }
                     }
                 }
                 //提取文字、图片和视频
@@ -122,7 +177,7 @@ class CollectionBbs extends Command
                     foreach ($matchIMG as $imgEle){
                         $r['content'] = str_replace($imgEle,'',$r['content']);
                     }
-                    $r['thumbs'] = $this->getSrcValue($matchIMG);
+                    $r['thumbs'] = $this->getImgSrcValue($matchIMG);
                 }
                 //视频
                 $pattern_VideoTag = '/<video\b.*?(?:\>|\/>)/i';
@@ -131,7 +186,7 @@ class CollectionBbs extends Command
                     foreach ($matchVideo as $videoEle){
                         $r['content'] = str_replace($videoEle,'',$r['content']);
                     }
-                    $r['videos'] = $this->getSrcValue($matchVideo);
+                    $r['videos'] = $this->getVideoSrcValue($matchVideo);
                 }
                 //文字
                 $r['content'] = strip_tags($r['content']);

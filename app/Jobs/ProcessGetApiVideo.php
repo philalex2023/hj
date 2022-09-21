@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\TraitClass\CurlTrait;
 use App\TraitClass\VideoTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Storage;
 
 class ProcessGetApiVideo implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, VideoTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, VideoTrait, CurlTrait;
 
     public int $tries = 1;
 
@@ -33,17 +34,6 @@ class ProcessGetApiVideo implements ShouldQueue
         $this->item = $item;
     }
 
-    public function getContentByUrl($url): bool|string
-    {
-        $ch = curl_init();
-        $timeout = 6000;
-        curl_setopt ($ch, CURLOPT_URL, $url);
-        curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        $file_contents = curl_exec($ch);
-        curl_close($ch);
-        return $file_contents;
-    }
 
     /**
      * Execute the job.
@@ -74,14 +64,14 @@ class ProcessGetApiVideo implements ShouldQueue
         //创建对应的切片目录
         $ts_path = '/public'.env('SLICE_DIR','/slice').'/hls/'.$file_name.'/';
 
-        $content = $this->getContentByUrl($playUrl);
+        $content = $this->curlByUrl($playUrl);
         $m3u8File = $ts_path.$file_name.'.m3u8';
         Storage::disk('sftp')->put($m3u8File,$content); //save m3u8
         $insertData['hls_url'] = $m3u8File;
         $trimmed = explode("\n",$content);
 //        $this->info('封面图文件:'.$pathInfo['dirname'].'/cover.jpg');
 
-        $coverContent = $this->getContentByUrl($pathInfo['dirname'].'/cover.jpg');
+        $coverContent = $this->curlByUrl($pathInfo['dirname'].'/cover.jpg');
         $encryptFile = $ts_path.'cover.htm';
         //Log::info('===encryptImg===',[$encryptFile,$content]);
         Storage::disk('sftp')->put($encryptFile,$coverContent);

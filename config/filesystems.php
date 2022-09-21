@@ -71,6 +71,28 @@ return [
             'endpoint' => env('AWS_ENDPOINT'),
         ],
 
+        'ftp' => [
+            'driver' => 'ftp',
+            'host' => env('SFTP_HOST',''),
+            'username' => env('SFTP_USERNAME',''),
+            'password' => env('SFTP_PASSWORD',''),
+            'port' => 21,
+            // 'root' => '',
+            'timeout' => 3600,
+            'visibility' => 'public',
+            'directoryPerm' => 0755,
+            'permissions' => [
+                'file' => [
+                    'public' => 0664,
+                    'private' => 0600,
+                ],
+                'dir' => [
+                    'public' => 0755,
+                    'private' => 0700,
+                ],
+            ],
+        ],
+
         'ftps' => [
             'driver' => 'ftp',
             'host' => env('SFTP_HOST',''),
