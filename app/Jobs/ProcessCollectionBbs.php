@@ -101,7 +101,7 @@ class ProcessCollectionBbs implements ShouldQueue
             foreach ($texts as $l){
                 if(str_contains($l, '_i0')){
                     $lName = pathinfo($l,PATHINFO_FILENAME);
-                    $fullM3u8Name = str_replace('_i0','',$lName);
+                    $fullM3u8Name = str_replace('_i0','_i',$lName);
                     $fullM3u8Url = $pathInfo['dirname'].'/'.$fullM3u8Name.'.m3u8';
                     break;
                 }
@@ -112,7 +112,7 @@ class ProcessCollectionBbs implements ShouldQueue
                 $m3u8ContentFull = $this->curlByUrl($fullM3u8Url);
                 $put = Storage::disk('ftp')->put($tmpPath,$m3u8ContentFull); //save
                 $localFile = env('RES_ROOT').$tmpPath;
-                Log::info('putFullM3u8TmpFile',[$put]);
+                Log::info('putFullM3u8TmpFile',[$tmpPath,$fullM3u8Url,$put]);
                 $texts = file($localFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
                 Storage::disk('ftp')->delete($delTmpPath);
             }
