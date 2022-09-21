@@ -15,7 +15,7 @@
                   if (!is_array($v??[])) { $v = ['path'=>$v,'view_src'=>$v];}
                   $v['type'] = $v['type'] ?? '';
                   $v['origin_path'] = $v['origin_path'] ?? '';
-               @endphp
+//               @endphp
             <div class="file-choose-list-item upload-area-more-item"
                  data-tmp_name="{{ ($v['tmp_name'] ?? '') }}"
                  data-ext="{{ ($v['ext'] ?? '') }}"
@@ -49,17 +49,6 @@
 
 </div>
 <script>
-    let xhr = new XMLHttpRequest();
-    $(".preview-img").forEach(item)
-    {
-        let src =  {{ \App\TraitClass\VideoTrait::getDomain(2) }}+$(item).attr('data-src');
-        xhr.open('get',src);
-        xhr.responseType = 'blob';
-        xhr.onload = function () {
-            $(item).attr('data-src',window.URL.createObjectURL(xhr.response));
-        }
-        xhr.send();
-    }
 
 
 </script>
