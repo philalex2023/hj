@@ -22,7 +22,7 @@
                  data-oss_type="{{ ($v['oss_type'] ?? '') }}"
                  data-path="{{ $v['path'] }}" data-view_src="{{ ($v['view_src'] ?? '') }}"
                   data-origin_path="{{ $v['origin_path'] }}">
-                <div class="file-choose-list-item-img " id="preview-img-{{ $k }}" ui-event="viewImg" data-src="{{ $v['view_src']??'' }}" style="background-image: url('{{ $v['view_src']??'' }}') ">
+                <div class="file-choose-list-item-img preview-img" ui-event="viewImg" data-src="{{ $v['view_src']??'' }}" style="background-image: url('{{ $v['view_src']??'' }}') ">
 
                 </div>
                 <div class=" handle ">
@@ -50,20 +50,16 @@
 </div>
 <script>
     let xhr = new XMLHttpRequest();
-    @foreach ($form_item['data'] as $k => $v)
-    @php
-        if (!is_array($v??[])) {
-            $src = \App\TraitClass\VideoTrait::getDomain(2).$v;
-            $v = ['path'=>$src,'view_src'=>$src];
-        }
-        $v['type'] = $v['type'] ?? '';
-        $v['origin_path'] = $v['origin_path'] ?? '';
-    @endphp
-        xhr.open('get',"{{ $src }}");
+    $(".preview-img").forEach(item)
+    {
+        let src =  {{ \App\TraitClass\VideoTrait::getDomain(2) }}+$(item).attr('data-src');
+        xhr.open('get',src);
         xhr.responseType = 'blob';
         xhr.onload = function () {
-            document.getElementById("preview-img-{{ $k }}").src = window.URL.createObjectURL(xhr.response);
+            $(item).attr('data-src',window.URL.createObjectURL(xhr.response));
         }
         xhr.send();
-    @endforeach
+    }
+
+
 </script>
