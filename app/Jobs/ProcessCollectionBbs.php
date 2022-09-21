@@ -17,6 +17,12 @@ class ProcessCollectionBbs implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, CurlTrait;
 
+    public array $resArr = [];
+
+    public int $id = 0;
+
+    public int $timeout = 180000; //默认60秒超时
+
     public function decodeImgUrl($data)
     {
         $d = 0;
@@ -111,9 +117,6 @@ class ProcessCollectionBbs implements ShouldQueue
         return $srcArr;
     }
 
-    public array $resArr = [];
-
-    public int $id = 0;
 
     /**
      * Create a new job instance.
