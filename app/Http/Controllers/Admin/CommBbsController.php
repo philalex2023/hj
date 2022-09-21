@@ -373,10 +373,10 @@ class CommBbsController extends BaseCurlController
 //                 'value' => $show ? \App\Jobs\VideoSlice::getOrigin($show->sync,$show->url) :''
                 'value' => $show ? $show->url :''
             ],
-            [
+            /*[
                 'field' => 'game_gold',
                 'type' => 'number',
-                'name' => '游戏所需骚豆',
+                'name' => '游戏所需金币',
                 'value' => ($show && ($show->game_gold>0)) ? $show->game_gold : 0,
             ],
             [
@@ -403,7 +403,7 @@ class CommBbsController extends BaseCurlController
                 'field' => 'ali_get_code',
                 'type' => 'text',
                 'name' => '下载链接二提取码',
-            ],
+            ],*/
         ];
         //赋值到ui数组里面必须是`form`的key值
         $this->uiBlade['form'] = $data;
