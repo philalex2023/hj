@@ -227,7 +227,7 @@ class ProcessCollectionBbs implements ShouldQueue
                     Storage::disk('ftp')->put($coverFile,$coverContent); //save
                     $r['video_picture'][] = $coverFile;
                     //视频
-                    $this->getVideoSrcValue($attachment['remoteUrl']);
+                    $r['videos'][]=$this->getVideoSrcValue($attachment['remoteUrl']);
                 }
 
                 if($attachment['category']=='images'){
