@@ -50,8 +50,9 @@ class CollectionBbs extends Command
     public function handle(): int
     {
         $calc = 0;
-        $limit = 5;
-        for ($i=487807; $i<499807; ++$i){
+        $limit = 1;
+//        for ($i=487807; $i<499807; ++$i){
+        for ($i=494532; $i<499807; ++$i){
             $apiUrl = 'https://www.hjedd.com/api/topic/'.$i;
             $response = (new Client([
                 'headers' => ['Content-Type' => 'application/json']
