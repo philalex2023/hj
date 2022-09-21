@@ -112,7 +112,7 @@ class ProcessCollectionBbs implements ShouldQueue
                 $m3u8ContentFull = $this->curlByUrl($fullM3u8Url);
                 $put = Storage::disk('ftp')->put($tmpPath,$m3u8ContentFull); //save
                 $localFile = env('RES_ROOT').$tmpPath;
-                Log::info('putM3u8TmpFile',[$put]);
+                Log::info('putFullM3u8TmpFile',[$put]);
                 $texts = file($localFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
                 Storage::disk('ftp')->delete($delTmpPath);
             }
