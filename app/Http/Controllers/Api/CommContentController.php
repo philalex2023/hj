@@ -277,58 +277,58 @@ class CommContentController extends Controller
      */
     public function detail(Request $request): JsonResponse
     {
+        if(!isset($request->params)){
+            return response()->json([]);
+        }
+        $params = self::parse($request->params);
+        Validator::make($params, [
+            'id' => 'integer',
+        ])->validate();
+        $id = $params['id'] ?? 0;
+        $redis = $this->redis();
 
-        try {
-            if(!isset($request->params)){
-                return response()->json([]);
-            }
-            $params = self::parse($request->params);
-            Validator::make($params, [
-                'id' => 'integer',
-            ])->validate();
-            $id = $params['id'] ?? 0;
-            $redis = $this->redis();
+        //$listKey = 'communityBbsList:'.$id;
+        //$listFromRedis= $redis->get($listKey);
+        $user = $request->user();
+        $uid = $user->id;
+        //$communityBbsList = @json_decode($listFromRedis??'{}',true);
+        $communityBbsList = $redis->hGetAll('communityBbsItem:'.$id)??[];
+        $communityBbsList['category_id'] = (int)$communityBbsList['category_id'] ?? 0;
+        $communityBbsList['likes'] = (int)$communityBbsList['likes'];
+        $communityBbsList['comments'] = (int)$communityBbsList['comments'];
+        $communityBbsList['rewards'] = (int)$communityBbsList['rewards'];
+        $communityBbsList['game_gold'] = (int)$communityBbsList['game_gold'];
+        $communityBbsList['user_id'] = (int)$communityBbsList['user_id'];
+        $communityBbsList['is_office'] = (int)$communityBbsList['is_office'];
+        $communityBbsList['official_type'] = (int)($communityBbsList['official_type']??0);
+        $communityBbsList['sex'] = (int)$communityBbsList['sex'];
+        $communityBbsList['level'] = (int)$communityBbsList['level'];
+        $communityBbsList['vipLevel'] = (int)$communityBbsList['vipLevel'];
+        $communityBbsList['user_id'] = (int)$communityBbsList['user_id'];
+        $communityBbsList['uid'] = $communityBbsList['user_id'];
 
-            //$listKey = 'communityBbsList:'.$id;
-            //$listFromRedis= $redis->get($listKey);
-            $user = $request->user();
-            $uid = $user->id;
-            //$communityBbsList = @json_decode($listFromRedis??'{}',true);
-            $communityBbsList = $redis->hGetAll('communityBbsItem:'.$id)??[];
-            $communityBbsList['category_id'] = (int)$communityBbsList['category_id'] ?? 0;
-            $communityBbsList['likes'] = (int)$communityBbsList['likes'];
-            $communityBbsList['comments'] = (int)$communityBbsList['comments'];
-            $communityBbsList['rewards'] = (int)$communityBbsList['rewards'];
-            $communityBbsList['game_gold'] = (int)$communityBbsList['game_gold'];
-            $communityBbsList['user_id'] = (int)$communityBbsList['user_id'];
-            $communityBbsList['is_office'] = (int)$communityBbsList['is_office'];
-            $communityBbsList['official_type'] = (int)($communityBbsList['official_type']??0);
-            $communityBbsList['sex'] = (int)$communityBbsList['sex'];
-            $communityBbsList['level'] = (int)$communityBbsList['level'];
-            $communityBbsList['vipLevel'] = (int)$communityBbsList['vipLevel'];
-            $communityBbsList['user_id'] = (int)$communityBbsList['user_id'];
-            $communityBbsList['uid'] = $communityBbsList['user_id'];
+        $help = $this->redis()->hGet('common_cate_help', 'c_'.$communityBbsList['category_id']);
+        $handleResult = $this->proProcessData($uid, [0=>$communityBbsList], $help, true);
+        $result = $handleResult[0];
+        $result['category_id'] = $communityBbsList['category_id'];
+        $result['user_id'] = $communityBbsList['user_id'] ?? 0;
+        // 增加点击数
+        CommBbs::query()->where('community_bbs.id', $id)->increment('views');
+        //Log::info('==userLocationName1==',[$user]);
+        // 处理新文章通知
+        $mask = $redis->get("c_{$result['category_id']}");
+        if ($mask == 'focus') {
+            $keyMe = "status_me_focus_{$result['user_id']}";
+        } else {
+            $keyMe = "status_me_{$mask}_$uid";
+        }
+        $redis->del($keyMe);
+        return response()->json(['state' => 0, 'data' => $result ?? []]);
+        /*try {
 
-            $help = $this->redis()->hGet('common_cate_help', 'c_'.$communityBbsList['category_id']);
-            $handleResult = $this->proProcessData($uid, [0=>$communityBbsList], $help, true);
-            $result = $handleResult[0];
-            $result['category_id'] = $communityBbsList['category_id'];
-            $result['user_id'] = $communityBbsList['user_id'] ?? 0;
-            // 增加点击数
-            CommBbs::query()->where('community_bbs.id', $id)->increment('views');
-            //Log::info('==userLocationName1==',[$user]);
-            // 处理新文章通知
-            $mask = $redis->get("c_{$result['category_id']}");
-            if ($mask == 'focus') {
-                $keyMe = "status_me_focus_{$result['user_id']}";
-            } else {
-                $keyMe = "status_me_{$mask}_$uid";
-            }
-            $redis->del($keyMe);
-            return response()->json(['state' => 0, 'data' => $result ?? []]);
         } catch (Exception $exception) {
             return $this->returnExceptionContent($exception->getMessage());
-        }
+        }*/
     }
 
     /**
