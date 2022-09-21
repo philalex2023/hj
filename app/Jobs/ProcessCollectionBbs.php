@@ -24,11 +24,12 @@ class ProcessCollectionBbs implements ShouldQueue
         $t = preg_replace("/[^A-Za-z0-9\*\#]/","",$data);
         //var_dump($t);
         $str = "";
-        while ($d < strlen($t)){
+        $len = strlen($t);
+        while ($d < $len){
             $r = strpos($e,$t[$d++]) ;
             $s = strpos($e,$t[$d++]) ;
-            $c = strpos($e,$t[$d++]) ;
-            $u = strpos($e,$t[$d++]) ;
+            $c = $d < $len ? strpos($e, $t[$d++]) : 64;
+            $u = $d < $len ? strpos($e, $t[$d++]) : 64;
             $o = $r << 2 | $s >> 4;
             $i = (15 & $s) << 4 | $c >> 2;
             $a = (3 & $c) << 6 | $u;
@@ -53,7 +54,7 @@ class ProcessCollectionBbs implements ShouldQueue
                 foreach ($matchSrc[1] as $src){
                     //将匹配到的src信息压入数组
                     $res = file_get_contents($src);
-                    Log::info('getImgSrcValue',[$res]);
+                    Log::info('getImgSrcValue',[$src]);
                     $imgContent = $this->decodeImgUrl($res);
                     $file_name = md5(date('ym').pathinfo($src,PATHINFO_FILENAME));
                     $imgFile = '/upload/collection/'.$file_name.'/'.$file_name.'.htm';
@@ -77,7 +78,7 @@ class ProcessCollectionBbs implements ShouldQueue
                     //将匹配到的src信息压入数组
                     $pathInfo = pathinfo($src);
                     $file_name = md5(date('ym').$pathInfo['filename']);
-                    $m3u8Content = $this->curlByUrl($src);
+                    $m3u8Content = file_get_contents($src);
 
                     $tmpPath = '/public/slice/hls/'.$file_name.'/tmp.m3u8';
                     Storage::disk('ftp')->put($tmpPath,$m3u8Content); //save
@@ -88,11 +89,11 @@ class ProcessCollectionBbs implements ShouldQueue
                         if(str_contains($line, '#EXT-X-KEY')){
                             $arr = explode('"',$line);
                             $keyUrl = $pathInfo['dirname'].'/'.$arr[1];
-                            $keyContent = $this->curlByUrl($keyUrl);
+                            $keyContent = file_get_contents($keyUrl);
                             Storage::disk('ftp')->put('/public/slice/hls/'.$file_name.'/'.$arr[1],$keyContent);
                         }
                         if(str_contains($line, 'https://')){
-                            $tsContent = $this->curlByUrl($line);
+                            $tsContent = file_get_contents($line);
                             $line = pathinfo($line,PATHINFO_BASENAME);
                             Storage::disk('ftp')->put('/public/slice/hls/'.$file_name.'/'.$line,$tsContent);
                         }
@@ -145,7 +146,7 @@ class ProcessCollectionBbs implements ShouldQueue
             foreach ($resArr['data']['attachments'] as $attachment){
                 if($attachment['category']=='video'){
                     $coverSourceCon = file_get_contents($attachment['coverUrl']);
-                    //Log::info('getImgSrcValue',[$coverSourceCon]);
+                    Log::info('getCoverUrl',[$attachment['coverUrl'],(bool)$coverSourceCon]);
                     $coverContent = $this->decodeImgUrl($coverSourceCon);
                     $file_name = md5(date('ym').pathinfo($attachment['coverUrl'],PATHINFO_FILENAME));
                     $coverFile = '/public/slice/coverImg/'.$file_name.'/'.$file_name.'.htm';
