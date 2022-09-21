@@ -43,8 +43,8 @@ class BackupRes extends Command
     {
         $paramTableName = $this->argument('tableName')??'video';
         $Items = DB::table($paramTableName)
-            ->where('id','<=',16009)
-            ->where('id','>=',11665)
+            ->where('id','<=',16000)
+            //->where('id','>=',11665)
             //->where('sync',1)
             //->take(1)
             ->get(['id','url','hls_url','cover_img']);

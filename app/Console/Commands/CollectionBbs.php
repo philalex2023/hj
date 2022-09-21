@@ -139,7 +139,7 @@ class CollectionBbs extends Command
                 print_r( $r);
                 //todo 图片解密保存
                 //$this->decodeImgUrl()
-                $insertData = [
+                /*$insertData = [
                     'thumbs' => json_encode($r['thumbs']),
                     'content' => json_encode($r['content']),
                     'title' => json_encode($r['title']),
@@ -148,7 +148,7 @@ class CollectionBbs extends Command
                     'created_at' => date('Y-m-d H:i:s'),
                     'updated_at' => date('Y-m-d H:i:s'),
                 ];
-                CommBbs::query()->insert($insertData);
+                CommBbs::query()->insert($insertData);*/
 
                 if($calc==$limit){
                     break;
