@@ -82,7 +82,7 @@ class ProcessCollectionBbs implements ShouldQueue
 
                     $tmpPath = '/public/slice/hls/'.$file_name.'/tmp.m3u8';
                     $put = Storage::disk('ftp')->put($tmpPath,$m3u8Content); //save
-                    $localFile = Storage::path($tmpPath);
+                    $localFile = Storage::disk('ftp')->path();
                     Log::info('putM3u8TmpFile',[$put]);
                     $texts = file($localFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
                     $m3u8Text = '';
