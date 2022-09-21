@@ -72,7 +72,63 @@ class ProcessCollectionBbs implements ShouldQueue
         return $srcArr;
     }
 
-    public function getVideoSrcValue($matchIMG): array
+    public function getVideoSrcValue($src): string
+    {
+        $isPreview = str_contains($src,'preview');
+        //将匹配到的src信息压入数组
+        $pathInfo = pathinfo($src);
+        $file_name = md5(date('ym').$pathInfo['filename']);
+        $m3u8Content = $this->curlByUrl($src);
+
+        $tmpPath = '/public/slice/hls/'.$file_name.'/tmp.m3u8';
+        $put = Storage::disk('ftp')->put($tmpPath,$m3u8Content); //save
+        $localFile = env('RES_ROOT').$tmpPath;
+        Log::info('putM3u8TmpFile',[$put]);
+        $texts = file($localFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+        if($isPreview){
+            foreach ($texts as $l){
+                if(str_contains($l, '_i0')){
+                    $lName = pathinfo($l,PATHINFO_FILENAME);
+                    $fullM3u8Name = str_replace('_i0','',$lName);
+                    $fullM3u8Url = $pathInfo['dirname'].'/'.$fullM3u8Name.'.m3u8';
+                    break;
+                }
+            }
+            if(isset($fullM3u8Url)){
+                $delTmpPath = $tmpPath;
+                $tmpPath = '/public/slice/hls/'.$file_name.'/full_tmp.m3u8';
+                $m3u8ContentFull = $this->curlByUrl($fullM3u8Url);
+                $put = Storage::disk('ftp')->put($tmpPath,$m3u8ContentFull); //save
+                $localFile = env('RES_ROOT').$tmpPath;
+                Log::info('putM3u8TmpFile',[$put]);
+                $texts = file($localFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+                Storage::disk('ftp')->delete($delTmpPath);
+            }
+        }
+
+        $m3u8Text = '';
+        foreach ($texts as &$line){
+            if(str_contains($line, '#EXT-X-KEY')){
+                $arr = explode('"',$line);
+                $keyUrl = $pathInfo['dirname'].'/'.$arr[1];
+                $keyContent = $this->curlByUrl($keyUrl);
+                Storage::disk('ftp')->put('/public/slice/hls/'.$file_name.'/'.$arr[1],$keyContent);
+            }
+            if(str_contains($line, 'https://')){
+                $tsContent = $this->curlByUrl($line);
+                $line = pathinfo($line,PATHINFO_BASENAME);
+                Storage::disk('ftp')->put('/public/slice/hls/'.$file_name.'/'.$line,$tsContent);
+            }
+            $m3u8Text .= $line."\r\n";
+        }
+        $m3u8File = '/public/slice/hls/'.$file_name.'/'.$file_name.'.m3u8';
+        $put2 = Storage::disk('ftp')->put($m3u8File,$m3u8Text); //save
+        Log::info('putM3u8File',[$put2]);
+        Storage::disk('ftp')->delete($tmpPath);
+        return $m3u8File;
+    }
+
+    /*public function getVideoSrcValueOld($matchIMG): array
     {
         $srcArr = [];
         foreach ($matchIMG[0] as $key => $imgTag){
@@ -115,7 +171,7 @@ class ProcessCollectionBbs implements ShouldQueue
             }
         }
         return $srcArr;
-    }
+    }*/
 
 
     /**
@@ -157,6 +213,8 @@ class ProcessCollectionBbs implements ShouldQueue
                     $coverFile = '/public/slice/coverImg/'.$file_name.'/'.$file_name.'.htm';
                     Storage::disk('ftp')->put($coverFile,$coverContent); //save
                     $r['video_picture'][] = $coverFile;
+                    //视频
+                    $this->getVideoSrcValue($attachment['remoteUrl']);
                 }
             }
         }
@@ -171,14 +229,14 @@ class ProcessCollectionBbs implements ShouldQueue
             $r['thumbs'] = $this->getImgSrcValue($matchIMG);
         }
         //视频
-        $pattern_VideoTag = '/<video\b.*?(?:\>|\/>)/i';
+        /*$pattern_VideoTag = '/<video\b.*?(?:\>|\/>)/i';
         preg_match_all($pattern_VideoTag,$r['content'],$matchVideo);
         if(isset($matchVideo[0])){
             foreach ($matchVideo as $videoEle){
                 $r['content'] = str_replace($videoEle,'',$r['content']);
             }
             $r['videos'] = $this->getVideoSrcValue($matchVideo);
-        }
+        }*/
         //文字
         $r['content'] = strip_tags($r['content']);
 
