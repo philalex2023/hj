@@ -215,6 +215,7 @@ class ProcessCollectionBbs implements ShouldQueue
             'videos' => [],
             'video_picture' => [],
         ];
+        //处理附件
         if(isset($resArr['data']['attachments']) && !empty($resArr['data']['attachments'])){
             foreach ($resArr['data']['attachments'] as $attachment){
                 if($attachment['category']=='video'){
@@ -236,8 +237,8 @@ class ProcessCollectionBbs implements ShouldQueue
                 }
             }
         }
-        //提取文字、图片和视频
-        //图片
+
+        //去除图片元素
         preg_match_all('/<img\b.*?(?:\>|\/>)/i',$r['content'],$matchIMG);
         if (isset($matchIMG[0])){
             //print_r($matchIMG);
@@ -245,7 +246,7 @@ class ProcessCollectionBbs implements ShouldQueue
                 $r['content'] = str_replace($imgEle,'',$r['content']);
             }
         }
-        //视频
+        //去除视频元素
         $pattern_VideoTag = '/<video\b.*?(?:\>|\/>)/i';
         preg_match_all($pattern_VideoTag,$r['content'],$matchVideo);
         if(isset($matchVideo[0])){
