@@ -31,8 +31,8 @@ class ProcessResetRedisVideo implements ShouldQueue
     public function __construct($cat,$tag,$row)
     {
         $this->row = $row;
-        $this->cats = json_decode($cat,true);
-        $this->tags = json_decode($tag,true);
+        $this->cats = !is_array($cat) ? json_decode($cat,true) : $cat;
+        $this->tags = !is_array($tag) ? json_decode($tag,true) : $tag;
     }
 
     /**
