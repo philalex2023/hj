@@ -406,7 +406,8 @@ class VideoController extends BaseCurlController
         $item->tag_name = $this->getTagName($item->tag_kv??[]);
         $item->status = UiService::switchTpl('status', $item,'','上架|下架');
         $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
-        $item->type = $this->video_source[$item->type]['name'];
+        $item->type = $item->type==0 ? '' : $this->video_source[$item->type]['name'];
+
         $item->dev_type = match ($item->dev_type){
             1 => '竖屏',
             default => '横屏'
