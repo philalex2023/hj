@@ -292,8 +292,15 @@ class CommContentController extends Controller
         $user = $request->user();
         $uid = $user->id;
         //$communityBbsList = @json_decode($listFromRedis??'{}',true);
-        $communityBbsList = $redis->hGetAll('communityBbsItem:'.$id)??[];
-        $communityBbsList['category_id'] = (int)$communityBbsList['category_id'] ?? 0;
+        $bbsItemKey = 'communityBbsItem:'.$id;
+        $communityBbsList = $redis->hGetAll($bbsItemKey)??[];
+        if(!$communityBbsList){
+            $model = DB::table('community_bbs')->where('id',$id)->first();
+            $this->resetBBSItem($model);
+            $communityBbsList = $redis->hGetAll($bbsItemKey)??[];
+        }
+        //todo
+        $communityBbsList['category_id'] = (int)($communityBbsList['category_id'] ?? 0);
         $communityBbsList['likes'] = (int)$communityBbsList['likes'];
         $communityBbsList['comments'] = (int)$communityBbsList['comments'];
         $communityBbsList['rewards'] = (int)$communityBbsList['rewards'];
