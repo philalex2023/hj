@@ -70,17 +70,11 @@ trait BbsTrait
             }
             $list[$k]['all_game_gold'] = $this->getAllGameNeedGold();
             $list[$k]['official_type'] = (int)($re['official_type']??0);
-            //$list[$k]['video_picture'] = [];
-            /*if (isset($re['video_picture']) && $re['video_picture']) {
-                $jsonVideoPicture = @json_decode($re['video_picture'],true);
-                if(!empty($jsonVideoPicture) && $jsonVideoPicture[0]){
-                    $list[$k]['video_picture'] = [$domainSync . $jsonVideoPicture[0]];
-                }
-            }*/
+
+            $list[$k]['video_picture'] = [];
             if (isset($re['video_picture'])) {
-                !$re['video_picture'] ? $list[$k]['video_picture'] = [] : $list[$k]['video_picture'] = [$domainSync . (json_decode($re['video_picture'],true)[0]??'')];
-            } else {
-                $list[$k]['video_picture'] = [];
+                $videoPictures = is_array($re['video_picture']) ? $re['video_picture'] : json_decode($re['video_picture'],true) ;
+                isset($videoPictures[0]) && $list[$k]['video_picture'] = [$domainSync . $videoPictures[0]];
             }
 
             if ($videoRedis->sIsMember('bbsLike_'.$uid,$re['id'])) {
