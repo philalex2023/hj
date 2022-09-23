@@ -9,10 +9,15 @@ use function MongoDB\BSON\toJSON;
 
 trait SmsTrait
 {
-    public array $smsConfig = [
-        'key' => '52faa274f4e3158e99dd7a9368fbfa29',
-        'tpl_id' => 249107
-    ];
+
+    public function getSmsConfig(): array
+    {
+        return [
+            'key' => env('SMS_KEY'),
+            'tpl_id' => env('SMS_TPL_ID'),
+            'api_url' => env('SMS_API_URL'),
+        ];
+    }
 
     public function validateSmsCode($phone,$code): bool|array
     {
@@ -33,16 +38,16 @@ trait SmsTrait
 
     public function sendChinaSmsCode($phone, $code)
     {
-
+        $smsConfig = $this->getSmsConfig();
         $params = [
             'mobile' => $phone,
-            'tpl_id' => $this->smsConfig['tpl_id'],
+            'tpl_id' => $smsConfig['tpl_id'],
             'vars' => json_encode(['code'=>$code],JSON_UNESCAPED_UNICODE),
             'tpl_value' => urlencode('#code#='.$code),
-            'key' => $this->smsConfig['key'],
+            'key' => $smsConfig['key'],
         ];
         $guzzle = new Client();
-        $response = $guzzle->request('post','http://v.juhe.cn/sms/send',[
+        $response = $guzzle->request('post',env('SMS_API_URL'),[
             'headers' => [
                 'Content-Type' => 'application/x-www-form-urlencoded',
             ],
