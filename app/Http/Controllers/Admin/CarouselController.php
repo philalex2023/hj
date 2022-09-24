@@ -14,6 +14,7 @@ use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Facades\DB;
 
 class CarouselController extends BaseCurlController
 {
@@ -308,11 +309,17 @@ class CarouselController extends BaseCurlController
         }
     }
 
-    public function deleteSuccessAfter(array $ids)
+    /**
+     * 可以通过此方法删除数据之前先获取数据存储备用
+     * @param $model
+     * @param array $ids
+     */
+    public function deleteGetData($model, array $ids)
     {
-        $cidArr = Carousel::query()->whereIn('id',$ids)->pluck('cid');
+        $cidArr = $model->whereIn('id',$ids)->pluck('cid');
         foreach ($cidArr as $cid) {
             Cache::forget('api_carousel.'.$cid);
         }
     }
+
 }
