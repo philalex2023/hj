@@ -56,15 +56,20 @@ class CommHomeController extends Controller
             //加入视频列表
             $res['hasMorePages'] = $paginator->hasMorePages();
             $userInfo = CacheUser::user($id);
-            if (CommFocus::query()->where(['user_id'=>$uid,'to_user_id'=>$userInfo->id])->exists()) {
-                $userInfo->is_focus = 1;
-            } else {
-                $userInfo->is_focus = 0;
+            if(!$userInfo){
+                $res['user_info'] = [];
+                $res['bbs_list'] = $result;
+            }else{
+                if (CommFocus::query()->where(['user_id'=>$uid,'to_user_id'=>$userInfo->id])->exists()) {
+                    $userInfo->is_focus = 1;
+                } else {
+                    $userInfo->is_focus = 0;
+                }
+                $res['user_info'] = $userInfo;
+                $res['bbs_list'] = $result;
+                $redis->hSet($hashKey, $page, json_encode($res));
+                $redis->expire($hashKey,3600);
             }
-            $res['user_info'] = $userInfo;
-            $res['bbs_list'] = $result;
-            $redis->hSet($hashKey, $page, json_encode($res));
-            $redis->expire($hashKey,3600);
         }
 
         return response()->json([
