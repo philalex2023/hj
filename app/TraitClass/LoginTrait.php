@@ -5,9 +5,9 @@ namespace App\TraitClass;
 trait LoginTrait
 {
 
-    public $loginUserFields = ['id','account','channel_id','nickname','device_system','phone_number','promotion_code','avatar','sex','gold','balance','long_vedio_times','area_number'];
+    public array $loginUserFields = ['id','account','channel_id','nickname','device_system','phone_number','promotion_code','avatar','sex','gold','balance','long_vedio_times','area_number'];
 
-    public $loginRules = [
+    public array $loginRules = [
         'type' => 'required|integer|between:1,2',
         'did' => 'required|string',
         'dev' => 'required',
@@ -17,7 +17,7 @@ trait LoginTrait
         'test' => 'nullable|boolean',
     ];
 
-    public $createNickNames = [
+    public array $createNickNames = [
         '孤独患者',
         '会飞的贼',
         '笨比熊',
