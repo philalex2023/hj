@@ -1,6 +1,6 @@
 <script src="/player/spark-md5.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/hls.js/latest/hls.min.js"></script>
+<script src="/player/hls.min.js"></script>
 
 {{--<script src="/player/dash.all.min.js"></script>--}}
 {{--<script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>--}}

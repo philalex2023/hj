@@ -14,73 +14,73 @@
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">在线人数/日活</div>
-                                <div class="layui-card-body">{{ $data['onlinePeople'] }} / {{ $data['activePeople'] }}</div>
+                                <div class="layui-card-body">{{ $data['online_user'] }} / {{ $data['active_user'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">留存</div>
-                                <div class="layui-card-body">140573</div>
+                                <div class="layui-card-body">{{ $data['keep_1'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">单小时新增/日新增</div>
-                                <div class="layui-card-body">1236 / 40200</div>
+                                <div class="layui-card-body">{{ $data['hour_inc_user'] }} / {{ $data['day_inc_user'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">安卓新增/ios新增</div>
-                                <div class="layui-card-body">33219 / 6983</div>
+                                <div class="layui-card-body">{{ $data['day_inc_android_user'] }} / {{ $data['day_inc_ios_user'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">金币充值(小时/日)</div>
-                                <div class="layui-card-body">5100.00 / 76500.00</div>
+                                <div class="layui-card-body">{{ $data['hour_gold_recharge'] }} / {{ $data['day_gold_recharge'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">VIP充值(小时/日)</div>
-                                <div class="layui-card-body">6200.00 / 98350.00</div>
+                                <div class="layui-card-body">{{ $data['hour_vip_recharge'] }} / {{ $data['day_vip_recharge'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">新用户充值(小时/日)</div>
-                                <div class="layui-card-body">6450.00 / 85300.00</div>
+                                <div class="layui-card-body">{{ $data['hour_new_user_recharge'] }} / {{ $data['day_new_user_recharge'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">老用户充值(小时/日)</div>
-                                <div class="layui-card-body">4850.00 / 89550.00</div>
+                                <div class="layui-card-body">{{ $data['hour_old_user_recharge'] }} / {{ $data['day_old_user_recharge'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">小时订单数(成功/拉起)</div>
-                                <div class="layui-card-body">142 / 281</div>
+                                <div class="layui-card-body">{{ $data['hour_success_order'] }} / {{ $data['hour_total_order'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">日订单数(成功/拉起)</div>
-                                <div class="layui-card-body">3013 / 5115</div>
+                                <div class="layui-card-body">{{ $data['day_success_order'] }} / {{ $data['day_total_order'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">新增会员/新增ARPU</div>
-                                <div class="layui-card-body">1509 / 3.86</div>
+                                <div class="layui-card-body">{{ $data['day_inc_recharge_user'] }} / {{ $data['day_inc_arpu'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">总充值</div>
-                                <div class="layui-card-body">147850.00</div>
+                                <div class="layui-card-body">{{ $data['day_inc_total_recharge'] }}</div>
                             </div>
                         </div>
 

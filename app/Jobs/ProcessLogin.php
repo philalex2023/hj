@@ -77,17 +77,21 @@ class ProcessLogin implements ShouldQueue
 
         $userRedis = $this->redis('user');
         $date = date('Y-m-d');
+        $dayData = date('Ymd');
         $time = strtotime($date);
         $keepUidKey = 'keep_'.$uid;
         $userRedis->zAdd($keepUidKey, $time, $date);
         $userRedis->expire($keepUidKey,10*3600*24);
         $keepUser = $userRedis->zRange($keepUidKey,0,-1,true);
         $statistic_day_key = 'statistic_day:'.$this->loginLogData['channel_id'].':'.$this->device_system.':'.$time;
+
         $redis = $this->redis();
         for ($i=1;$i<11;++$i){
             $keyDate = date('Y-m-d',strtotime('-'.$i.' day'));
             if(isset($keepUser[$keyDate])){
                 $redis->hIncrBy($statistic_day_key,'keep_'.$i,1);
+                //首页统计
+                $i==1 && $redis->hIncrBy('statistic_home_'.$dayData,'keep_'.$i,1)->expire('statistic_home',24*3600);
             }
         }
 
@@ -106,6 +110,16 @@ class ProcessLogin implements ShouldQueue
         }
         DB::table('users')->where('id',$uid)->increment('login_numbers',1,$updateData);
         LoginLog::query()->create($this->loginLogData);
+        //
+        $hourData = date('YmdH');
+        $redis->sAdd('active_user_'.$dayData,$uid)->expire('statistic_home',24*3600);
+        if($this->loginLogData['type']==1){//新用户
+            $nowTime = time();
+            $redis->zAdd('new_increase_'.$dayData,$nowTime,$uid)->expire('new_increase_'.$dayData,24*3600);
+            $redis->sAdd('new_increase_android_'.$dayData,$uid)->expire('new_increase_'.$dayData,24*3600);
+            $redis->sAdd('new_increase_ios_'.$dayData,$uid)->expire('new_increase_'.$dayData,24*3600);
+        }
+
     }
 
     public function bindChannel()

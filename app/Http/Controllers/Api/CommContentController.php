@@ -316,6 +316,8 @@ class CommContentController extends Controller
             $result = $handleResult[0];
             $result['category_id'] = $communityBbsList['category_id'];
             $result['user_id'] = $communityBbsList['user_id'] ?? 0;
+            //统计在线
+            $this->redis('video')->sAdd('onlineUser_'.date('Ymd'),$uid)->expire('onlineUser',3600*24);
             // 增加点击数
             CommBbs::query()->where('community_bbs.id', $id)->increment('views');
             //Log::info('==userLocationName1==',[$user]);
