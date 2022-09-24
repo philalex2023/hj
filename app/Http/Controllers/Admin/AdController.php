@@ -13,6 +13,7 @@ use App\TraitClass\CommTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -347,6 +348,12 @@ class AdController extends BaseCurlController
      */
     public function deleteGetData($model, array $ids)
     {
+        //删除
+        $cidArrDel = $model->whereIn('id',$ids)->pluck('name');
+        foreach ($cidArrDel as $delName) {
+            Cache::forget('ads_key_'.$delName);
+        }
+        //重置
         $cidArr = $model->whereNotIn('id',$ids)->pluck('name');
         foreach ($cidArr as $name) {
             //广告缓存
