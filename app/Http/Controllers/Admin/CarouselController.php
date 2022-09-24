@@ -123,15 +123,20 @@ class CarouselController extends BaseCurlController
 
     public function setOutputUiCreateEditForm($show = '')
     {
+        $data = [...$this->getCatNavData(),[
+            16001 => ['id'=>16001,'name'=>'固定|我的'],
+            16002 => ['id'=>16002,'name'=>'固定|社区'],
+            16003 => ['id'=>16003,'name'=>'固定|小视频'],
+        ]];
         $data = [
             [
                 'field' => 'cid',
                 'type' => 'select',
-                'name' => '首页二级分类',
+                'name' => '首页二级分类/固定位置',
                 'must' => 1,
                 'verify' => 'rq',
                 'default' => 0,
-                'data' => $this->getCatNavData()
+                'data' => $data
             ],
             [
                 'field' => 'title',

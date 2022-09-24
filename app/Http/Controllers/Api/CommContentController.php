@@ -104,7 +104,6 @@ class CommContentController extends Controller
     }
 
     /**
-     * 文章列表
      * @param Request $request
      * @return array|JsonResponse
      */
