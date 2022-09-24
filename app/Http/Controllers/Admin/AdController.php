@@ -353,12 +353,6 @@ class AdController extends BaseCurlController
         foreach ($cidArrDel as $delName) {
             Cache::forget('ads_key_'.$delName);
         }
-        //重置
-        $cidArr = $model->whereNotIn('id',$ids)->pluck('name');
-        foreach ($cidArr as $name) {
-            //广告缓存
-            $this->resetAdsData($name);
-        }
         //清除首页列表缓存
         $this->resetHomeRedisData();
         //配置信息
