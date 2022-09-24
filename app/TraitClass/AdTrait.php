@@ -197,4 +197,12 @@ trait AdTrait
         return $ads;
     }
 
+    public function resetAdsData($flag): void
+    {
+        Cache::forever('ads_key_'.$flag,Ad::query()
+            ->where('name',$flag)
+            ->where('status',1)
+            ->orderBy('sort')
+            ->get(['id','sort','name','title','img','position','url','play_url','type','status','action_type','vid','end_at']));
+    }
 }
