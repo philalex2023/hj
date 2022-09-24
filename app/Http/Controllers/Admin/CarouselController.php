@@ -13,12 +13,19 @@ use App\TraitClass\CatTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 
 class CarouselController extends BaseCurlController
 {
     use CatTrait, AboutEncryptTrait, PHPRedisTrait,VideoTrait;
 
     public $pageName = '轮播图管理';
+
+    public array $fixedNav = [
+        16001 => ['id'=>16001,'name'=>'固定|我的'],
+        16002 => ['id'=>16002,'name'=>'固定|社区'],
+        16003 => ['id'=>16003,'name'=>'固定|小视频'],
+    ];
 
     public function setModel(): Carousel
     {
@@ -123,11 +130,7 @@ class CarouselController extends BaseCurlController
 
     public function setOutputUiCreateEditForm($show = '')
     {
-        $data = [...$this->getCatNavData(),...[
-            16001 => ['id'=>16001,'name'=>'固定|我的'],
-            16002 => ['id'=>16002,'name'=>'固定|社区'],
-            16003 => ['id'=>16003,'name'=>'固定|小视频'],
-        ]];
+        $data = [...$this->getCatNavData(),...$this->fixedNav];
         $data = [
             [
                 'field' => 'cid',
@@ -234,6 +237,9 @@ class CarouselController extends BaseCurlController
     public function setListOutputItemExtend($item)
     {
         $item->category_name = $item->category['name'] ?? '';
+        if(isset($this->fixedNav[$item->cid])){
+            $item->category_name = $this->fixedNav[$item->cid];
+        }
         $endAtTime = $item->end_at ? strtotime($item->end_at) : 0;
         $item->status = ($item->status!=1 || ($item->end_at && $endAtTime<time())) ? '关闭': '启用';
         return $item;
@@ -302,4 +308,11 @@ class CarouselController extends BaseCurlController
         }
     }
 
+    public function deleteSuccessAfter(array $ids)
+    {
+        $cidArr = Carousel::query()->whereIn('id',$ids)->pluck('cid');
+        foreach ($cidArr as $cid) {
+            Cache::forget('api_carousel.'.$cid);
+        }
+    }
 }
