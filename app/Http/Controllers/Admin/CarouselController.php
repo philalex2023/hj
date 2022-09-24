@@ -238,7 +238,7 @@ class CarouselController extends BaseCurlController
     {
         $item->category_name = $item->category['name'] ?? '';
         if(isset($this->fixedNav[$item->cid])){
-            $item->category_name = $this->fixedNav[$item->cid];
+            $item->category_name = $this->fixedNav[$item->cid]['name'];
         }
         $endAtTime = $item->end_at ? strtotime($item->end_at) : 0;
         $item->status = ($item->status!=1 || ($item->end_at && $endAtTime<time())) ? '关闭': '启用';
