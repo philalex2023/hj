@@ -15,7 +15,11 @@ class HomeController extends BaseController
         return $this->display();
     }
     public function home(){
-        return $this->display();
+        $data = [
+            'onlinePeople' => 4309,
+            'activePeople' => 180734,
+        ];
+        return $this->display(['data'=>$data]);
     }
     public function map($type,Request $request){
         $this->setViewPath($type.'Map');

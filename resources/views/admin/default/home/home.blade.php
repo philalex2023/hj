@@ -14,7 +14,7 @@
                         <div class="layui-col-md3">
                             <div class="layui-card">
                                 <div class="layui-card-header">在线人数/日活</div>
-                                <div class="layui-card-body">4308 / 180733</div>
+                                <div class="layui-card-body">{{ $data['onlinePeople'] }} / {{ $data['activePeople'] }}</div>
                             </div>
                         </div>
                         <div class="layui-col-md3">
