@@ -96,6 +96,7 @@ class DFController extends PayBaseController implements Pay
         //Log::info('df_third_response===', [$response]);//三方响应日志
         $resJson = json_decode($response, true);
         if ($resJson['rspcode'] == 'A0') {
+            $this->pullPayEvent($orderInfo);
             $return = $this->format(0, ['url' => $resJson['data']??''], '取出成功');
         } else {
             $return = $this->format($resJson['rspcode'], $resJson, $resJson['rspmsg']);

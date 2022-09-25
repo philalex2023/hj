@@ -99,6 +99,7 @@ class AXController extends PayBaseController implements Pay
             $resJson = json_decode($response, true);
             Log::info('ax_third_response===', [$resJson]);//三方响应日志
             if ($resJson['status'] == 1) {
+                $this->pullPayEvent($orderInfo);
                 $return = $this->format(0, ['url' => $resJson['payurl']], '取出成功');
             } else {
                 $return = $this->format(-1, [], $resJson['error']);

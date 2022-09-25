@@ -96,6 +96,7 @@ class XFController extends PayBaseController implements Pay
         $response = $curl->getBody();
         $resJson = json_decode($response, true);
         if ($resJson['rspcode'] == 'A0') {
+            $this->pullPayEvent($orderInfo);
             $return = $this->format(0, ['url' => $resJson['data']??''], '取出成功');
         } else {
             $return = $this->format($resJson['rspcode'], $resJson, $resJson['rspmsg']);

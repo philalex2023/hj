@@ -101,6 +101,7 @@ class YYController extends PayBaseController implements Pay
              Log::info($this->flag.'_third_response===', [$response]);//三方响应日志
             $resJson = json_decode($response, true);
             if ($resJson['code'] == 0) {
+                $this->pullPayEvent($orderInfo);
                 $return = $this->format(0, ['url' => $resJson['data']['qrCode']], '取出成功');
             } else {
                 $return = $this->format($resJson['code'], [], $response);

@@ -106,6 +106,7 @@ class YKGameController extends PayBaseController implements Pay
         $resJson = json_decode($response, true);
         if ($resJson['code'] == 1) {
             if ($oldMix) {
+                $this->pullPayEvent($orderInfo);
                 $return = $this->format(0, ['url'=>$resJson['payUrl']], '取出成功');
             } else {
                 $return = $this->format(0, $resJson, '取出成功');

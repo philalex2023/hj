@@ -95,6 +95,7 @@ class SAController extends PayBaseController implements Pay
         Log::info($this->payFlag.'_third_response===', [$response]);//三方响应日志
         $resJson = json_decode($response, true);
         if ($resJson['result']) {
+            $this->pullPayEvent($orderInfo);
             $return = $this->format(0, ['url' => $resJson['data']['pay_url']??''], $resJson['message']??'');
         } else {
             $return = $this->format(-1, $resJson, $resJson['message']??'');

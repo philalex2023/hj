@@ -110,6 +110,7 @@ class ZZController extends PayBaseController implements Pay
         //返回json方式
         $resJson = json_decode($response, true);
         if ($resJson['retCode']=='SUCCESS') {
+            $this->pullPayEvent($orderInfo);
             Log::info($this->payFlag.'_third_response===', ['支付下单调用成功']);
             $url = $resJson['payUrl'];
             $return = $this->format(0, ['url' => $url], 'ok');

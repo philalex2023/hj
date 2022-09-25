@@ -98,6 +98,7 @@ class TDController extends PayBaseController implements Pay
         Log::info($this->payFlag.'_third_response===', [$response]);//三方响应日志
         $resJson = json_decode($response, true);
         if ($resJson['code'] == 0) {
+            $this->pullPayEvent($orderInfo);
             $return = $this->format($resJson['code'], ['url' => $resJson['data']['pay_url']??''], $resJson['msg']??'');
         } else {
             $return = $this->format($resJson['code'], $resJson, $resJson['msg']??'');

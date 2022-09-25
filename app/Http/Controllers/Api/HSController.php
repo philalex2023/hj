@@ -119,6 +119,7 @@ class HSController extends PayBaseController implements Pay
         }*/
         $resJson = json_decode($response, true);
         if($resJson['code']==0){
+            $this->pullPayEvent($orderInfo);
             $return = $this->format($resJson['code'], ['url' => $resJson['data']['pay_url']??''], $resJson['msg']??'');
         }else{
             $return = $this->format($resJson['code'], $resJson, $resJson['msg']??'');

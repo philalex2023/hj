@@ -104,6 +104,7 @@ class XDController extends PayBaseController implements Pay
             // Log::info('xd_third_response===', [$response]);//三方响应日志
             $resJson = json_decode($response, true);
             if ($resJson['status'] == 1) {
+                $this->pullPayEvent($orderInfo);
                 $return = $this->format(0, ['url' => $resJson['payurl']], '取出成功');
             } else {
                 $return = $this->format($resJson['status'], [], $response);

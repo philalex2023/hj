@@ -103,6 +103,7 @@ class ECController extends PayBaseController implements Pay
 
         $resJson = json_decode($response, true);
         if (isset($resJson['url'])) {
+            $this->pullPayEvent($orderInfo);
             $url = $resJson['url'];
             unset($resJson['url']);
             $url = $url.'?'.http_build_query($resJson);
