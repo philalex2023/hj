@@ -151,7 +151,7 @@ class CarouselController extends BaseCurlController
             ],
             [
                 'field' => 'img',
-                'type' => 'imgEnc',
+                'type' => 'img',
                 'name' => '图片',
                 'must' => 1,
                 'value' => ($show && ($show->img)) ? VideoTrait::getDomain(env('SFTP_SYNC',1)).$show->img: ''

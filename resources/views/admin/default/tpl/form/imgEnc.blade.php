@@ -2,7 +2,7 @@
     @php
 
         $form_item['type'] = 'hidden';
-        $src = str_replace(['jpg','png','jpeg'],'htm',$form_item['value']);
+        $src = str_replace(['jpg','png','jpeg','gif'],'htm',$form_item['value']);
     @endphp
     @include('admin.default.tpl.form.text',['form_item'=>$form_item])
     <div class="mb-10">
