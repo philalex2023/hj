@@ -91,8 +91,7 @@ class ProcessLogin implements ShouldQueue
             if(isset($keepUser[$keyDate])){
                 $redis->hIncrBy($statistic_day_key,'keep_'.$i,1);
                 //首页统计
-                $i==1 && $redis->hIncrBy('statistic_home_'.$dayData,'keep_'.$i,1);
-                $redis->expire('statistic_home',86400);
+                $i==1 && $redis->incr('total_keep_1_'.$dayData) && $redis->expire('total_keep_1_'.$dayData,86400);
             }
         }
 

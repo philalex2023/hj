@@ -21,36 +21,10 @@ class HomeController extends BaseController
         $redis = $this->redis();
         $dayData = date('Ymd');
         $nowTime = time();
-        $hashData = $redis->hMGet('statistic_home_'.$dayData,[
-//            'online_user',//ok
-//            'active_user',//ok
-            'keep_1', //ok
-//            'hour_inc_user',
-//            'day_inc_user',
-//            'day_inc_android_user',
-//            'day_inc_ios_user',
-//            'hour_gold_recharge',
-//            'day_gold_recharge',
-//            'hour_vip_recharge',
-//            'day_vip_recharge',
-//            'hour_new_user_recharge',
-//            'day_new_user_recharge',
-//            'hour_old_user_recharge',
-//            'day_old_user_recharge',
-//            'hour_success_order',
-//            'hour_total_order',
-//            'day_success_order',
-//            'day_total_order',
-//            'day_inc_recharge_user',
-//            'day_inc_arpu',
-//            'day_total_recharge',
-        ]);
-        foreach ($hashData as &$data) {
-            $data = (int)$data;
-        }
         $starTime = strtotime(date('Y-m-d'));
         $hourAgo = strtotime('-1 hour');
-        $hashData['active_user'] = $redis->sCard('active_user_'.$dayData);//ok
+        $hashData['keep_1'] = $redis->get('total_keep_1_'.$dayData);
+        $hashData['active_user'] = $redis->sCard('active_user_'.$dayData);
         $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);//ok
         $hashData['hour_inc_user'] = $redis->zCount('new_increase_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_inc_user'] = $redis->zCount('new_increase_'.$dayData,$starTime,$nowTime);
