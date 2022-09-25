@@ -305,7 +305,7 @@ class VideoController extends BaseCurlController
             ],
             [
                 'field' => 'cover_img',
-                'type' => 'imgEnc',
+                'type' => 'img',
                 'name' => '封面图片',
                 'value' => ($show && ($show->cover_img)) ? self::getDomain($show->sync).$show->cover_img: ''
 //                'verify' => 'img'

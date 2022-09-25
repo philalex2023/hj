@@ -48,9 +48,6 @@
                     @case('img')
                     @include('admin.default.tpl.form.img',['form_item'=>$form_tpl_item])
                     @break
-                    @case('imgEnc')
-                    @include('admin.default.tpl.form.imgEnc',['form_item'=>$form_tpl_item])
-                    @break
                     @case('imgMore')
                     @include('admin.default.tpl.form.imgMore',['form_item'=>$form_tpl_item])
                     @break
