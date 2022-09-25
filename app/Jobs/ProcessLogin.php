@@ -118,10 +118,17 @@ class ProcessLogin implements ShouldQueue
             $nowTime = time();
             $redis->zAdd('new_increase_'.$dayData,$nowTime,$uid);
             $redis->expire('new_increase_'.$dayData,86400);
-            $redis->sAdd('new_increase_android_'.$dayData,$uid);
-            $redis->expire('new_increase_'.$dayData,86400);
-            $redis->sAdd('new_increase_ios_'.$dayData,$uid);
-            $redis->expire('new_increase_'.$dayData,86400);
+
+            if($this->device_system==1 || $this->device_system==3){
+                $redis->sAdd('new_increase_ios_'.$dayData,$uid);
+                $redis->expire('new_increase_'.$dayData,86400);
+            }
+
+            if($this->device_system==2){
+                $redis->sAdd('new_increase_android_'.$dayData,$uid);
+                $redis->expire('new_increase_'.$dayData,86400);
+            }
+
         }
 
     }
