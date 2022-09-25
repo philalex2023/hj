@@ -54,8 +54,8 @@ class HomeController extends BaseController
         $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);//ok
         $hashData['hour_inc_user'] = $redis->zCount('new_increase_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_inc_user'] = $redis->zCount('new_increase_'.$dayData,$starTime,$nowTime);
-        $hashData['day_inc_android_user'] = $redis->zCount('new_increase_android_'.$dayData,$starTime,$nowTime);
-        $hashData['day_inc_ios_user'] = $redis->zCount('new_increase_ios_'.$dayData,$starTime,$nowTime);
+        $hashData['day_inc_android_user'] = $redis->sCard('new_increase_android_'.$dayData);
+        $hashData['day_inc_ios_user'] = $redis->sCard('new_increase_ios_'.$dayData);
 
         $hashData['hour_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$hourAgo,$nowTime));
         $hashData['day_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$starTime,$nowTime));
