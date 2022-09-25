@@ -23,11 +23,15 @@ class HomeController extends BaseController
         $nowTime = time();
         $starTime = strtotime(date('Y-m-d'));
         $hourAgo = strtotime('-1 hour');
-        $hashData['keep_1'] = $redis->get('total_keep_1_'.$dayData);
+
         $hashData['active_user'] = $redis->sCard('active_user_'.$dayData);
-        $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);//ok
+        $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);
+
+        $hashData['keep_1'] = $redis->get('total_keep_1_'.$dayData);
+
         $hashData['hour_inc_user'] = $redis->zCount('new_increase_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_inc_user'] = $redis->zCount('new_increase_'.$dayData,$starTime,$nowTime);
+
         $hashData['day_inc_android_user'] = $redis->sCard('new_increase_android_'.$dayData);
         $hashData['day_inc_ios_user'] = $redis->sCard('new_increase_ios_'.$dayData);
 
