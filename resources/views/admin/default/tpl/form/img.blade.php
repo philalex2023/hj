@@ -2,7 +2,7 @@
     @php
 
         $form_item['type'] = 'hidden';
-
+        $form_item['value'] = str_replace(['jpg','png','jpeg','gif'],'htm',$form_item['value']);
     @endphp
     @include('admin.default.tpl.form.text',['form_item'=>$form_item])
     <div class="mb-10">
@@ -21,3 +21,12 @@
                 data-target="#{{ (md5($form_item['field']))  }}" class="layui-btn   layui-btn-sm"><i class="layui-icon layui-icon-picture"></i> {{ lang('库选择') }}</button>--}}
 
 </div>
+<script>
+    let xhr = new XMLHttpRequest();
+    xhr.open('get',"{{ $form_item['value'] }}");
+    xhr.responseType = 'blob';
+    xhr.onload = function () {
+        document.getElementById("preview-img").src = window.URL.createObjectURL(xhr.response);
+    }
+    xhr.send();
+</script>
