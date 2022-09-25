@@ -109,6 +109,7 @@ class YLController extends PayBaseController implements Pay
         //返回json方式
         $resJson = json_decode($response, true);
         if ($resJson['code']=='0100') {
+            $this->pullPayEvent($orderInfo);
             $url = $resJson['data']['html'];
             $return = $this->format(0, ['url' => $url], 'ok');
         } else {

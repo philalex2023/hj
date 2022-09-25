@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Psr\SimpleCache\InvalidArgumentException;
 
 trait PayTrait
@@ -158,6 +159,15 @@ trait PayTrait
         return [];
     }
 
+    private function pullPayEvent($orderInfo): void
+    {
+        //首页统计拉起
+        $redis = Redis::connection()->client();
+        $dayData = date('Ymd');
+        $nowTime = time();
+        $redis->zAdd('day_pull_order_'.$dayData,$nowTime,$orderInfo->id)->expire('vip_recharge_'.$dayData,3600*24);
+    }
+
     /**
      * 处理vip购买
      * @param $goodsId
@@ -262,8 +272,9 @@ trait PayTrait
         }
         DB::connection('master_mysql')->table('recharge')->updateOrInsert(['order_id'=>$orderInfo->id],$chargeData);
         //########渠道CPS日统计########
-        ProcessStatisticsChannelByDay::dispatchAfterResponse($orderInfo);
+        ProcessStatisticsChannelByDay::dispatchAfterResponse($orderInfo,$chargeData['user_type']);
         //#############################
+
     }
 
     /**
