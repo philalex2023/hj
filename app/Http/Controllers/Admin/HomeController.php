@@ -72,7 +72,7 @@ class HomeController extends BaseController
         $hashData['day_total_recharge'] = round($hashData['day_new_user_recharge'] + $hashData['day_old_user_recharge'],2);
 
         $hashData['day_inc_recharge_user'] = $redis->sCard('day_inc_recharge_user_'.$dayData);
-        $hashData['day_inc_arpu'] = round($hashData['day_total_recharge']/$hashData['day_inc_user'],2);
+        $hashData['day_inc_arpu'] = $hashData['day_inc_user']==0 ? 0 : round($hashData['day_total_recharge']/$hashData['day_inc_user'],2);
 
         $hashData['hour_success_order'] = $redis->zCount('vip_recharge_'.$dayData,$hourAgo,$nowTime) + $redis->zCount('gold_recharge_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_success_order'] = $redis->zCount('vip_recharge_'.$dayData,$starTime,$nowTime) + $redis->zCount('gold_recharge_'.$dayData,$starTime,$nowTime);
