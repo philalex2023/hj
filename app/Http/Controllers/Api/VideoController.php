@@ -51,7 +51,8 @@ class VideoController extends Controller
 
         }
         //统计在线
-        $videoRedis->sAdd('onlineUser_'.date('Ymd'),$uid)->expire('onlineUser',3600*24);
+        $videoRedis->sAdd('onlineUser_'.date('Ymd'),$uid);
+        $videoRedis->expire('onlineUser',3600*24);
         //插入历史记录
         $videoRedis->zAdd($view_history_key,time(),$vid);
         $videoRedis->expire($view_history_key,7*24*3600);

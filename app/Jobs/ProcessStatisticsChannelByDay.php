@@ -123,17 +123,22 @@ class ProcessStatisticsChannelByDay implements ShouldQueue
         $dayData = date('Ymd');
         $nowTime = time();
         if($this->orderInfo->type==1){ //VIP
-            $redis->zAdd('vip_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount)->expire('vip_recharge_'.$dayData,3600*24);
+            $redis->zAdd('vip_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+            $redis->expire('vip_recharge_'.$dayData,3600*24);
         } else { //金币
-            $redis->zAdd('gold_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount)->expire('vip_recharge_'.$dayData,3600*24);
+            $redis->zAdd('gold_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+            $redis->expire('vip_recharge_'.$dayData,3600*24);
         }
 
         if($this->new_old_user==1){
-            $redis->zAdd('old_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount)->expire('vip_recharge_'.$dayData,3600*24);
+            $redis->zAdd('old_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+            $redis->expire('vip_recharge_'.$dayData,3600*24);
         }else{
-            $redis->zAdd('new_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount)->expire('vip_recharge_'.$dayData,3600*24);
+            $redis->zAdd('new_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+            $redis->expire('vip_recharge_'.$dayData,3600*24);
         }
 
         $redis->sAdd('day_inc_recharge_user_'.$dayData,$this->orderInfo->uid);
+        $redis->expire('day_inc_recharge_user_'.$dayData,3600*24);
     }
 }

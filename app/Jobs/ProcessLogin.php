@@ -91,7 +91,8 @@ class ProcessLogin implements ShouldQueue
             if(isset($keepUser[$keyDate])){
                 $redis->hIncrBy($statistic_day_key,'keep_'.$i,1);
                 //首页统计
-                $i==1 && $redis->hIncrBy('statistic_home_'.$dayData,'keep_'.$i,1)->expire('statistic_home',24*3600);
+                $i==1 && $redis->hIncrBy('statistic_home_'.$dayData,'keep_'.$i,1);
+                $redis->expire('statistic_home',86400);
             }
         }
 
@@ -111,13 +112,16 @@ class ProcessLogin implements ShouldQueue
         DB::table('users')->where('id',$uid)->increment('login_numbers',1,$updateData);
         LoginLog::query()->create($this->loginLogData);
         //
-        $hourData = date('YmdH');
-        $redis->sAdd('active_user_'.$dayData,$uid)->expire('statistic_home',24*3600);
+        $redis->sAdd('active_user_'.$dayData,$uid);
+        $redis->expire('statistic_home',86400);
         if($this->loginLogData['type']==1){//新用户
             $nowTime = time();
-            $redis->zAdd('new_increase_'.$dayData,$nowTime,$uid)->expire('new_increase_'.$dayData,24*3600);
-            $redis->sAdd('new_increase_android_'.$dayData,$uid)->expire('new_increase_'.$dayData,24*3600);
-            $redis->sAdd('new_increase_ios_'.$dayData,$uid)->expire('new_increase_'.$dayData,24*3600);
+            $redis->zAdd('new_increase_'.$dayData,$nowTime,$uid);
+            $redis->expire('new_increase_'.$dayData,86400);
+            $redis->sAdd('new_increase_android_'.$dayData,$uid);
+            $redis->expire('new_increase_'.$dayData,86400);
+            $redis->sAdd('new_increase_ios_'.$dayData,$uid);
+            $redis->expire('new_increase_'.$dayData,86400);
         }
 
     }
