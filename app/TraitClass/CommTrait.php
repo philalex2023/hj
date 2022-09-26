@@ -11,6 +11,53 @@ use Illuminate\Support\Facades\DB;
 trait CommTrait
 {
     use PHPRedisTrait,AdTrait;
+
+    public function getAppModuleShowType(): array
+    {
+        return [
+            0 => [
+                'id' => 0,
+                'name' => '无'
+            ],
+            1 => [
+                'id' => 1,
+                'name' => '横中'
+            ],
+            2 => [
+                'id' => 2,
+                'name' => '横中大'
+            ],
+            3 => [
+                'id' => 3,
+                'name' => '横小'
+            ],
+            4 => [
+                'id' => 4,
+                'name' => '横大二'
+            ],
+            5 => [
+                'id' => 5,
+                'name' => '横大一'
+            ],
+            6 => [
+                'id' => 6,
+                'name' => '双连'
+            ],
+            7 => [
+                'id' => 7,
+                'name' => '大一偶小'
+            ],
+            8 => [
+                'id' => 8,
+                'name' => '新横大二'
+            ],
+            9 => [
+                'id' => 9,
+                'name' => '横小二'
+            ],
+        ];
+    }
+
     public function getCommCate()
     {
         $redis = $this->redis();

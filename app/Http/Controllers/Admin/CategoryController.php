@@ -28,49 +28,6 @@ class CategoryController extends BaseCurlController
 
     public $denyCommonBladePathActionName = ['index','create','edit'];
 
-    public array $appModuleStyle = [
-        0 => [
-            'id' => 0,
-            'name' => '无'
-        ],
-        1 => [
-            'id' => 1,
-            'name' => '横中'
-        ],
-        2 => [
-            'id' => 2,
-            'name' => '横中大'
-        ],
-        3 => [
-            'id' => 3,
-            'name' => '横小'
-        ],
-        4 => [
-            'id' => 4,
-            'name' => '横大二'
-        ],
-        5 => [
-            'id' => 5,
-            'name' => '横大一'
-        ],
-        6 => [
-            'id' => 6,
-            'name' => '双连'
-        ],
-        7 => [
-            'id' => 7,
-            'name' => '大一偶小'
-        ],
-        8 => [
-            'id' => 8,
-            'name' => '新横大二'
-        ],
-        9 => [
-            'id' => 9,
-            'name' => '横小二'
-        ],
-    ];
-
     //1.设置模型
     public function setModel()
     {
@@ -186,7 +143,7 @@ class CategoryController extends BaseCurlController
 
     public function setListOutputItemExtend($item)
     {
-        $appModuleStyle = $this->appModuleStyle;
+        $appModuleStyle = $this->getAppModuleShowType();
         $item->is_free = UiService::switchTpl('is_free', $item,'','是|否');
         $item->is_rand = UiService::switchTpl('is_rand', $item,'','是|否');
         $item->group_type = $appModuleStyle[$item->group_type]['name'];
@@ -331,7 +288,7 @@ class CategoryController extends BaseCurlController
                 'must' => 0,
                 'default' => 0,
                 'verify' => 'rq',
-                'data' => $this->appModuleStyle
+                'data' => $this->getAppModuleShowType()
             ],
             [
                 'field' => 'group_bg_img',

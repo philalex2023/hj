@@ -89,6 +89,8 @@ $route->middleware(['admin_auth'])->name($route_name)->group(function ($route) {
         'FailedJobController',
         'PayLogController',
         'CommGameGoldController',
+        'TopicController',
+        'DataSourceController',
     ];
     //批量添加控制器
     $batch = [

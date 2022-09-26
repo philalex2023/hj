@@ -1,0 +1,199 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Models\Tag;
+use App\Models\Topic;
+use App\TraitClass\CatTrait;
+use App\TraitClass\CommTrait;
+use App\TraitClass\TagTrait;
+
+class TopicController extends BaseCurlController
+{
+    use CatTrait,TagTrait,CommTrait;
+
+    public $pageName = '专题';
+
+    public array $cats=[];
+
+    public array $tags=[];
+
+    public array $showTypes=[];
+
+    public function setModel(): Topic
+    {
+        $this->cats = $this->getCatNavData();
+//        $this->cats = [''=>['id'=>'','name'=>'test']];
+        //dd($this->cats);
+        $this->tags = $this->getTagData();
+        $this->showTypes = $this->getAppModuleShowType();
+        return $this->model = new Topic();
+    }
+
+    public function indexCols()
+    {
+        return [
+            /*[
+                'type' => 'checkbox'
+            ],*/
+            [
+                'field' => 'id',
+                'width' => 80,
+                'title' => '编号',
+                'sort' => 1,
+                'align' => 'center'
+            ],
+            [
+                'field' => 'name',
+                'minWidth' => 150,
+                'title' => '专题名称',
+                'align' => 'center',
+            ],
+            [
+                'field' => 'cid',
+                'minWidth' => 150,
+                'title' => '分类',
+                'align' => 'center',
+            ],
+            [
+                'field' => 'tag',
+                'minWidth' => 100,
+                'title' => '标签',
+                'align' => 'center',
+            ],
+            [
+                'field' => 'show_type',
+                'minWidth' => 100,
+                'title' => '展示样式',
+                'align' => 'center',
+            ],
+            [
+                'field' => 'data_source',
+                'minWidth' => 100,
+                'title' => '数据源',
+                'align' => 'center',
+            ],
+            [
+                'field' => 'sort',
+                'width' => 80,
+                'title' => '排序',
+                'sort' => 1,
+                'align' => 'center',
+                'edit' => 1
+            ],
+            [
+                'field' => 'created_at',
+                'minWidth' => 150,
+                'title' => '创建时间',
+                'align' => 'center'
+            ],
+            [
+                'field' => 'updated_at',
+                'minWidth' => 150,
+                'hide' => true,
+                'title' => '更新时间',
+                'align' => 'center'
+            ],
+            [
+                'field' => 'handle',
+                'minWidth' => 150,
+                'title' => '操作',
+                'align' => 'center'
+            ]
+        ];
+
+    }
+
+    public function setOutputUiCreateEditForm($show = '')
+    {
+        $data = [
+            [
+                'field' => 'name',
+                'type' => 'text',
+                'name' => '专题名称',
+                'must' => 1,
+                'verify' => 'rq',
+                'default' => '',
+            ],
+            [
+                'field' => 'cid',
+                'type' => 'select',
+                'name' => '分类',
+                'must' => 1,
+                'verify' => 'rq',
+                'data' => $this->cats
+            ],
+            /*[
+                'field' => 'tag',
+                'type' => 'checkbox',
+                'name' => '标签',
+                'value' => ($show && ($show->tag)) ? json_decode($show->tag,true) : [],
+                'data' => $this->tags
+            ],*/
+            [
+                'field' => 'show_type',
+                'type' => 'select',
+                'name' => '展示样式',
+                'data' => $this->showTypes
+            ],
+            [
+                'field' => 'show_type',
+                'type' => 'checkbox',
+                'name' => '数据源',
+                'data' => []
+            ],
+            [
+                'field' => 'sort',
+                'type' => 'number',
+                'name' => '排序',
+                'default' => 0,
+            ],
+            [
+                'field' => 'status',
+                'type' => 'radio',
+                'name' => '是否上架',
+                'verify' => '',
+                'default' => 1,
+                'data' => $this->uiService->trueFalseData()
+            ],
+        ];
+        $this->uiBlade['form'] = $data;
+    }
+
+    //表单验证
+   /* public function checkRule($id = '')
+    {
+        $data = [
+            'name'=>'required|unique:tag,name',
+        ];
+        //$id值存在表示编辑的验证
+        if ($id) {
+            $data['name'] = 'required|unique:tag,name,' . $id;
+        }
+        return $data;
+    }
+
+    public function checkRuleFieldName($id = '')
+    {
+        return [
+            'name'=>'标签名称',
+        ];
+    }*/
+    public function setListOutputItemExtend($item)
+    {
+        //$item->cid = $this->get;
+        return $item;
+    }
+
+    //弹窗大小
+    public function layuiOpenWidth()
+    {
+        return '75%'; // TODO: Change the autogenerated stub
+    }
+
+    public function layuiOpenHeight()
+    {
+        return '75%'; // TODO: Change the autogenerated stub
+    }
+
+}

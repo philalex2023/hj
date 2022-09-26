@@ -14,7 +14,8 @@ trait CatTrait
             ->where('parent_id',2)
             ->orderBy('sort')
             ->get(['id','name']);
-        $data = $this->uiService->allDataArr('请选择分类');
+        //$data = $this->uiService->allDataArr('请选择分类');
+        $data = [''=>['id'=>'','name'=>'请选择分类']];
         foreach ($res as $item) {
             $data[$item->id] = [
                 'id' => $item->id,
