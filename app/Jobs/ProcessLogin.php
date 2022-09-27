@@ -103,7 +103,7 @@ class ProcessLogin implements ShouldQueue
         if(!$this->code){
             $invitationCode = Str::random(2).$uid.Str::random(2);
             $updateData['promotion_code'] = $invitationCode;
-            $updateData['account'] = $this->loginLogData['account'] . '-' .$uid;
+            //$updateData['account'] = $this->loginLogData['account'] . '-' .$uid;
             $updateData['password'] = $updateData['account'];
         }
         //增加登录次数
