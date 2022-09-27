@@ -128,7 +128,7 @@ class AuthController extends Controller
             //
             $nickNames = $this->createNickNames;
             $randNickName = $this->createNickNames[array_rand($nickNames)];
-            $accountV = $accountRedis->get('account_v') ?? 1;
+            $accountV = !$accountRedis->get('account_v') ? 1 : $accountRedis->get('account_v');
             $user->account = 'AD-'.$accountV;
             $user->nickname = $randNickName;
 
