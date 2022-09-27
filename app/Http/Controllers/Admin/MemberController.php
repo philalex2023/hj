@@ -85,6 +85,7 @@ class MemberController extends BaseCurlController
                 'minWidth' => 150,
                 'title' => '渠道负责人',
                 'align' => 'center',
+                'hide' => true
             ],
             [
                 'field' => 'nickname',
