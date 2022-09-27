@@ -102,6 +102,7 @@ class AuthController extends Controller
         if($loginType===1){ //注册登录
             $regLock = Cache::lock('reg_lock');
             if(!$regLock->get()){
+                Log::info('reg_lock',[$ip,$validated]);
                 return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
             }
 
