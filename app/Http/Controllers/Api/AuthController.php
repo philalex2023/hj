@@ -102,7 +102,7 @@ class AuthController extends Controller
         if($loginType===1){ //注册登录
             $regLock = Cache::lock('reg_lock');
             if(!$regLock->get()){
-                return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候再试']);
+                return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
             }
 
             //创建新用户
@@ -139,6 +139,7 @@ class AuthController extends Controller
             $user->channel_pid = $bindInfo['channel_pid'];
             $user->save();
 
+            $accountRedis->sAdd('account_did',$validated['did']);
             $accountRedis->incr('account_v');
             $regLock->release();
         }else{ //第二次及以后登录
