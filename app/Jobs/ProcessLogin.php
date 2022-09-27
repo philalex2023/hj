@@ -104,7 +104,7 @@ class ProcessLogin implements ShouldQueue
             $invitationCode = Str::random(2).$uid.Str::random(2);
             $updateData['promotion_code'] = $invitationCode;
             //$updateData['account'] = $this->loginLogData['account'] . '-' .$uid;
-            $updateData['password'] = $updateData['account'];
+            //$updateData['password'] = $this->loginLogData['account'];
         }
         //增加登录次数
         DB::table('users')->where('id',$uid)->increment('login_numbers',1,$updateData);
