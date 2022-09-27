@@ -2,33 +2,28 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Models\Tag;
-use App\Models\Topic;
-use App\TraitClass\CatTrait;
-use App\TraitClass\CommTrait;
-use App\TraitClass\TagTrait;
+use App\Models\DataSource;
 
-class TopicController extends BaseCurlController
+
+class DataSourceController extends BaseCurlController
 {
-    use CatTrait,TagTrait,CommTrait;
 
-    public $pageName = '专题';
+    public $pageName = '数据源';
 
-    public array $cats=[];
+    public array $dataType = [
+        1 => ['id'=>1,'name'=>'标签'],
+        2 => ['id'=>2,'name'=>'关键字'],
+        3 => ['id'=>3,'name'=>'分类'],
+        4 => ['id'=>4,'name'=>'最新上架'],
+        5 => ['id'=>5,'name'=>'自定义'],
+    ];
 
-    public array $tags=[];
-
-    public array $showTypes=[];
-
-    public function setModel(): Topic
+    public function setModel(): DataSource
     {
-        $this->cats = $this->getCatNavData();
-        $this->tags = $this->getTagData();
-        $this->showTypes = $this->getAppModuleShowType();
-        return $this->model = new Topic();
+        return $this->model = new DataSource();
     }
 
-    public function indexCols()
+    public function indexCols(): array
     {
         return [
             /*[
@@ -44,40 +39,26 @@ class TopicController extends BaseCurlController
             [
                 'field' => 'name',
                 'minWidth' => 150,
-                'title' => '专题名称',
+                'title' => '数据源名称',
                 'align' => 'center',
             ],
             [
-                'field' => 'cid',
+                'field' => 'video_type',
                 'minWidth' => 150,
-                'title' => '分类',
+                'title' => '视频类型',
                 'align' => 'center',
             ],
             [
-                'field' => 'tag',
-                'minWidth' => 100,
-                'title' => '标签',
+                'field' => 'data_type',
+                'minWidth' => 150,
+                'title' => '数据类型',
                 'align' => 'center',
             ],
             [
-                'field' => 'show_type',
-                'minWidth' => 100,
-                'title' => '展示样式',
+                'field' => 'data_value',
+                'minWidth' => 150,
+                'title' => '数据值',
                 'align' => 'center',
-            ],
-            [
-                'field' => 'data_source',
-                'minWidth' => 100,
-                'title' => '数据源',
-                'align' => 'center',
-            ],
-            [
-                'field' => 'sort',
-                'width' => 80,
-                'title' => '排序',
-                'sort' => 1,
-                'align' => 'center',
-                'edit' => 1
             ],
             [
                 'field' => 'created_at',
@@ -108,52 +89,47 @@ class TopicController extends BaseCurlController
             [
                 'field' => 'name',
                 'type' => 'text',
-                'name' => '专题名称',
+                'name' => '数据源名称',
                 'must' => 1,
                 'verify' => 'rq',
                 'default' => '',
             ],
             [
-                'field' => 'cid',
+                'field' => 'video_type',
                 'type' => 'select',
-                'name' => '分类',
+                'name' => '视频类型',
                 'must' => 1,
                 'verify' => 'rq',
-                'data' => $this->cats
+                'data' => [
+                    0 => ['id'=>0,'name'=>'横版'],
+                    1 => ['id'=>1,'name'=>'竖版'],
+                ]
+            ],
+            [
+                'field' => 'data_type',
+                'type' => 'select',
+                'name' => '数据类型',
+                'data' => $this->dataType
+            ],
+            [
+                'field' => 'data_value',
+                'type' => 'text',
+                'name' => '数据值',
             ],
             /*[
-                'field' => 'tag',
-                'type' => 'checkbox',
-                'name' => '标签',
-                'value' => ($show && ($show->tag)) ? json_decode($show->tag,true) : [],
-                'data' => $this->tags
-            ],*/
-            [
-                'field' => 'show_type',
-                'type' => 'select',
-                'name' => '展示样式',
-                'data' => $this->showTypes
-            ],
-            [
-                'field' => 'show_type',
-                'type' => 'checkbox',
-                'name' => '数据源',
-                'data' => []
-            ],
-            [
                 'field' => 'sort',
                 'type' => 'number',
                 'name' => '排序',
                 'default' => 0,
-            ],
-            [
+            ],*/
+            /*[
                 'field' => 'status',
                 'type' => 'radio',
                 'name' => '状态',
                 'verify' => '',
                 'default' => 1,
                 'data' => $this->uiService->trueFalseData()
-            ],
+            ],*/
         ];
         $this->uiBlade['form'] = $data;
     }

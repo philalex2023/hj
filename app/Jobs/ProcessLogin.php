@@ -60,20 +60,18 @@ class ProcessLogin implements ShouldQueue
      */
     public function handle()
     {
-        //增加登录次数
+
         $uid = $this->loginLogData['uid'];
         // 冗余最后一次登录地理信息
         $area = Ip::find($this->loginLogData['ip']);
         $areaJson = json_encode($area,JSON_UNESCAPED_UNICODE);
 
         if($this->loginLogData['type']==1){
-            $updateData = $this->bindChannel();
-            $this->saveStatisticByDay('install',$updateData['channel_id'],$this->device_system);
-            $this->saveStatisticByDay('active_users',$updateData['channel_id'],$this->device_system);
+            $this->saveStatisticByDay('install',$this->loginLogData['channel_id'],$this->device_system);
         }else{
             $this->saveStatisticByDay('login_number',$this->loginLogData['channel_id'],$this->device_system);
-            $this->saveStatisticByDay('active_users',$this->loginLogData['channel_id'],$this->device_system);
         }
+        $this->saveStatisticByDay('active_users',$this->loginLogData['channel_id'],$this->device_system);
 
         $userRedis = $this->redis('user');
         $date = date('Y-m-d');
@@ -108,9 +106,10 @@ class ProcessLogin implements ShouldQueue
             $updateData['account'] = $this->loginLogData['account'] . '-' .$uid;
             $updateData['password'] = $updateData['account'];
         }
+        //增加登录次数
         DB::table('users')->where('id',$uid)->increment('login_numbers',1,$updateData);
         LoginLog::query()->create($this->loginLogData);
-        //
+        //首页统计
         $redis->sAdd('active_user_'.$dayData,$uid);
         $redis->expire('statistic_home',86400);
         if($this->loginLogData['type']==1){//新用户
@@ -132,33 +131,4 @@ class ProcessLogin implements ShouldQueue
 
     }
 
-    public function bindChannel()
-    {
-        //绑定渠道推广
-        $device_system = $this->loginLogData['device_system'];
-        $channel_id = 0;
-        $clipboard = $this->loginLogData['clipboard'] ?? '';
-        $redis = $this->redis();
-        if(!empty($clipboard)){
-            $channel_id = $this->getChannelIdByPromotionCode($clipboard);
-            //Log::info('==BindChannelUserClipboard==',[$clipboard,$channel_id]);
-        }else{
-            $hashKey = 'download:'.$this->loginLogData['ip'];
-            if($redis->exists($hashKey)){
-                $hashValue = $redis->hGetAll($hashKey);
-                $pid = 0;
-                $channel_id = $hashValue['channel_id'];
-                $device_system = $hashValue['device_system'];
-                $this->device_system = $hashValue['device_system'];
-            }
-
-        }
-        //Log::info('==BindChannelUser==',$updateData);
-        return [
-            'pid'=>$pid ?? 0,
-            'channel_id'=>$channel_id ?? 0,
-            'device_system'=>$device_system ?? 0,
-            'channel_pid'=>$this->getChannelInfoById($channel_id)->pid ?? 0
-        ];
-    }
 }

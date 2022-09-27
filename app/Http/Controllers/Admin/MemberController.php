@@ -93,12 +93,6 @@ class MemberController extends BaseCurlController
                 'align' => 'center',
             ],
             [
-                'field' => 'location_name',
-                'minWidth' => 150,
-                'title' => '最近登录位置',
-                'align' => 'center',
-            ],
-            [
                 'field' => 'area_number',
                 'minWidth' => 150,
                 'title' => '国际码',
@@ -174,6 +168,13 @@ class MemberController extends BaseCurlController
                 'field' => 'login_numbers',
                 'minWidth' => 80,
                 'title' => '登录次数',
+                'align' => 'center',
+                'hide' => true
+            ],
+            [
+                'field' => 'location_name',
+                'minWidth' => 150,
+                'title' => '最近登录位置',
                 'align' => 'center',
                 'hide' => true
             ],

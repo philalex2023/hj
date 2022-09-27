@@ -24,7 +24,7 @@ use Laravel\Passport\Token;
 
 class AuthController extends Controller
 {
-    use LoginTrait, PHPRedisTrait, IpTrait, ApiParamsTrait;
+    use LoginTrait, IpTrait, ApiParamsTrait;
     /**
      * Create user
      *
@@ -75,6 +75,12 @@ class AuthController extends Controller
             Log::debug('illegal_did===',[$validated['did'],$ip]);
             return response()->json(['state' => -1, 'msg' => '非法设备']);
         }
+        if(!isset($_SERVER['HTTP_USER_AGENT'])){
+            return response()->json(['state' => -1, 'msg' => '非法设备!']);
+        }
+
+        $deviceSystem = $this->getDeviceSystem();
+
         $deviceInfo = !is_string($validated['dev']) ? json_encode($validated['dev']) : $validated['dev'] ;
         $appInfo = !is_string($validated['env']) ? json_encode($validated['env']) : $validated['env'] ;
         // 暂时放开轻量版
@@ -82,65 +88,65 @@ class AuthController extends Controller
             $lock = Cache::lock($key,10);
             if(!$lock->get()){
                 Log::debug('repeat_register_did===',[$validated['did'],'ip:'.$ip]);//参数日志
-                return response()->json(['state' => -1, 'msg' => '请勿重复注册']);
+                return response()->json(['state' => -1, 'msg' => '请勿重复提交否则会作封禁处理']);
             }
         }
 
         $test = $validated['test'] ?? false;
+        $accountRedis = $this->redis('account');
 
-        $user = new User();
-        $member = $user::query()->where('did',$validated['did'])->where('status',1)->first($this->loginUserFields);
-        $loginType = !$member ? 1 : 2;
-        $login_info = [];
-        switch ($loginType){
-            case 1:
-                //创建新用户
-                $user->did = $validated['did'];
-                $user->last_did = $validated['did'];
-                $user->create_ip = $ip;
-                $user->last_ip = $ip;
-                $user->gold = 0;
-                $user->balance = 0;
-                $user->sex = 0;
-                $user->member_card_type = 0;
-                $user->vip_start_last = '';
-                //分配默认相关设置
-                $configData = config_cache('app');
-                $user->long_vedio_times = $configData['free_view_long_video_times'] ?? 0;
-                $user->avatar = rand(1,13);
-                if(!isset($_SERVER['HTTP_USER_AGENT'])){
-                    return response()->json(['state' => -1, 'msg' => '非法设备!']);
-                }
+        $hasDid = !$accountRedis->exists('account_did') ? $this->getDidFromDb($validated['did']) : $accountRedis->sIsMember('account_did',$validated['did']);
+        $loginType = !$hasDid ? 1 : 2;
 
-                $user->device_system = 0;
-                if(strpos($deviceInfo.'', 'androidId')){
-                    $user->device_system = 2;
-                }else if(strpos($deviceInfo.'', 'ios')){
-                    $user->device_system = 1;
-                }
-                $user->device_info = $deviceInfo;
-                $user->app_info = $appInfo ?? '{}';
-                //
-                $nickNames = $this->createNickNames;
-                $randNickName = $this->createNickNames[array_rand($nickNames)];
-                $user->account = 'ID-'.Str::random(6);
-                $user->nickname = $randNickName;
-                $user->save();
-                $login_info = $user->only($this->loginUserFields);
-                //Log::debug('===login_info===',$login_info);
-                break;
-            case 2: //再次登录
-                if(!$member){
-                    return response()->json(['state' => -1, 'msg' => '用户不存在或被禁用!']);
-                }
-                //授权登录验证用户名密码
-                /*if(!Auth::attempt(['account'=>$member->account, 'password'=>$member->account])){
-                    return response()->json(['state'=>-1,'msg' => 'Unauthorized'], 401);
-                }*/
-                $user = $member;
-                $login_info = $member->only($this->loginUserFields);
-                break;
+        $login_info = ['device_system'=>$deviceSystem,'clipboard'=>$validated['clipboard']??'','ip'=>$ip];
+        if($loginType===1){ //注册登录
+            $regLock = Cache::lock('reg_lock');
+            if(!$regLock->get()){
+                return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候再试']);
+            }
+
+            //创建新用户
+            $user = new User();
+            $user->did = $validated['did'];
+            $user->last_did = $validated['did'];
+            $user->create_ip = $ip;
+            $user->last_ip = $ip;
+            $user->gold = 0;
+            $user->balance = 0;
+            $user->sex = 0;
+            $user->member_card_type = 0;
+            $user->vip_start_last = '';
+            //分配默认相关设置
+            $configData = config_cache('app');
+            $user->long_vedio_times = $configData['free_view_long_video_times'] ?? 0;
+            $user->avatar = rand(1,13);
+
+            $user->device_system = $deviceSystem;
+
+            $user->device_info = $deviceInfo;
+            $user->app_info = $appInfo ?? [];
+            //
+            $nickNames = $this->createNickNames;
+            $randNickName = $this->createNickNames[array_rand($nickNames)];
+            $accountV = $accountRedis->get('account_v') ?? 1;
+            $user->account = 'AD-'.$accountV;
+            $user->nickname = $randNickName;
+
+            $bindInfo = $this->bindChannel($login_info);
+            $user->pid = $bindInfo['pid'];
+            $user->channel_id = $bindInfo['channel_id'];
+            $user->channel_pid = $bindInfo['channel_pid'];
+            $user->save();
+
+            $accountRedis->incr('account_v');
+            $regLock->release();
+        }else{ //第二次及以后登录
+            $user = User::query()->where('did',$validated['did'])->where('status',1)->first($this->loginUserFields);
+            if(!$user){
+                return response()->json(['state' => -1, 'msg' => '用户不存在或被禁用!']);
+            }
         }
+        $login_info = $user->only($this->loginUserFields);
 
         $login_info['avatar'] += 0;
         //记录登录日志
@@ -163,7 +169,7 @@ class AuthController extends Controller
         /*$job = new ProcessLogin($login_log_data);
         $this->dispatch($job);*/
         //ProcessLogin::dispatch($login_log_data)->delay(now()->addMinutes());
-        if($loginType==2){
+        if($loginType===2){
             Token::query()->where('user_id',$login_info['id'])->delete();
         }
         //重新分配token
