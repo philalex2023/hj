@@ -110,7 +110,8 @@ class MemberController extends BaseCurlController
                 'field' => 'member_card_type',
                 'minWidth' => 80,
                 'title' => 'VIP',
-                'align' => 'center'
+                'align' => 'center',
+                'hide' => true,
             ],
             [
                 'field' => 'vip_start_last',
