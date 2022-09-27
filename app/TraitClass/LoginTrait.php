@@ -12,7 +12,7 @@ trait LoginTrait
 
     public array $loginRules = [
         'type' => 'required|integer|between:1,2',
-        'did' => 'required|string|max:32',
+        'did' => 'required|string|max:64',
         'dev' => 'required',
         'env' => 'required',
         'name' => 'nullable|string',
