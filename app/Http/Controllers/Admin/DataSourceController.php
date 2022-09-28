@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Admin;
 use App\Models\DataSource;
 use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
+use App\TraitClass\EsTrait;
 use App\TraitClass\TagTrait;
+use Illuminate\Support\Facades\DB;
 
 
 class DataSourceController extends BaseCurlController
 {
-    use CatTrait,TagTrait,CommTrait;
+    use CatTrait,TagTrait,CommTrait,EsTrait;
 
     public $pageName = '数据源';
 
@@ -182,6 +184,19 @@ class DataSourceController extends BaseCurlController
 
     protected function afterSaveSuccessEvent($model, $id = '')
     {
+        switch ($model->data_type){
+            case 1://标签
+                $tagIds = $this->rq->input('tags',[]);
+                $videos = DB::table('video')
+//                    ->whereRaw('JSON_CONTAINS(JSON_EXTRACT(cat,"$.*","$[*]"),?)',['["'.$moveCatId.'"]'])
+                    ->where('status',1)
+                    ->whereRaw('JSON_CONTAINS(JSON_EXTRACT(tag,"$.*","$[*]"),?)',['['.implode(',',$tagIds).']'])
+                    ->get(['id','tag']);
+                dump($videos);
+                break;
+        }
+        //在ES中创建/更新索引
+        //$es = $this->esClient();
 
         return $model;
     }

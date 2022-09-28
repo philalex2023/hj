@@ -436,11 +436,10 @@ class VideoController extends BaseCurlController
 
     public function beforeSaveEvent($model, $id = '')
     {
-        $model->cat = $this->rq->input('cats',[]);
-        $model->tag = $this->rq->input('tags',[]);
-        $model->cat = json_encode($model->cat);
-        $model->tag = json_encode($model->tag);
-
+        $cats = $this->rq->input('cats',[]);
+        $model->cat = json_encode($cats);
+        $tags = $this->rq->input('tags',[]);
+        $model->tag = json_encode($tags);
         $model->author = admin('nickname');
         $model->gold = $this->rq->input('gold',0);
         $model->gold *= $this->goldUnit;
