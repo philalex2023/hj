@@ -9,7 +9,7 @@ Trait EsTrait
     public function esClient(): \Elasticsearch\Client
     {
         return ClientBuilder::create()
-            //->setHosts([env('ELASTICSEARCH_HOST')])
+            ->setHosts([env('ELASTICSEARCH_HOST')])
             ->build();
     }
 }

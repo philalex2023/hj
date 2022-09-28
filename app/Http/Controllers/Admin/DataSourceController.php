@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\DataSource;
+use App\Models\Video;
 use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
 use App\TraitClass\EsTrait;
@@ -171,35 +172,90 @@ class DataSourceController extends BaseCurlController
 
     public function beforeSaveEvent($model, $id = '')
     {
-        $model->tag = $this->rq->input('tags',[]);
-        if(!empty($model->tag)){
-            $tagName = [];
-            foreach ($model->tag as $v){
-                $tagName[] = $this->tags[$v]['name'];
-            }
-            $model->data_value = implode(',',$tagName);
+        $tagIds = $this->rq->input('tags',[]);
+        $dataType = $this->rq->input('data_type',0);
+        $dataValue = $this->rq->input('data_value','');
+        $model->tag = json_encode([]);
+        switch ($dataType){
+            case 1: //标签
+                if(!empty($tagIds)){
+                    $tagName = [];
+                    foreach ($tagIds as $v){
+                        $tagName[] = $this->tags[$v]['name'];
+                    }
+                    $model->data_value = implode(',',$tagName);
+                    $model->tag = json_encode($tagIds);
+                    //
+                    $videoIds = [];
+                    DB::table('video')->where('status',1)->chunkById(100,function ($items) use ($tagIds,&$videoIds,$model){
+                        foreach ($items as $item){
+                            $jsonArr = json_decode($item->tag,true);
+                            $intersect = array_intersect($jsonArr,$tagIds); //交集
+                            if(!empty($intersect)){
+                                $videoIds[] = $item->id;
+                            }
+                        }
+                    });
+                    $model->contain_vids = implode(',',$videoIds);
+                }
+                break;
+            case 2: //关键字
+                if(!empty($dataValue)){
+                    $videoIds = [];
+                    $es = $this->esClient();
+                    $searchParams = [
+                        'index' => 'video_index',
+                        'body' => [
+                            'size' => 10,
+//                            '_source' => ['id','name'],
+                            '_source' => false,
+                            'query' => [
+                                'bool'=>[
+                                    'must' => [
+                                        'match' => ['name'=>$dataValue]
+                                    ]
+                                ]
+                            ],
+                        ],
+                    ];
+                    $response = $es->search($searchParams);
+                    $searchGet = $response['hits']['hits'];
+                    //dd($searchGet);
+                    //$items = Video::query()->where('status',1)->where('name','like',$dataValue.'%')->get(['id','name']);
+                    foreach ($searchGet as $item){
+                        dump($item->name);
+                    }
+                    dd($videoIds);
+                    $model->contain_vids = implode(',',$videoIds);
+                }
+                break;
+            case 3: //分类
+
+                break;
+            case 4: //最新上架
+                break;
+            case 5: //自定义
+                break;
+
         }
-        $model->tag = json_encode($model->tag);
+
     }
 
-    protected function afterSaveSuccessEvent($model, $id = '')
+    /*protected function afterSaveSuccessEvent($model, $id = '')
     {
         switch ($model->data_type){
-            case 1://标签
+            case 1: //标签
                 $tagIds = $this->rq->input('tags',[]);
-                $videos = DB::table('video')
-//                    ->whereRaw('JSON_CONTAINS(JSON_EXTRACT(cat,"$.*","$[*]"),?)',['["'.$moveCatId.'"]'])
-                    ->where('status',1)
-                    ->whereRaw('JSON_CONTAINS(JSON_EXTRACT(tag,"$.*","$[*]"),?)',['['.implode(',',$tagIds).']'])
-                    ->get(['id','tag']);
-                dump($videos);
+
+                break;
+            case 2: //关键字
+                Video::search($model->data_value)->where('status',1)->get();
                 break;
         }
         //在ES中创建/更新索引
         //$es = $this->esClient();
-
         return $model;
-    }
+    }*/
     //表单验证
    /* public function checkRule($id = '')
     {

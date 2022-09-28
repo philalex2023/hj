@@ -164,11 +164,11 @@ class VideoController extends Controller
         $user = $request->user();
         $code = $user->promotion_code ?? null;
         if (!empty($code)) {
-            $domainArr = Domain::query()
+            $domainArr = array_column(Domain::query()
                 ->where('status', 1)
                 ->where('type', '<', 2)
-                ->get(['id', 'name'])->toArray();
-            if(!isset($domainArr[0])){
+                ->get(['id','name'])->all(),null,'id');
+            if(!isset($domainArr[1])){
                 return response()->json([
                     'state' => -1,
                     'msg' => "请配置渠道推广域名",
