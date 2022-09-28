@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\DataSource;
 use App\Models\Tag;
 use App\Models\Topic;
 use App\TraitClass\CatTrait;
@@ -20,12 +21,20 @@ class TopicController extends BaseCurlController
 
     public array $showTypes=[];
 
+    public array $dataSource=[];
+
     public function setModel(): Topic
     {
         $this->cats = $this->getCatNavData();
         $this->tags = $this->getTagData();
         $this->showTypes = $this->getAppModuleShowType();
+        $this->dataSource = $this->getDataSource();
         return $this->model = new Topic();
+    }
+
+    public function getDataSource(): array
+    {
+        return array_column(DataSource::query()->get(['id','name'])->all(),null,'id');
     }
 
     public function indexCols()
@@ -102,6 +111,12 @@ class TopicController extends BaseCurlController
 
     }
 
+    public function beforeSaveEvent($model, $id = '')
+    {
+        $model->tag = json_encode($this->rq->input('tags',[]));
+        $model->data_source = json_encode($this->rq->input('source',[]));
+    }
+
     public function setOutputUiCreateEditForm($show = '')
     {
         $data = [
@@ -121,24 +136,26 @@ class TopicController extends BaseCurlController
                 'verify' => 'rq',
                 'data' => $this->cats
             ],
-            /*[
-                'field' => 'tag',
+            [
+                'field' => 'tags', //这里不要跟字段一样，在事件中处理
                 'type' => 'checkbox',
                 'name' => '标签',
                 'value' => ($show && ($show->tag)) ? json_decode($show->tag,true) : [],
                 'data' => $this->tags
-            ],*/
+            ],
             [
                 'field' => 'show_type',
                 'type' => 'select',
                 'name' => '展示样式',
+                'default' => 6,
                 'data' => $this->showTypes
             ],
             [
-                'field' => 'show_type',
+                'field' => 'source',
                 'type' => 'checkbox',
                 'name' => '数据源',
-                'data' => []
+                'value' => ($show && ($show->data_source)) ? json_decode($show->data_source,true) : [],
+                'data' => $this->dataSource
             ],
             [
                 'field' => 'sort',
@@ -179,7 +196,11 @@ class TopicController extends BaseCurlController
     }*/
     public function setListOutputItemExtend($item)
     {
-        //$item->cid = $this->get;
+        $tagArr = json_decode($item->tag,true)??[];
+        $dataSourceArr = json_decode($item->data_source,true)??[];
+        $item->tag = $this->transferJsonFieldName($this->tags,$tagArr);
+        $item->data_source = $this->transferJsonFieldName($this->dataSource,$dataSourceArr);
+        $item->show_type = $this->showTypes[$item->show_type]['name'];
         return $item;
     }
 

@@ -3,12 +3,25 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\DataSource;
+use App\TraitClass\CatTrait;
+use App\TraitClass\CommTrait;
+use App\TraitClass\TagTrait;
 
 
 class DataSourceController extends BaseCurlController
 {
+    use CatTrait,TagTrait,CommTrait;
 
     public $pageName = '数据源';
+
+    public array $cats=[];
+
+    public array $tags=[];
+
+    public array $deviceType=[
+        0 => ['id'=>0,'name'=>'横版'],
+        1 => ['id'=>1,'name'=>'竖版'],
+    ];
 
     public array $dataType = [
         1 => ['id'=>1,'name'=>'标签'],
@@ -20,6 +33,8 @@ class DataSourceController extends BaseCurlController
 
     public function setModel(): DataSource
     {
+        $this->cats = $this->getCatNavData();
+        $this->tags = $this->getTagData();
         return $this->model = new DataSource();
     }
 
@@ -58,6 +73,12 @@ class DataSourceController extends BaseCurlController
                 'field' => 'data_value',
                 'minWidth' => 150,
                 'title' => '数据值',
+                'align' => 'center',
+            ],
+            [
+                'field' => 'show_num',
+                'minWidth' => 150,
+                'title' => '首页展示量',
                 'align' => 'center',
             ],
             [
@@ -100,10 +121,7 @@ class DataSourceController extends BaseCurlController
                 'name' => '视频类型',
                 'must' => 1,
                 'verify' => 'rq',
-                'data' => [
-                    0 => ['id'=>0,'name'=>'横版'],
-                    1 => ['id'=>1,'name'=>'竖版'],
-                ]
+                'data' => $this->deviceType
             ],
             [
                 'field' => 'data_type',
@@ -115,6 +133,21 @@ class DataSourceController extends BaseCurlController
                 'field' => 'data_value',
                 'type' => 'text',
                 'name' => '数据值',
+            ],
+            [
+                'field' => 'cid',
+                'type' => 'select',
+                'name' => '分类',
+                'must' => 0,
+                'verify' => '',
+                'data' => $this->cats
+            ],
+            [
+                'field' => 'tags',
+                'type' => 'checkbox',
+                'name' => '标签',
+                'value' => ($show && ($show->tag)) ? json_decode($show->tag,true) : [],
+                'data' => $this->tags
             ],
             /*[
                 'field' => 'sort',
@@ -134,6 +167,24 @@ class DataSourceController extends BaseCurlController
         $this->uiBlade['form'] = $data;
     }
 
+    public function beforeSaveEvent($model, $id = '')
+    {
+        $model->tag = $this->rq->input('tags',[]);
+        if(!empty($model->tag)){
+            $tagName = [];
+            foreach ($model->tag as $v){
+                $tagName[] = $this->tags[$v]['name'];
+            }
+            $model->data_value = implode(',',$tagName);
+        }
+        $model->tag = json_encode($model->tag);
+    }
+
+    protected function afterSaveSuccessEvent($model, $id = '')
+    {
+
+        return $model;
+    }
     //表单验证
    /* public function checkRule($id = '')
     {
@@ -153,9 +204,15 @@ class DataSourceController extends BaseCurlController
             'name'=>'标签名称',
         ];
     }*/
+
     public function setListOutputItemExtend($item)
     {
-        //$item->cid = $this->get;
+        $item->video_type = $this->deviceType[$item->video_type]['name'];
+        $item->data_type = $this->dataType[$item->data_type]['name'];
+        $item->show_num = match ($item->show_num){
+            0 => '-',
+            default => $item->show_num,
+        };
         return $item;
     }
 

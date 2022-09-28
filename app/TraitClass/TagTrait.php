@@ -7,12 +7,21 @@ use App\Models\Tag;
 trait TagTrait
 {
 
-    public function getTagData($usage = 1)
+    public function getTagData(): array
     {
-        return Tag::query()->where('usage',$usage)->get(['id','name'])->toArray();
+        return array_column(Tag::query()->get(['id','name'])->all(),null,'id');
     }
 
-    public function getTagName($tag)
+    public function transferJsonFieldName($data,$jsonArr): string
+    {
+        $name = [];
+        foreach ($jsonArr as $v){
+            $name[] = $data[$v]['name'];
+        }
+        return implode(',',$name);
+    }
+
+    public function getTagName($tag): string
     {
         $tagArr = !is_array($tag) ? (array)json_decode($tag, true) : $tag;
         $name = '';
