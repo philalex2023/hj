@@ -206,7 +206,7 @@ class DataSourceController extends BaseCurlController
                     $searchParams = [
                         'index' => 'video_index',
                         'body' => [
-                            'size' => 10,
+                            'size' => 100000,
 //                            '_source' => ['id','name'],
                             '_source' => false,
                             'query' => [
@@ -219,14 +219,15 @@ class DataSourceController extends BaseCurlController
                         ],
                     ];
                     $response = $es->search($searchParams);
-                    $searchGet = $response['hits']['hits'];
-                    //dd($searchGet);
-                    //$items = Video::query()->where('status',1)->where('name','like',$dataValue.'%')->get(['id','name']);
-                    foreach ($searchGet as $item){
-                        dump($item->name);
+                    if(isset($response['hits']) && isset($response['hits']['hits'])){
+                        $searchGet = $response['hits']['hits'];
+                        foreach ($searchGet as $item){
+                            $videoIds[] = $item['_id'];
+                        }
+                        //dd($videoIds);
+                        $model->contain_vids = implode(',',$videoIds);
                     }
-                    dd($videoIds);
-                    $model->contain_vids = implode(',',$videoIds);
+
                 }
                 break;
             case 3: //分类
