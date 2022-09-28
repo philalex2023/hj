@@ -168,7 +168,7 @@ class VideoController extends Controller
                 ->where('status', 1)
                 ->where('type', '<', 2)
                 ->get(['id','name'])->all(),null,'id');
-            if(!isset($domainArr[1])){
+            if(empty($domainArr)){
                 return response()->json([
                     'state' => -1,
                     'msg' => "请配置渠道推广域名",
