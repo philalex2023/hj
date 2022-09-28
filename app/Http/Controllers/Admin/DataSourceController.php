@@ -175,6 +175,7 @@ class DataSourceController extends BaseCurlController
         $tagIds = $this->rq->input('tags',[]);
         $dataType = $this->rq->input('data_type',0);
         $dataValue = $this->rq->input('data_value','');
+        $cid = $this->rq->input('cid',0);
         $model->tag = json_encode([]);
         switch ($dataType){
             case 1: //标签
@@ -206,13 +207,14 @@ class DataSourceController extends BaseCurlController
                     $searchParams = [
                         'index' => 'video_index',
                         'body' => [
-                            'size' => 100000,
+                            'size' => 10000,
 //                            '_source' => ['id','name'],
                             '_source' => false,
                             'query' => [
                                 'bool'=>[
                                     'must' => [
-                                        'match' => ['name'=>$dataValue]
+                                        'match' => ['name'=>$dataValue],
+                                        'term' => ['status'=>1],
                                     ]
                                 ]
                             ],
@@ -231,11 +233,23 @@ class DataSourceController extends BaseCurlController
                 }
                 break;
             case 3: //分类
-
+                if($cid>0){
+                    $videoIds = DB::table('video')->where('status',1)->where('cid',$cid)->pluck('id')->all();
+                    //dd($videoIds);
+                    $model->data_value = $this->cats[$cid]['name'];
+                    $model->contain_vids = implode(',',$videoIds);
+                }
                 break;
             case 4: //最新上架
+                $model->data_value = '最新';
+                $videoIds = DB::table('video')->where('status',1)->orderByDesc('updated_at')->take(64)->pluck('id')->all();
+                $model->contain_vids = implode(',',$videoIds);
                 break;
             case 5: //自定义
+                $videoIds = explode(',',$dataValue);
+                if(!empty($videoIds)){
+                    $model->contain_vids = $dataValue;
+                }
                 break;
 
         }
