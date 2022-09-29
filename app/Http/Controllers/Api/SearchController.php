@@ -227,7 +227,7 @@ class SearchController extends Controller
                 $catVideoList = [];
                 $total = 0;
                 if(isset($response['hits']) && isset($response['hits']['hits'])){
-                    $total = $response['hits']['total'];
+                    //$total = $response['hits']['total'];
                     foreach ($response['hits']['hits'] as $item) {
                         $catVideoList[] = $item['_source'];
                     }
