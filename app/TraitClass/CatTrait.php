@@ -59,7 +59,7 @@ trait CatTrait
     public function getCatName($cat,$parentId =2)
     {
         $topCat = $this->getCats($parentId);
-        $catArr = json_decode($cat, true);
+        $catArr = json_decode($cat, true)??[];
         $name = '';
         $characters = '|';
         foreach ($topCat as $item)
