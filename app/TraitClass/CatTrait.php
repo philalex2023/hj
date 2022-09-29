@@ -64,8 +64,10 @@ trait CatTrait
         $characters = '|';
         foreach ($topCat as $item)
         {
-            if(in_array($item['id'],$catArr)){
+            if(!empty($catArr) && in_array($item['id'],$catArr)){
                 $name .= $item['name'].$characters;
+            }else{
+                $name = '';
             }
         }
         return rtrim($name,$characters);

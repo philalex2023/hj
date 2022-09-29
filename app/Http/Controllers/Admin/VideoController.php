@@ -60,19 +60,19 @@ class VideoController extends BaseCurlController
                 'fixed' => 'left',
                 'align' => 'center'
             ],
-            /*[
+            [
                 'field' => 'category_name',
                 'width' => 150,
                 'title' => '分类',
                 'align' => 'center',
                 'edit' => 1
-            ],*/
-            [
+            ],
+            /*[
                 'field' => 'category_name',
                 'width' => 150,
                 'title' => '版块',
                 'align' => 'center',
-            ],
+            ],*/
             [
                 'field' => 'tag_name',
                 'minWidth' => 100,
