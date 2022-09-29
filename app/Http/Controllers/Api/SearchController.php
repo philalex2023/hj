@@ -232,6 +232,7 @@ class SearchController extends Controller
                         $catVideoList[] = $item['_source'];
                     }
                 }
+                $res['total'] = $total;
                 $hasMorePages = $total >= $perPage*$page;
                 /*$catVideoList = Video::search((string)$cid)->where('status',1)->simplePaginate(10000,'catVideo',1)->toArray()['data'];
                 foreach ($catVideoList as &$item){
