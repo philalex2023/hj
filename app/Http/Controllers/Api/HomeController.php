@@ -9,6 +9,7 @@ use App\Models\Category;
 use App\Models\Video;
 use App\TraitClass\AdTrait;
 use App\TraitClass\ApiParamsTrait;
+use App\TraitClass\EsTrait;
 use App\TraitClass\GoldTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PHPRedisTrait;
@@ -22,7 +23,7 @@ use Illuminate\Validation\ValidationException;
 
 class HomeController extends Controller
 {
-    use PHPRedisTrait, GoldTrait, VideoTrait, AdTrait, MemberCardTrait,ApiParamsTrait;
+    use PHPRedisTrait, GoldTrait, VideoTrait, AdTrait, MemberCardTrait,ApiParamsTrait,EsTrait;
 
     public function category(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -107,6 +108,7 @@ class HomeController extends Controller
                 //二级分类列表
                 $res = $redis->get($sectionKey);
                 $res = json_decode($res,true);
+                $res = false;
                 if(!$res){
                     $lock = Cache::lock('homeLists_lock');
                     if(!$lock->get()){
@@ -125,8 +127,31 @@ class HomeController extends Controller
                         $topic['title'] = '';
                         $ids = explode(',',$topic['contain_vids']);
                         //Log::info('index_list',$ids);
-                        $videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
-                        $videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
+                        $searchParams = [
+                            'index' => 'video_index',
+                            'body' => [
+                                'size' => 8,
+                                '_source' => ['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
+//                                '_source' => false,
+                                'query' => [
+                                    'bool'=>[
+                                        'must' => [
+                                            'terms' => ['id'=>$ids],
+                                        ]
+                                    ]
+                                ],
+                            ],
+                        ];
+                        $es = $this->esClient();
+                        $response = $es->search($searchParams);
+                        $videoList = [];
+                        if(isset($response['hits']) && isset($response['hits']['hits'])){
+                            foreach ($response['hits']['hits'] as $item) {
+                                $videoList[] = $item['_source'];
+                            }
+                        }
+                        //$videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
+                        //$videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
                         $topic['small_video_list'] = $videoList;
                         unset($topic['contain_vids']);
                     }
