@@ -206,7 +206,7 @@ class SearchController extends Controller
                 $perPage = 16;
                 $offset = ($page-1)*$perPage;
 
-                $ids = DB::table('topic')->where('id',$cid)->value('contain_vids');
+                $ids = explode(',',DB::table('topic')->where('id',$cid)->value('contain_vids'));
                 $searchParams = [
                     'index' => 'video_index',
                     'body' => [
@@ -225,11 +225,15 @@ class SearchController extends Controller
                 $es = $this->esClient();
                 $response = $es->search($searchParams);
                 $catVideoList = [];
+                $total = 0;
                 if(isset($response['hits']) && isset($response['hits']['hits'])){
+                    $total = $response['hits']['total'];
                     foreach ($response['hits']['hits'] as $item) {
                         $catVideoList[] = $item['_source'];
                     }
                 }
+                $res['total'] = $total;
+                $hasMorePages = $total >= $perPage*$page;
                 /*$catVideoList = Video::search((string)$cid)->where('status',1)->simplePaginate(10000,'catVideo',1)->toArray()['data'];
                 foreach ($catVideoList as &$item){
                     $item['updated_time'] = strtotime($item['updated_at']);
@@ -240,11 +244,12 @@ class SearchController extends Controller
 
 
 
-                $pageLists = array_slice($catVideoList,$offset,$perPage);
-                $hasMorePages = count($catVideoList) > $perPage*$page;
+//                $pageLists = array_slice($catVideoList,$offset,$perPage);
+//                $hasMorePages = count($catVideoList) > $perPage*$page;
 
                 if(!empty($catVideoList)){
-                    $res['list'] = $this->handleVideoItems($pageLists,false,$user->id);
+                    $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
+//                    $res['list'] = $this->handleVideoItems($pageLists,false,$user->id);
                     //广告
                     $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
                     //Log::info('==CatList==',$res['list']);
