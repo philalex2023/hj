@@ -110,7 +110,7 @@ class HomeController extends Controller
                 $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')
                     ->simplePaginate($perPage,['contain_vids'],'homeContent',$page);
                 $res['hasMorePages'] = $paginator->hasMorePages();
-                $topics = $paginator->toArray()['data'];
+                $topics = $paginator->items();
                 foreach ($topics as &$topic){
                     $topic['small_video_list'] = [];
                     //获取专题数据
