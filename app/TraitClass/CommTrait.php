@@ -104,7 +104,7 @@ trait CommTrait
 
     public function resetHomeRedisData(): void
     {
-        $homeCats = $this->resetHomeCategory();
+        /*$homeCats = $this->resetHomeCategory();
         $redis = $this->redis();
 
         foreach ($homeCats as $homeCat){
@@ -144,7 +144,7 @@ trait CommTrait
                 ++$page;
 
             } while ($data['hasMorePages']);
-        }
+        }*/
         //Cache::put('updateHomePage',1);
     }
 

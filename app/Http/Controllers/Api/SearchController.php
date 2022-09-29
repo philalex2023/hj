@@ -12,6 +12,7 @@ use App\Models\Tag;
 use App\Models\Video;
 use App\TraitClass\AdTrait;
 use App\TraitClass\ApiParamsTrait;
+use App\TraitClass\EsTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
 use Elasticsearch\ClientBuilder;
@@ -24,7 +25,7 @@ use Illuminate\Support\Facades\Validator;
 
 class SearchController extends Controller
 {
-    use VideoTrait,PHPRedisTrait,AdTrait,ApiParamsTrait;
+    use VideoTrait,PHPRedisTrait,AdTrait,ApiParamsTrait,EsTrait;
 
     /**
      * 搜索功能
@@ -203,13 +204,42 @@ class SearchController extends Controller
                 $cid = $validated['cid'];
                 $page = $validated['page'];
                 $perPage = 16;
-                $catVideoList = Video::search((string)$cid)->where('status',1)->simplePaginate(10000,'catVideo',1)->toArray()['data'];
+                $offset = ($page-1)*$perPage;
+
+                $ids = DB::table('topic')->where('id',$cid)->value('contain_vids');
+                $searchParams = [
+                    'index' => 'video_index',
+                    'body' => [
+                        'size' => $perPage,
+                        'from' => $offset,
+                        //'_source' => false,
+                        'query' => [
+                            'bool'=>[
+                                'must' => [
+                                    'terms' => ['id'=>$ids],
+                                ]
+                            ]
+                        ],
+                    ],
+                ];
+                $es = $this->esClient();
+                $response = $es->search($searchParams);
+                $catVideoList = [];
+                if(isset($response['hits']) && isset($response['hits']['hits'])){
+                    foreach ($response['hits']['hits'] as $item) {
+                        $catVideoList[] = $item['_source'];
+                    }
+                }
+                /*$catVideoList = Video::search((string)$cid)->where('status',1)->simplePaginate(10000,'catVideo',1)->toArray()['data'];
                 foreach ($catVideoList as &$item){
                     $item['updated_time'] = strtotime($item['updated_at']);
                 }
                 $updatedAt = array_column($catVideoList,'updated_time');
-                array_multisort($updatedAt,SORT_DESC,$catVideoList);
-                $offset = ($page-1)*$perPage;
+                array_multisort($updatedAt,SORT_DESC,$catVideoList);*/
+
+
+
+
                 $pageLists = array_slice($catVideoList,$offset,$perPage);
                 $hasMorePages = count($catVideoList) > $perPage*$page;
 
