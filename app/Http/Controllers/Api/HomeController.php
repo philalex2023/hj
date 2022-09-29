@@ -118,6 +118,7 @@ class HomeController extends Controller
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
+                   Log::info('index_list_topics',[$topics]);
                     foreach ($topics as &$topic){
                         $topic = (array)$topic;
 //                    $topic['small_video_list'] = [];
@@ -126,7 +127,7 @@ class HomeController extends Controller
                         $topic['style'] = $topic['show_type'];
                         $ids = explode(',',$topic['contain_vids']);
                         Log::info('index_list_str',[$topic['contain_vids']]);
-                        Log::info('index_list',$ids);
+
                         $searchParams = [
                             'index' => 'video_index',
                             'body' => [
