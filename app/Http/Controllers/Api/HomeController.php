@@ -112,6 +112,7 @@ class HomeController extends Controller
                 $res['hasMorePages'] = $paginator->hasMorePages();
                 $topics = $paginator->toArray()['data'];
                 foreach ($topics as &$topic){
+                    $topic = (array)$topic;
                     $topic['small_video_list'] = [];
                     //获取专题数据
                     $videoBuild = DB::table('video')->where('status',1)->whereIn('id',explode(',',$topic['contain_vids']));
