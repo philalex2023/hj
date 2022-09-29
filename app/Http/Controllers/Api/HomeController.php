@@ -118,7 +118,7 @@ class HomeController extends Controller
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
-                    Log::info('index_list_topics',[$topics]);
+                    //Log::info('index_list_topics',[$topics]);
                     foreach ($topics as &$topic){
                         $topic = (array)$topic;
                         $videoList = [];
