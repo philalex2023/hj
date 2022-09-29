@@ -62,12 +62,12 @@ trait CatTrait
         $catArr = json_decode($cat, true)??[];
         $name = '';
         $characters = '|';
-        foreach ($topCat as $item)
-        {
-            if(!empty($catArr) && in_array($item['id'],$catArr)){
-                $name .= $item['name'].$characters;
-            }else{
-                $name = '';
+        if(!empty($catArr)){
+            foreach ($topCat as $item)
+            {
+                if($catArr && in_array($item['id'],$catArr)){
+                    $name .= $item['name'].$characters;
+                }
             }
         }
         return rtrim($name,$characters);
