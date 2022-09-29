@@ -118,39 +118,42 @@ class HomeController extends Controller
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
-                   Log::info('index_list_topics',[$topics]);
+                    Log::info('index_list_topics',[$topics]);
                     foreach ($topics as &$topic){
                         $topic = (array)$topic;
-//                    $topic['small_video_list'] = [];
-                        //获取专题数据
-                        $topic['title'] = '';
-                        $topic['style'] = $topic['show_type'];
-                        $ids = explode(',',$topic['contain_vids']);
-                        Log::info('index_list_str',[$topic['contain_vids']]);
-
-                        $searchParams = [
-                            'index' => 'video_index',
-                            'body' => [
-                                'size' => 8,
-                                '_source' => ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
-//                                '_source' => false,
-                                'query' => [
-                                    'bool'=>[
-                                        'must' => [
-                                            'terms' => ['id'=>$ids],
-                                        ]
-                                    ]
-                                ],
-                            ],
-                        ];
-                        $es = $this->esClient();
-                        $response = $es->search($searchParams);
                         $videoList = [];
-                        if(isset($response['hits']) && isset($response['hits']['hits'])){
-                            foreach ($response['hits']['hits'] as $item) {
-                                $videoList[] = $item['_source'];
+                        if(!empty($topic)){
+                            //获取专题数据
+                            $topic['title'] = '';
+                            $topic['style'] = $topic['show_type'];
+                            $ids = explode(',',$topic['contain_vids']);
+                            Log::info('index_list_str',[$topic['contain_vids']]);
+
+                            $searchParams = [
+                                'index' => 'video_index',
+                                'body' => [
+                                    'size' => 8,
+                                    '_source' => ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
+//                                '_source' => false,
+                                    'query' => [
+                                        'bool'=>[
+                                            'must' => [
+                                                'terms' => ['id'=>$ids],
+                                            ]
+                                        ]
+                                    ],
+                                ],
+                            ];
+                            $es = $this->esClient();
+                            $response = $es->search($searchParams);
+                            if(isset($response['hits']) && isset($response['hits']['hits'])){
+                                foreach ($response['hits']['hits'] as $item) {
+                                    $videoList[] = $item['_source'];
+                                }
                             }
                         }
+
+
                         //$videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
                         //$videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
                         $topic['small_video_list'] = $videoList;
