@@ -32,6 +32,8 @@ class VideoController extends BaseCurlController
 
     public $pageName = '视频管理';
 
+    public array $cats=[];
+
     public array $video_source = [
         ''=>['id'=>'','name'=>'全部'],
         1=>['id'=>1,'name'=>'上传'],
@@ -42,6 +44,7 @@ class VideoController extends BaseCurlController
 
     public function setModel(): AdminVideo
     {
+        $this->cats = $this->getCatNavData();
         return $this->model = new AdminVideo();
     }
 
@@ -61,18 +64,18 @@ class VideoController extends BaseCurlController
                 'align' => 'center'
             ],
             [
-                'field' => 'category_name',
+                'field' => 'cid',
                 'width' => 150,
                 'title' => '分类',
                 'align' => 'center',
                 'edit' => 1
             ],
-            /*[
+            [
                 'field' => 'category_name',
                 'width' => 150,
                 'title' => '版块',
                 'align' => 'center',
-            ],*/
+            ],
             [
                 'field' => 'tag_name',
                 'minWidth' => 100,
@@ -402,12 +405,12 @@ class VideoController extends BaseCurlController
 
     public function setListOutputItemExtend($item)
     {
+        $item->cid = $this->cats[$item->cid]['name'];
         $item->category_name = $this->getCatName($item->cat);
         $item->tag_name = $this->getTagName($item->tag_kv??[]);
         $item->status = UiService::switchTpl('status', $item,'','上架|下架');
         $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
         $item->type = $item->type==0 ? '' : $this->video_source[$item->type]['name'];
-
         $item->dev_type = match ($item->dev_type){
             1 => '竖屏',
             default => '横屏'
