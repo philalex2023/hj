@@ -102,18 +102,18 @@ class HomeController extends Controller
                 $perPage = 4;
                 $page = $validated['page'];
 
-                /*$redis = $this->redis();
+                $redis = $this->redis();
                 $sectionKey = 'homeLists_'.$cid.'-'.$page;
 
                 //二级分类列表
                 $res = $redis->get($sectionKey);
-                $res = json_decode($res,true);*/
-//                if(!$res){
-                    /*$lock = Cache::lock('homeLists_lock');
+                $res = json_decode($res,true);
+                if(!$res){
+                    $lock = Cache::lock('homeLists_lock');
                     if(!$lock->get()){
                         Log::info('index_list',[$sectionKey]);
                         return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
-                    }*/
+                    }
 
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
@@ -162,9 +162,9 @@ class HomeController extends Controller
                     //广告
                     $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
                     $res['list'] = $topics;
-                    //$redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
-                    //$lock->release();
-//                }
+                    $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
+                    $lock->release();
+                }
 
                 if(isset($res['list'])){
                     $domain = env('RESOURCE_DOMAIN2');
