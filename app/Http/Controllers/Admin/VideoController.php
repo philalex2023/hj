@@ -405,7 +405,7 @@ class VideoController extends BaseCurlController
 
     public function setListOutputItemExtend($item)
     {
-        $item->cid = $this->cats[$item->cid]['name'];
+        $item->cid = $item->cid==0? '-' : $this->cats[$item->cid]['name'];
         $item->category_name = $this->getCatName($item->cat);
         $item->tag_name = $this->getTagName($item->tag_kv??[]);
         $item->status = UiService::switchTpl('status', $item,'','上架|下架');
