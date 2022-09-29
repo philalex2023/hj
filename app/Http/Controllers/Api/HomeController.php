@@ -108,13 +108,14 @@ class HomeController extends Controller
                 /*$res = $redis->get($sectionKey);
                 $res = json_decode($res,true);*/
                 $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')
-                    ->simplePaginate($perPage,['id','name','title','contain_vids'],'homeContent',$page);
+                    ->simplePaginate($perPage,['id','name','contain_vids'],'homeContent',$page);
                 $res['hasMorePages'] = $paginator->hasMorePages();
                 $topics = $paginator->toArray()['data'];
                 foreach ($topics as &$topic){
                     $topic = (array)$topic;
 //                    $topic['small_video_list'] = [];
                     //获取专题数据
+                    $topic['title'] = '';
                     $ids = explode(',',$topic['contain_vids']);
                     Log::info('index_list',$ids);
                     $videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
