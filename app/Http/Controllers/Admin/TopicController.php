@@ -26,7 +26,7 @@ class TopicController extends BaseCurlController
 
     public function setModel(): Topic
     {
-        $this->cats = $this->getCatNavData();
+        $this->cats = $this->getCatNavData()+[10000=>['id'=>10000,'name'=>'短视频']];
         $this->tags = $this->getTagData();
         $this->showTypes = $this->getAppModuleShowType();
         $this->dataSource = $this->getDataSource();
