@@ -43,12 +43,13 @@ class MoveTopic extends Command
      */
     public function handle(): int
     {
-        $topCat = DB::table('categories')
-            ->where('parent_id',2)
-            ->where('is_checked',1)
-            ->orderBy('sort')
-            ->pluck('id');
-        foreach ($topCat as $cat){
+//        $topCat = DB::table('categories')
+//            ->where('parent_id',2)
+//            ->where('is_checked',1)
+//            ->orderBy('sort')
+//            ->pluck('id');
+//        foreach ($topCat as $cat){
+            $cat = 10000; //短视频
             $topics = DB::table('categories')
                 ->where('parent_id',$cat)
                 ->where('is_checked',1)
@@ -66,7 +67,7 @@ class MoveTopic extends Command
                     'updated_at' => date('Y-m-d H:i:s'),
                 ]);
             }
-        }
+//        }
 
         //$bar = $this->output->createProgressBar(count($Items));
         //$bar->start();
