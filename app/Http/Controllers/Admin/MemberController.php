@@ -598,6 +598,20 @@ class MemberController extends BaseCurlController
 
     }
 
+    /**
+     * 可以通过此方法删除数据之前先获取数据存储备用
+     * @param $model
+     * @param array $ids
+     */
+    public function deleteGetData($model, array $ids)
+    {
+        $didArr = $model->whereIn('id',$ids)->pluck('did');
+        $accountRedis = $this->redis('account');
+        foreach ($didArr as $did) {
+            $accountRedis->sRem('account_did',$did);
+        }
+    }
+
     //弹窗大小
     public function layuiOpenWidth()
     {
