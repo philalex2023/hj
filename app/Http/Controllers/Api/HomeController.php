@@ -115,8 +115,7 @@ class HomeController extends Controller
                         return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
                     }*/
 
-                    $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')
-                        ->simplePaginate($perPage,['id','name','contain_vids'],'homeContent',$page);
+                    $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
                     foreach ($topics as &$topic){
