@@ -242,8 +242,6 @@ class SearchController extends Controller
                 array_multisort($updatedAt,SORT_DESC,$catVideoList);*/
 
 
-
-
 //                $pageLists = array_slice($catVideoList,$offset,$perPage);
 //                $hasMorePages = count($catVideoList) > $perPage*$page;
 
