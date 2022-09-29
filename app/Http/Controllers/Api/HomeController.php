@@ -131,7 +131,7 @@ class HomeController extends Controller
                             'index' => 'video_index',
                             'body' => [
                                 'size' => 8,
-                                '_source' => ['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
+                                '_source' => ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
 //                                '_source' => false,
                                 'query' => [
                                     'bool'=>[
