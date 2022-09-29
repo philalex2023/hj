@@ -124,7 +124,7 @@ class HomeController extends Controller
                         //获取专题数据
                         $topic['title'] = '';
                         $ids = explode(',',$topic['contain_vids']);
-                        //Log::info('index_list',$ids);
+                        Log::info('index_list',$ids);
                         $searchParams = [
                             'index' => 'video_index',
                             'body' => [
