@@ -122,7 +122,7 @@ class HomeController extends Controller
                     foreach ($topics as &$topic){
                         $topic = (array)$topic;
                         $videoList = [];
-                        if(!empty($topic)){
+                        if(!empty($topic['contain_vids'])){
                             //获取专题数据
                             $topic['title'] = '';
                             $topic['style'] = $topic['show_type'];
