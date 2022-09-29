@@ -36,7 +36,7 @@ class DataSourceController extends BaseCurlController
 
     public function setModel(): DataSource
     {
-        $this->cats = $this->getCatNavData();
+        $this->cats = $this->getCatNavData()+[10000=>['id'=>10000,'name'=>'短视频']];
         $this->tags = $this->getTagData();
         return $this->model = new DataSource();
     }
