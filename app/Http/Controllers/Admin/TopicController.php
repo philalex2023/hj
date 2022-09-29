@@ -225,7 +225,7 @@ class TopicController extends BaseCurlController
         $item->data_source = $this->transferJsonFieldName($this->dataSource,$dataSourceArr);
         $item->show_type = $this->showTypes[$item->show_type]['name'];
         //$item->cid = $this->cats[$item->cid]['name'];
-        $item->cid = $item->cid==0? '-' : $this->cats[$item->cid]['name'];
+        $item->cid = !isset($this->cats[$item->cid])? '-' : $this->cats[$item->cid]['name'];
         return $item;
     }
 
