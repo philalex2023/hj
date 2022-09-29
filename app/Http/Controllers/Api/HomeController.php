@@ -108,16 +108,19 @@ class HomeController extends Controller
                 /*$res = $redis->get($sectionKey);
                 $res = json_decode($res,true);*/
                 $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')
-                    ->simplePaginate($perPage,['contain_vids'],'homeContent',$page);
+                    ->simplePaginate($perPage,['id','name','title','contain_vids'],'homeContent',$page);
                 $res['hasMorePages'] = $paginator->hasMorePages();
                 $topics = $paginator->toArray()['data'];
                 foreach ($topics as &$topic){
                     $topic = (array)$topic;
-                    $topic['small_video_list'] = [];
+//                    $topic['small_video_list'] = [];
                     //获取专题数据
-                    $videoBuild = DB::table('video')->where('status',1)->whereIn('id',explode(',',$topic['contain_vids']));
+                    $ids = explode(',',$topic['contain_vids']);
+                    Log::info('index_list',$ids);
+                    $videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
                     $videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
                     $topic['small_video_list'] = $videoList;
+                    unset($topic['contain_vids']);
                 }
                 //广告
                 $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
