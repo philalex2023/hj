@@ -146,6 +146,7 @@ class AuthController extends Controller
         }else{ //第二次及以后登录
             $user = User::query()->where('did',$validated['did'])->where('status',1)->first($this->loginUserFields);
             if(!$user){
+                Log::info('Login',['login_type:'.$loginType,'did:'.$validated['did']]);
                 return response()->json(['state' => -1, 'msg' => '用户不存在或被禁用!']);
             }
         }
