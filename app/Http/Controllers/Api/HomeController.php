@@ -125,7 +125,7 @@ class HomeController extends Controller
                         $topic['title'] = '';
                         $topic['style'] = $topic['show_type'];
                         $ids = explode(',',$topic['contain_vids']);
-                        Log::info('index_list_str',$topic['contain_vids']);
+                        Log::info('index_list_str',[$topic['contain_vids']]);
                         Log::info('index_list',$ids);
                         $searchParams = [
                             'index' => 'video_index',
