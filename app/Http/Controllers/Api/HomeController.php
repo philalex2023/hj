@@ -105,27 +105,37 @@ class HomeController extends Controller
                 $sectionKey = 'homeLists_'.$cid.'-'.$page;
 
                 //二级分类列表
-                /*$res = $redis->get($sectionKey);
-                $res = json_decode($res,true);*/
-                $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')
-                    ->simplePaginate($perPage,['id','name','contain_vids'],'homeContent',$page);
-                $res['hasMorePages'] = $paginator->hasMorePages();
-                $topics = $paginator->items();
-                foreach ($topics as &$topic){
-                    $topic = (array)$topic;
+                $res = $redis->get($sectionKey);
+                $res = json_decode($res,true);
+                if(!$res){
+                    $lock = Cache::lock('homeLists_lock');
+                    if(!$lock->get()){
+                        Log::info('index_list',[$sectionKey]);
+                        return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
+                    }
+
+                    $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')
+                        ->simplePaginate($perPage,['id','name','contain_vids'],'homeContent',$page);
+                    $res['hasMorePages'] = $paginator->hasMorePages();
+                    $topics = $paginator->items();
+                    foreach ($topics as &$topic){
+                        $topic = (array)$topic;
 //                    $topic['small_video_list'] = [];
-                    //获取专题数据
-                    $topic['title'] = '';
-                    $ids = explode(',',$topic['contain_vids']);
-                    //Log::info('index_list',$ids);
-                    $videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
-                    $videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
-                    $topic['small_video_list'] = $videoList;
-                    unset($topic['contain_vids']);
+                        //获取专题数据
+                        $topic['title'] = '';
+                        $ids = explode(',',$topic['contain_vids']);
+                        //Log::info('index_list',$ids);
+                        $videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
+                        $videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
+                        $topic['small_video_list'] = $videoList;
+                        unset($topic['contain_vids']);
+                    }
+                    //广告
+                    $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
+                    $res['list'] = $topics;
+                    $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
+                    $lock->release();
                 }
-                //广告
-                $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
-                $res['list'] = $topics;
 
                 if(isset($res['list'])){
                     $domain = env('RESOURCE_DOMAIN2');
