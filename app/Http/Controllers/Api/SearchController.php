@@ -211,7 +211,7 @@ class SearchController extends Controller
                     'index' => 'video_index',
                     'body' => [
                         'size' => $perPage,
-                        'from' => $offset,
+//                        'from' => $offset,
                         //'_source' => false,
                         'query' => [
                             'bool'=>[
