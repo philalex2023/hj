@@ -98,13 +98,23 @@ class HomeController extends Controller
                     'page' => 'required|integer',
                 ])->validated();
                 $cid = $validated['cid'];
+                $perPage = 4;
                 $page = $validated['page'];
+
                 $redis = $this->redis();
                 $sectionKey = 'homeLists_'.$cid.'-'.$page;
 
                 //二级分类列表
                 $res = $redis->get($sectionKey);
                 $res = json_decode($res,true);
+                /*$paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')
+                    ->simplePaginate($perPage,['contain_vids'],'homeContent',$page);
+                $res['hasMorePages'] = $paginator->hasMorePages();
+                $topics = $paginator->items();
+                foreach ($topics as $topic){
+
+                }*/
+
                 if(isset($res['list'])){
                     $domain = env('RESOURCE_DOMAIN2');
                     foreach ($res['list'] as &$r){

@@ -421,11 +421,11 @@ class MemberController extends BaseCurlController
                 'value' => '',
                 'mark' => $show ? '不填表示不修改密码' : '',
             ],
-            [
+            /*[
                 'field' => 'did',
                 'type' => 'text',
                 'name' => '设备码',
-            ],
+            ],*/
         ];
         $this->uiBlade['form'] = $data;
     }
