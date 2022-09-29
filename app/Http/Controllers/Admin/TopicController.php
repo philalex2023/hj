@@ -8,6 +8,7 @@ use App\Models\Topic;
 use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
 use App\TraitClass\TagTrait;
+use Illuminate\Support\Facades\DB;
 
 class TopicController extends BaseCurlController
 {
@@ -37,7 +38,7 @@ class TopicController extends BaseCurlController
         return array_column(DataSource::query()->get(['id','name'])->all(),null,'id');
     }
 
-    public function indexCols()
+    public function indexCols(): array
     {
         return [
             /*[
@@ -113,8 +114,30 @@ class TopicController extends BaseCurlController
 
     public function beforeSaveEvent($model, $id = '')
     {
-        $model->tag = json_encode($this->rq->input('tags',[]));
-        $model->data_source = json_encode($this->rq->input('source',[]));
+        $tag = $this->rq->input('tags',[]);
+        $dataSource = $this->rq->input('source',[]);
+        $model->tag = json_encode($tag);
+        $model->data_source = json_encode($dataSource);
+        $videoIds = [];
+        if(!empty($tag)){
+            DB::table('video')->where('status',1)->chunkById(100,function ($items) use ($tag,&$videoIds,$model){
+                foreach ($items as $item){
+                    $jsonArr = json_decode($item->tag,true);
+                    $intersect = array_intersect($jsonArr,$tag); //交集
+                    if(!empty($intersect)){
+                        $videoIds[] = $item->id;
+                    }
+                }
+            });
+        }
+        if(!empty($dataSource)){
+            $dataSources = DB::table('data_source')->whereIn('id',$dataSource)->pluck('contain_vids')->all();
+            $idStr = implode('', $dataSources);
+            $videoIds = array_unique([...$videoIds,...explode(',',$idStr)]);
+        }
+        if(!empty($videoIds)){
+            $model->contain_vids = implode(',',$videoIds);
+        }
     }
 
     public function setOutputUiCreateEditForm($show = '')
@@ -147,7 +170,7 @@ class TopicController extends BaseCurlController
                 'field' => 'show_type',
                 'type' => 'select',
                 'name' => '展示样式',
-                'default' => 6,
+                'default' => 7,
                 'data' => $this->showTypes
             ],
             [
@@ -201,6 +224,7 @@ class TopicController extends BaseCurlController
         $item->tag = $this->transferJsonFieldName($this->tags,$tagArr);
         $item->data_source = $this->transferJsonFieldName($this->dataSource,$dataSourceArr);
         $item->show_type = $this->showTypes[$item->show_type]['name'];
+        $item->cid = $this->cats[$item->cid]['name'];
         return $item;
     }
 
