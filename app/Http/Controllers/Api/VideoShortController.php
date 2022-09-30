@@ -350,16 +350,21 @@ class VideoShortController extends Controller
                     'bool'=>[
                         'must' => [
                             ['terms' => ['id'=>$ids]],
-//                                        ['term' => ['status'=>1]],
-                            ['term' => ['cid'=>['value'=>10000]]],
+                            ['term' => ['cid'=>10000]],
                         ]
                     ]
                 ];
 
                 if (!empty($words)) {
                     $query = [
-                        'match'=>[
+                        /*'match'=>[
                             'name' => $words
+                        ],*/
+                        'bool'=>[
+                            'must' => [
+                                ['match'=>['name' => $words],],
+                                ['term' => ['cid'=>10000]],
+                            ]
                         ]
                     ];
                 }
