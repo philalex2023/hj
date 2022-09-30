@@ -332,11 +332,13 @@ class VideoShortController extends Controller
                     $tagId = "";
                     $starId = '0';
                 }
+                $total = 0;
                 $perPage = 8;
                 $offset = ($page-1)*$perPage;
                 $hasMorePages = false;
                 $ids = explode(',',DB::table('topic')->where('id',$cateId)->value('contain_vids'));
                 $catVideoList = [];
+                Log::info('==ShortListIds==',$ids);
                 if(!empty($ids)){
                     $searchParams = [
                         'index' => 'video_index',
@@ -355,7 +357,6 @@ class VideoShortController extends Controller
                     ];
                     $es = $this->esClient();
                     $response = $es->search($searchParams);
-                    $total = 0;
                     if(isset($response['hits']) && isset($response['hits']['hits'])){
                         $total = $response['hits']['total']['value'];
                         foreach ($response['hits']['hits'] as $item) {
