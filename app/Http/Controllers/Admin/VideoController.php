@@ -528,45 +528,14 @@ class VideoController extends BaseCurlController
     public function handleResultModel($model)
     {
         $cid = $this->rq->input('cid');
-        $cat = $this->rq->input('cat');
-        $tag = $this->rq->input('tag');
+        //$cat = $this->rq->input('cat');
+        //$tag = $this->rq->input('tag');
         $type = (int)$this->rq->input('type',0);
-        $page = $this->rq->input('page', 1);
-        $pagesize = $this->rq->input('limit', 30);
-        $order_by_name = $this->orderByName();
-        $order_by_type = $this->orderByType();
 
         $type>0 && $model=$model->where('type',$type);
-        $model = $this->orderBy($model, $order_by_name, $order_by_type);
+        $cid>0 && $model=$model->where('cid',$cid);
 
-
-        if(!$tag && !$cat && !$cid){
-            $total = $model->count();
-            $currentPageData = $model->forPage($page, $pagesize)->get();
-        }else{
-            $items = $model->get();
-            $resultTag = $this->getSearchCheckboxResult($items,$tag,'tag');
-            if($cid>0){
-                $cat = Category::query()->where('parent_id',$cid)->get('id')->pluck('id')->all();
-                $result = $this->getSearchCheckboxResult($resultTag,$cat,'cat');
-            }else{
-                if(!empty($resultTag)){
-                    $result = $this->getSearchCheckboxResult($resultTag,$cat,'cat');
-                }else{
-                    $result = $this->getSearchCheckboxResult($items,$cat,'cat');
-                }
-            }
-            $result = (array)$result ?? [];
-            $total = count($result);
-            //获取当前页数据
-            $offset = ($page-1)*$pagesize;
-            $currentPageData = array_slice($result,$offset,$pagesize);
-        }
-
-        return [
-            'total' => $total,
-            'result' => $currentPageData
-        ];
+        return parent::handleResultModel($model);
 
     }
 
