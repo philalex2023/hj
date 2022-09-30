@@ -168,7 +168,7 @@ class HomeController extends Controller
                     $res['list'] = $topics;
                     $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
                     $redis->expire($sectionKey,3600);
-                    $redis->set('homeLists_fresh',0);
+                    $redis->del('homeLists_fresh');
                     $lock->release();
                 }
 
