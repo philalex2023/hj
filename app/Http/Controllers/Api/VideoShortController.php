@@ -334,34 +334,37 @@ class VideoShortController extends Controller
                 }
                 $perPage = 8;
                 $offset = ($page-1)*$perPage;
+                $hasMorePages = false;
                 $ids = explode(',',DB::table('topic')->where('id',$cateId)->value('contain_vids'));
-                $searchParams = [
-                    'index' => 'video_index',
-                    'body' => [
-                        'size' => $perPage,
-                        'from' => $offset,
-                        //'_source' => false,
-                        'query' => [
-                            'bool'=>[
-                                'must' => [
-                                    'terms' => ['id'=>$ids],
-                                ]
-                            ]
-                        ],
-                    ],
-                ];
-                $es = $this->esClient();
-                $response = $es->search($searchParams);
                 $catVideoList = [];
-                $total = 0;
-                if(isset($response['hits']) && isset($response['hits']['hits'])){
-                    $total = $response['hits']['total']['value'];
-                    foreach ($response['hits']['hits'] as $item) {
-                        $catVideoList[] = $item['_source'];
+                if(!empty($ids)){
+                    $searchParams = [
+                        'index' => 'video_index',
+                        'body' => [
+                            'size' => $perPage,
+                            'from' => $offset,
+                            //'_source' => false,
+                            'query' => [
+                                'bool'=>[
+                                    'must' => [
+                                        'terms' => ['id'=>$ids],
+                                    ]
+                                ]
+                            ],
+                        ],
+                    ];
+                    $es = $this->esClient();
+                    $response = $es->search($searchParams);
+                    $total = 0;
+                    if(isset($response['hits']) && isset($response['hits']['hits'])){
+                        $total = $response['hits']['total']['value'];
+                        foreach ($response['hits']['hits'] as $item) {
+                            $catVideoList[] = $item['_source'];
+                        }
                     }
+                    $res['total'] = $total;
+                    $hasMorePages = $total >= $perPage*$page;
                 }
-                $res['total'] = $total;
-                $hasMorePages = $total >= $perPage*$page;
 
                 //Log::info('==ShortList==',$catVideoList);
                 if(!empty($catVideoList)){
