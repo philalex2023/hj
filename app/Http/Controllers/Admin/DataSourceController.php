@@ -213,14 +213,15 @@ class DataSourceController extends BaseCurlController
                 break;
             case 2: //关键字
                 if(!empty($dataValue)){
-                    $keywords = explode(',',$dataValue);
+                    //$keywords = explode(',',$dataValue);
                     $must = [
                         ['term' => ['status'=>1]],
-                        ['term' => ['dev_type'=>$videoType]]
+                        ['term' => ['dev_type'=>$videoType]],
+                        ['match' => ['name'=>$dataValue]]
                     ];
-                    foreach ($keywords as $keyword){
-                        $must[] = ['match' => ['name'=>$keyword]];
-                    }
+                    /*foreach ($keywords as $keyword){
+                        $must[] = ['match' => ['name'=>$dataValue]];
+                    }*/
                     $es = $this->esClient();
                     $searchParams = [
                         'index' => 'video_index',
