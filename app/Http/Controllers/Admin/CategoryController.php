@@ -72,7 +72,7 @@ class CategoryController extends BaseCurlController
                 'align' => 'center',
                 'hide'=>true
             ],
-            [
+            /*[
                 'field' => 'group_type',
                 'minWidth' => 100,
                 'title' => '版块类型',
@@ -98,7 +98,7 @@ class CategoryController extends BaseCurlController
                 'title' => '本地背景图',
                 'align' => 'center',
                 'hide'=>true
-            ],
+            ],*/
             [
                 'field' => 'path_level',
                 'minWidth' => 100,
@@ -113,12 +113,12 @@ class CategoryController extends BaseCurlController
                 'align' => 'center',
                 'hide'=>true
             ],
-            [
+            /*[
                 'field' => 'is_rand',
                 'minWidth' => 80,
                 'title' => '是否随机显示',
                 'align' => 'center'
-            ],
+            ],*/
             [
                 'field' => 'is_checked_html',
                 'minWidth' => 80,
