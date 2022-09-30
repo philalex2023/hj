@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Models\AdminVideo;
 use App\Models\ShortComment;
 use App\Models\VideoShort;
 use App\Services\UiService;
@@ -163,7 +164,7 @@ class ShortCommentController extends BaseCurlIndexController
                             if($commentItem->reply_cid>0){
                                 ShortComment::query()->where('id',$commentItem->reply_cid)->increment('replies');
                             }else{
-                                VideoShort::query()->where('id',$commentItem->vid)->increment('comments');
+                                AdminVideo::query()->where('id',$commentItem->vid)->increment('comments');
                             }
                             $updateIdArr[] = $commentId;
                         }
@@ -180,7 +181,7 @@ class ShortCommentController extends BaseCurlIndexController
                         if($commentItem->reply_cid>0){
                             ShortComment::query()->where('id',$commentItem->reply_cid)->increment('replies');
                         }else{
-                            VideoShort::query()->where('id',$commentItem->vid)->increment('comments');
+                            AdminVideo::query()->where('id',$commentItem->vid)->increment('comments');
                         }
                     }
                     $r = $this->editTableAddWhere()->whereIn($id, $id_arr)->update(['status' => $value]);

@@ -6,6 +6,7 @@ use App\Jobs\ProcessShort;
 use App\Jobs\ProcessSyncMiddleTagTable;
 use App\Jobs\ProcessVideoShort;
 use App\Jobs\ProcessVideoShortMod;
+use App\Models\AdminVideo;
 use App\Models\AdminVideoShort;
 use App\Models\Category;
 use App\Models\Video;
@@ -34,9 +35,9 @@ class ShortController extends BaseCurlController
         'short_rec'
     ];
 
-    public function setModel(): AdminVideoShort
+    public function setModel()
     {
-        return $this->model = new AdminVideoShort();
+        return $this->model = new AdminVideo();
     }
 
     public function indexCols(): array

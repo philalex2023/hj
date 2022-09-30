@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminVideo;
 use App\Models\AdminVideoShort;
 use App\Models\Category;
 use App\Models\Tag;
@@ -436,10 +437,10 @@ class VideoShortController extends Controller
             if ($is_love) {
                 $videoRedis->sAdd($shortLoveKey,$id);
                 $videoRedis->expire($shortLoveKey,7*24*3600);
-                VideoShort::query()->where('id', $id)->increment('likes');
+                AdminVideo::query()->where('id', $id)->increment('likes');
             } else {
                 $videoRedis->sRem($shortLoveKey,$id);
-                VideoShort::query()->where('id', $id)->decrement('likes');
+                AdminVideo::query()->where('id', $id)->decrement('likes');
             }
             return response()->json([
                 'state' => 0,
@@ -485,7 +486,7 @@ class VideoShortController extends Controller
         if ($isCollect) {
             $videoRedis->zAdd($shortCollectsKey,time(),$id);
             $videoRedis->expire($shortCollectsKey,7*24*3600);
-            VideoShort::query()->where('id', $id)->increment('favors');
+            AdminVideo::query()->where('id', $id)->increment('favors');
         } else {
             $videoRedis->zRem($shortCollectsKey,$id);
             VideoShort::query()->where('id', $id)->decrement('favors');
