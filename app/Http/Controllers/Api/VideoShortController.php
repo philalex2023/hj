@@ -334,14 +334,10 @@ class VideoShortController extends Controller
                 $page = $params['page'] ?? 1;
                 $cateId = $params['cate_id'] ?? "";
                 $tagId = $params['tag_id'] ?? "";
-                $starId = $validated['start_id'] ?? '0';
+//                $starId = $validated['start_id'] ?? '0';
                 //关键词搜索
                 $words = $params['keyword'] ?? '';
-                if (!empty($words)) {
-                    $cateId = "";
-                    $tagId = "";
-                    $starId = '0';
-                }
+
                 $tagId!="" && $cateId = $this->cateMapAlias[$tagId];
 
                 $total = 0;
@@ -350,6 +346,24 @@ class VideoShortController extends Controller
                 $hasMorePages = false;
                 $idStr = DB::table('topic')->where('id',$cateId)->value('contain_vids');
                 $ids = $idStr ? explode(',',$idStr) : [];
+                $query = [
+                    'bool'=>[
+                        'must' => [
+                            ['terms' => ['id'=>$ids]],
+//                                        ['term' => ['status'=>1]],
+                            ['term' => ['cid'=>['value'=>10000]]],
+                        ]
+                    ]
+                ];
+
+                if (!empty($words)) {
+                    $query = [
+                        'match'=>[
+                            'name' => $words
+                        ]
+                    ];
+                }
+
                 $catVideoList = [];
                 Log::info('==ShortListIds==',$ids);
                 if(!empty($ids)){
@@ -360,15 +374,7 @@ class VideoShortController extends Controller
                             'size' => $perPage,
                             'from' => $offset,
 //                            '_source' => [],
-                            'query' => [
-                                'bool'=>[
-                                    'must' => [
-                                        ['terms' => ['id'=>$ids]],
-//                                        ['term' => ['status'=>1]],
-                                        ['term' => ['cid'=>['value'=>10000]]],
-                                    ]
-                                ]
-                            ],
+                            'query' => $query,
                         ],
                     ];
                     $es = $this->esClient();
