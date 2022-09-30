@@ -79,7 +79,7 @@ class ShortController extends BaseCurlController
             [
                 'field' => 'gold',
                 'minWidth' => 100,
-                'title' => '所需骚豆',
+                'title' => '所需金币',
 //                'edit' => 1,
                 'sort' => 1,
                 'align' => 'center',
@@ -234,7 +234,7 @@ class ShortController extends BaseCurlController
             [
                 'field' => 'gold',
                 'type' => 'number',
-                'name' => '所需骚豆',
+                'name' => '所需金币',
                 'value' => ($show && ($show->gold>0)) ? $show->gold : 0,
                 'verify' => 'rq',
             ],
@@ -543,7 +543,7 @@ class ShortController extends BaseCurlController
             ];
             $data[] = [
                 'class' => 'layui-btn-danger',
-                'name' => '骚豆限制',
+                'name' => '金币限制',
                 'id' => 'btn-goldRestricted',
                 'data'=>[
                     'data-type' => "handle",

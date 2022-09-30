@@ -149,7 +149,7 @@ class OrderController extends BaseCurlController
     {
         $types = [
             1 => '会员卡',
-            2 => '骚豆',
+            2 => '金币',
         ];
         $item->type = $types[$item->type];
         //$item->amount = round($item->amount/100,2);

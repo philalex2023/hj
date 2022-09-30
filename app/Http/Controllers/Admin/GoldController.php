@@ -14,7 +14,7 @@ class GoldController extends BaseCurlController
     use PayTrait;
     use PHPRedisTrait;
     //设置页面的名称
-    public $pageName = '骚豆设置';
+    public $pageName = '金币设置';
 
     //1.设置模型
     public function setModel(): Gold

@@ -97,7 +97,7 @@ class VideoController extends BaseCurlController
             [
                 'field' => 'gold',
                 'minWidth' => 100,
-                'title' => '所需骚豆',
+                'title' => '所需金币',
 //                'edit' => 1,
                 'sort' => 1,
                 'align' => 'center',
@@ -268,23 +268,23 @@ class VideoController extends BaseCurlController
         $tag = $this->getTagData();
         $cats = $this->getCats();
         $data = [
-            /*[
+            [
                 'field' => 'cid',
                 'type' => 'select',
                 'name' => '分类',
                 'must' => 1,
                 'verify' => 'rq',
                 'default' => 0,
-                'data' => $this->getCateGoryData()
-            ],*/
-            [
+                'data' => $this->cats
+            ],
+            /*[
                 'field' => 'cats',
                 'type' => 'checkbox',
                 'name' => '版块',
                 'verify' => '',
                 'value' => ($show && ($show->cat)) ? json_decode($show->cat,true) : [],
                 'data' => $cats
-            ],
+            ],*/
             [
                 'field' => 'name',
                 'type' => 'text',
@@ -292,12 +292,12 @@ class VideoController extends BaseCurlController
                 'must' => 1,
                 'verify' => 'rq',
             ],
-            [
+            /*[
                 'field' => 'tagNames',
                 'type' => 'text',
                 'tips' => '输入包含标签词的内容即可,格式不限,如:#内射#口交#人妻...',
                 'name' => '自动标签内容'
-            ],
+            ],*/
             [
                 'field' => 'tags',
                 'type' => 'checkbox',
@@ -339,7 +339,7 @@ class VideoController extends BaseCurlController
             [
                 'field' => 'gold',
                 'type' => 'number',
-                'name' => '所需骚豆',
+                'name' => '所需金币',
                 'value' => ($show && ($show->gold>0)) ? $show->gold/$this->goldUnit : 0,
                 'verify' => 'rq',
             ],
@@ -472,7 +472,7 @@ class VideoController extends BaseCurlController
             }
         }
         //自动打标签
-        if(isset($model->tagNames) && (empty($tags))){
+        /*if(isset($model->tagNames) && (empty($tags))){
             $tagLists = $this->getTagData();
             $tagArr = [];
             foreach ($tagLists as $tagList){
@@ -485,7 +485,7 @@ class VideoController extends BaseCurlController
                 $model->tag = $tagArr;
             }
             $tags = $tagArr;
-        }
+        }*/
         $tagsArr = DB::table('tag')->where('usage',1)->whereIn('id',$tags)->pluck('name','id')->all();
         $model->tag_kv = json_encode($tagsArr);
     }
@@ -631,7 +631,7 @@ class VideoController extends BaseCurlController
     public function setOutputHandleBtnTpl($shareData)
     {
         $data = $this->defaultHandleBtnAddTpl($shareData);
-        if($this->isCanDel()){
+        /*if($this->isCanDel()){
             $data[] = [
                 'class' => 'layui-btn-danger',
                 'name' => '修正时长',
@@ -654,7 +654,7 @@ class VideoController extends BaseCurlController
                     'data-value' => 0,
                 ]
             ];
-            /*$data[] = [
+            $data[] = [
                 'class' => 'layui-btn-danger',
                 'name' => '批量预览',
                 'id' => 'btn-preview',
@@ -664,8 +664,8 @@ class VideoController extends BaseCurlController
                     'data-field' => "preview",
                     'data-value' => 0,
                 ]
-            ];*/
-        }
+            ];
+        }*/
         if ($this->isCanEdit()) {
             $data[] = [
                 'class' => 'layui-btn-success',
@@ -701,7 +701,7 @@ class VideoController extends BaseCurlController
                 ]
             ];*/
 
-            $data[] = [
+            /*$data[] = [
                 'class' => 'layui-btn-dark',
                 'name' => '批量版块',
                 'id' => 'btn-batchCat',
@@ -711,7 +711,7 @@ class VideoController extends BaseCurlController
                     'data-title' => "确定批量操作吗",
                     'data-field' => "cat",
                 ]
-            ];
+            ];*/
             $data[] = [
                 'class' => 'layui-btn-dark',
                 'name' => '批量标签',
@@ -736,7 +736,7 @@ class VideoController extends BaseCurlController
             ];
             $data[] = [
                 'class' => 'layui-btn-danger',
-                'name' => '骚豆限制',
+                'name' => '金币限制',
                 'id' => 'btn-goldRestricted',
                 'data'=>[
                     'data-type' => "handle",

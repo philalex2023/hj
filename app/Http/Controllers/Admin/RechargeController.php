@@ -54,7 +54,7 @@ class RechargeController extends BaseCurlIndexController
         ],
         2=>[
             'id'=>2,
-            'name'=>'骚豆'
+            'name'=>'金币'
         ],
     ];
 

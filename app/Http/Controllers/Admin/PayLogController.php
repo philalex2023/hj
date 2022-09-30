@@ -122,7 +122,7 @@ class PayLogController extends BaseCurlController
     {
         $item->type = match ($item->order?->type){
             1 => '会员卡',
-            2 => '骚豆',
+            2 => '金币',
             default => '',
         };
         $item->amount = $item->order?->amount;

@@ -253,7 +253,7 @@ class MemberController extends BaseCurlController
             [
                 'field' => 'query_gold',
                 'type' => 'select',
-                'name' => '骚豆',
+                'name' => '金币',
                 'data' => [
                     ''=>[
                         'id' => '',
@@ -388,7 +388,7 @@ class MemberController extends BaseCurlController
             [
                 'field' => 'gold',
                 'type' => 'number',
-                'name' => '骚豆',
+                'name' => '金币',
             ],
             [
                 'field' => 'vipCards',

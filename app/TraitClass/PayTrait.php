@@ -139,7 +139,7 @@ trait PayTrait
     }
 
     /**
-     * 处理骚豆购买
+     * 处理金币购买
      * @param $id
      * @param $uid
      * @return Model|Collection|Builder|array|null

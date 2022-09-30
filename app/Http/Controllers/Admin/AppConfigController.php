@@ -118,7 +118,7 @@ class AppConfigController extends BaseCurlController
                     [
                         'field' => 'all_game_gold',
                         'type' => 'number',
-                        'name' => '一键解锁游戏所需骚豆',
+                        'name' => '一键解锁游戏所需金币',
                         'must' => 1,
                         'verify' => 'rq',
                         'default' => 500,

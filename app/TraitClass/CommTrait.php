@@ -156,6 +156,11 @@ trait CommTrait
             ->select('id', 'name')
             ->get();
         $rawArr = $raw->toArray();
+        /*$rawArr = DB::table('topic')
+            ->where('cid',10000)
+            ->where('status',1)
+            ->orderBy('sort')->get(['id','name'])->toArray();*/
+
         $this->redis()->set('short_category',json_encode($rawArr,JSON_UNESCAPED_UNICODE));
         return $rawArr;
     }

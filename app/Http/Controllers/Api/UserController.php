@@ -134,7 +134,7 @@ class UserController extends Controller
                 if($order->type==1){
                     $order->name =  $memberCard[$order->type_id];
                 }elseif ($order->type==2){
-                    $order->name = '骚豆充值';
+                    $order->name = '金币充值';
                 }
                 // $order->amount = number_format($order->amount/100,2);
                 unset($order->type);
