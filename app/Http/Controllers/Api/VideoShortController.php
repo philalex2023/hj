@@ -371,7 +371,7 @@ class VideoShortController extends Controller
 
                 $catVideoList = [];
                 //Log::info('==ShortListIds==',$ids);
-                Log::info('==ShortListSearch==',$query);
+//                Log::info('==ShortListSearch==',$query);
                 if(!empty($ids)){
                     $searchParams = [
                         'index' => 'video_index',
@@ -385,7 +385,7 @@ class VideoShortController extends Controller
                     ];
                     $es = $this->esClient();
                     $response = $es->search($searchParams);
-                    //Log::info('==ShortResponse==',[$response]);
+                    Log::info('==ShortResponse==',[$response]);
                     if(isset($response['hits']) && isset($response['hits']['hits'])){
                         $total = $response['hits']['total']['value'];
                         foreach ($response['hits']['hits'] as $item) {
