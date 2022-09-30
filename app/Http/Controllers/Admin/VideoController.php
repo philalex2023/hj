@@ -67,6 +67,12 @@ class VideoController extends BaseCurlController
                 'align' => 'center'
             ],
             [
+                'field' => 'name',
+                'minWidth' => 150,
+                'title' => '片名',
+                'align' => 'center',
+            ],
+            [
                 'field' => 'cid',
                 'width' => 150,
                 'title' => '分类',
@@ -80,15 +86,16 @@ class VideoController extends BaseCurlController
                 'align' => 'center',
             ],*/
             [
+                'field' => 'dev_type',
+                'minWidth' => 95,
+                'title' => '视频类型',
+                'align' => 'center',
+                'hide' => false
+            ],
+            [
                 'field' => 'tag_name',
                 'minWidth' => 100,
                 'title' => '标签',
-                'align' => 'center',
-            ],
-            [
-                'field' => 'name',
-                'minWidth' => 150,
-                'title' => '片名',
                 'align' => 'center',
             ],
             [
@@ -178,13 +185,6 @@ class VideoController extends BaseCurlController
                 'field' => 'type',
                 'minWidth' => 120,
                 'title' => '视频来源',
-                'align' => 'center',
-                'hide' => true
-            ],
-            [
-                'field' => 'dev_type',
-                'minWidth' => 80,
-                'title' => '视频类型',
                 'align' => 'center',
                 'hide' => true
             ],
