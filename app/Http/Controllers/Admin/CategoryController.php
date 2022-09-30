@@ -386,14 +386,14 @@ class CategoryController extends BaseCurlController
             $next = $next ? $next . '-' : '';
             $model->path_level = $next . $model->id;
             //清除缓存
-            if($model->parent_id==2){
+            /*if($model->parent_id==2){
                 $this->resetHomeCategory();
             }
-            $this->resetHomeRedisData();
+            $this->resetHomeRedisData();*/
         } else {
             $model->path_level = $model->id;
         }
-        $this->resetShortCate();
+        //$this->resetShortCate();
         $model->save();
 
         return $model;
