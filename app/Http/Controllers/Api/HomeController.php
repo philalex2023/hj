@@ -108,7 +108,7 @@ class HomeController extends Controller
                 //二级分类列表
                 $res = $redis->get($sectionKey);
                 $res = json_decode($res,true);
-                if(!$res){
+                if(!$res || $redis->get('homeLists_fresh')){
                     $lock = Cache::lock('homeLists_lock');
                     if(!$lock->get()){
                         Log::info('index_list',[$sectionKey]);
@@ -168,6 +168,7 @@ class HomeController extends Controller
                     $res['list'] = $topics;
                     $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
                     $redis->expire($sectionKey,3600);
+                    $redis->set('homeLists_fresh',0);
                     $lock->release();
                 }
 
