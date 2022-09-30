@@ -352,8 +352,8 @@ class VideoShortController extends Controller
                                 'bool'=>[
                                     'must' => [
                                         ['terms' => ['id'=>$ids]],
-                                        ['term' => ['status'=>1]],
-                                        ['term' => ['cid'=>['value'=>10000]]],
+//                                        ['term' => ['status'=>1]],
+//                                        ['term' => ['cid'=>['value'=>10000]]],
                                     ]
                                 ]
                             ],
