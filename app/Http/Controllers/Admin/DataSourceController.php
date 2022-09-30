@@ -227,6 +227,7 @@ class DataSourceController extends BaseCurlController
                     $searchParams = [
                         'index' => 'video_index',
                         'body' => [
+                            'track_total_hits' => true,
                             'size' => 10000,
 //                            '_source' => ['id','name'],
                             '_source' => false,
