@@ -489,7 +489,7 @@ class VideoController extends BaseCurlController
         }*/
         $tagsArr = [];
         foreach ($tags as $tagId){
-            $tagsArr[$tagId] = $tagsArr[$tagId]['name'];
+            $tagsArr[$tagId] = $this->tags[$tagId]['name'];
         }
         $model->tag_kv = json_encode($tagsArr);
     }
