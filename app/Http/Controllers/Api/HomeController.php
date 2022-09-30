@@ -125,7 +125,7 @@ class HomeController extends Controller
                         if(!empty($topic['contain_vids'])){
                             //获取专题数据
                             $topic['title'] = '';
-                            $topic['style'] = $topic['show_type'];
+                            $topic['style'] = (int)$topic['show_type'];
                             $ids = explode(',',$topic['contain_vids']);
                             //Log::info('index_list_str',[$topic['contain_vids']]);
                             $size = $topic['style'] == 7 ? 7: 8;
