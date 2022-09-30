@@ -197,12 +197,12 @@ class DataSourceController extends BaseCurlController
                     $model->tag = json_encode($tagIds);
                     //
                     DB::table('video')
-                        ->where('dev_type',$videoType)
+                        //->where('dev_type',$videoType)
                         ->where('status',1)->chunkById(1000,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
                             $intersect = array_intersect($jsonArr,$tagIds); //交集
-                            if(str_contains($item->tag,"23")){
+                            if(str_contains($item->tag,"181")){
                                 Log::info('test',[$jsonArr,$tagIds,$intersect]);
                             }
                             if(!empty($intersect)){
