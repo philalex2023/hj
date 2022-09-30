@@ -259,13 +259,13 @@ class CategoryController extends BaseCurlController
                 'verify' => 'rq',
                 'mark' => $name['mark'] ?? ''
             ],
-            [
+            /*[
                 'field' => 'usage',
                 'name' => '用途',
                 'type' => 'select',
                 'on' => '1',
                 'data' => [['id' => '1', 'name' => '电影'],['id' => '2', 'name' => '小视频']]
-            ],
+            ],*/
             [
                 'field' => 'parent_id',
                 'name' => '上级',
@@ -281,7 +281,7 @@ class CategoryController extends BaseCurlController
                 'name' => '标题',
                 'default' => '',
             ],
-            [
+            /*[
                 'field' => 'group_type',
                 'type' => 'radio',
                 'name' => '版块类型',
@@ -312,16 +312,16 @@ class CategoryController extends BaseCurlController
                 'type' => 'text',
                 'name' => '编程代码',
                 'default' => '',
-            ],
+            ],*/
             [
                 'field' => 'sort',
                 'type' => 'text',
                 'name' => '排序',
-                'must' => 1,
+                'must' => 0,
                 'default' => 0,
-                'verify' => 'rq'
+                'verify' => ''
             ],
-            [
+            /*[
                 'field' => 'is_free',
                 'type' => 'radio',
                 'name' => '是否免费',
@@ -336,7 +336,7 @@ class CategoryController extends BaseCurlController
                 'verify' => '',
                 'default' => 0,
                 'data' => $this->uiService->trueFalseData()
-            ],
+            ],*/
             [
                 'field' => 'is_checked',
                 'type' => 'radio',
