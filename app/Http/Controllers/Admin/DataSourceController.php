@@ -231,8 +231,8 @@ class DataSourceController extends BaseCurlController
 //                            '_source' => ['id','name'],
                             '_source' => false,
                             'query' => [
-                                'should' =>$should,
                                 'bool'=>[
+                                    'should' =>$should,
                                     'must' => $must
                                 ]
                             ],
