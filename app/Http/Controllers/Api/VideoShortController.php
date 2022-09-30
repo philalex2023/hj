@@ -336,9 +336,10 @@ class VideoShortController extends Controller
                 $perPage = 8;
                 $offset = ($page-1)*$perPage;
                 $hasMorePages = false;
-                $ids = explode(',',DB::table('topic')->where('id',$cateId)->value('contain_vids'));
+                $idStr = DB::table('topic')->where('id',$cateId)->value('contain_vids');
+                $ids = $idStr ? explode(',',$idStr) : [];
                 $catVideoList = [];
-                Log::info('==ShortListIds==',$ids);
+                //Log::info('==ShortListIds==',$ids);
                 if(!empty($ids)){
                     $searchParams = [
                         'index' => 'video_index',
