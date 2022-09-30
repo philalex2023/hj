@@ -199,7 +199,7 @@ class DataSourceController extends BaseCurlController
                     DB::table('video')->where('dev_type',$videoType)->where('status',1)->chunkById(1000,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
-                            $tagIds = json_decode($tagIds,true);
+                            $tagIds = (array)$tagIds;
                             $intersect = array_intersect($jsonArr,$tagIds); //交集
                             Log::info('test',[$jsonArr,$tagIds,$intersect]);
                             if(!empty($intersect)){
