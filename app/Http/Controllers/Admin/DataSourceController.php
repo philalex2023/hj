@@ -9,6 +9,7 @@ use App\TraitClass\CommTrait;
 use App\TraitClass\EsTrait;
 use App\TraitClass\TagTrait;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 
 class DataSourceController extends BaseCurlController
@@ -195,12 +196,11 @@ class DataSourceController extends BaseCurlController
                     $model->data_value = implode(',',$tagName);
                     $model->tag = json_encode($tagIds);
                     //
-                    DB::table('video')->where('dev_type',$videoType)->where('status',1)->chunkById(100,function ($items) use ($tagIds,&$videoIds,$model){
+                    DB::table('video')->where('dev_type',$videoType)->where('status',1)->chunkById(1000,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
-                            dump($jsonArr);
                             $intersect = array_intersect($jsonArr,$tagIds); //交集
-                            dump($intersect,$tagIds);
+                            Log::info('test',$intersect);
                             if(!empty($intersect)){
                                 $videoIds[] = $item->id;
                             }
