@@ -146,7 +146,7 @@ class CategoryController extends BaseCurlController
         $appModuleStyle = $this->getAppModuleShowType();
         $item->is_free = UiService::switchTpl('is_free', $item,'','是|否');
         $item->is_rand = UiService::switchTpl('is_rand', $item,'','是|否');
-        $item->group_type = $appModuleStyle[$item->group_type]['name'];
+        $item->group_type = $item->group_type!='' ? $appModuleStyle[$item->group_type]['name'] : '';
         return $item;
     }
 
