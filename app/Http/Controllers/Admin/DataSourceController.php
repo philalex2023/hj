@@ -200,7 +200,7 @@ class DataSourceController extends BaseCurlController
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
                             $intersect = array_intersect($jsonArr,$tagIds); //交集
-                            Log::info('test',$intersect);
+                            Log::info('test',[$jsonArr,$tagIds,$intersect]);
                             if(!empty($intersect)){
                                 $videoIds[] = $item->id;
                             }
