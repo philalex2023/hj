@@ -140,7 +140,7 @@ class HomeController extends Controller
                                         'bool'=>[
                                             'must' => [
                                                 ['terms' => ['id'=>$ids]],
-                                                ['term' => ['video_type'=>0]],
+                                                ['term' => ['dev_type'=>0]],
 //                                                ['term' => ['cid'=>$cid]],
                                             ]
                                         ]
