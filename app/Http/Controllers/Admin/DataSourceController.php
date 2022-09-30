@@ -81,6 +81,12 @@ class DataSourceController extends BaseCurlController
             [
                 'field' => 'show_num',
                 'minWidth' => 150,
+                'title' => '视频数量',
+                'align' => 'center',
+            ],
+            [
+                'field' => 'show_num',
+                'minWidth' => 150,
                 'title' => '首页展示量',
                 'align' => 'center',
             ],
