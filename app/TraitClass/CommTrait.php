@@ -162,7 +162,9 @@ trait CommTrait
             ->where('status',1)
             ->orderBy('sort')->get(['id','name'])->toArray();
         //Log::info('short_cat',$rawArr);
-        $this->redis()->set('short_category',json_encode($rawArr,JSON_UNESCAPED_UNICODE));
+        $redis = $this->redis();
+        $redis->set('short_category',json_encode($rawArr,JSON_UNESCAPED_UNICODE));
+        $redis->expire('short_category',3600);
         return $rawArr;
     }
 
