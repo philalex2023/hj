@@ -34,6 +34,8 @@ class VideoController extends BaseCurlController
 
     public array $cats=[];
 
+    public array $tags=[];
+
     public array $video_source = [
         ''=>['id'=>'','name'=>'全部'],
         1=>['id'=>1,'name'=>'上传'],
@@ -45,6 +47,7 @@ class VideoController extends BaseCurlController
     public function setModel(): AdminVideo
     {
         $this->cats = $this->getCatNavData();
+        $this->tags = $this->getTagData();
         return $this->model = new AdminVideo();
     }
 
@@ -265,8 +268,6 @@ class VideoController extends BaseCurlController
 
     public function setOutputUiCreateEditForm($show = '')
     {
-        $tag = $this->getTagData();
-        $cats = $this->getCats();
         $data = [
             [
                 'field' => 'cid',
@@ -304,7 +305,7 @@ class VideoController extends BaseCurlController
                 'name' => '标签',
                 'verify' => '',
                 'value' => ($show && ($show->tag)) ? json_decode($show->tag,true) : [],
-                'data' => $tag
+                'data' => $this->tags
             ],
             [
                 'field' => 'cover_img',
@@ -473,7 +474,7 @@ class VideoController extends BaseCurlController
         }
         //自动打标签
         /*if(isset($model->tagNames) && (empty($tags))){
-            $tagLists = $this->getTagData();
+            $tagLists = $this->tags;
             $tagArr = [];
             foreach ($tagLists as $tagList){
                 $pos = strpos($model->tagNames,$tagList['name']);
@@ -572,7 +573,7 @@ class VideoController extends BaseCurlController
     public function setOutputSearchFormTpl($shareData)
     {
         $data = [
-            [
+            /*[
                 'field' => 'cat',
                 'type' => 'checkbox',
                 'name' => '版块',
@@ -581,13 +582,13 @@ class VideoController extends BaseCurlController
                     'id' => 0,
                     'name' => '无'
                 ]])
-            ],
+            ],*/
             [
                 'field' => 'tag',
                 'type' => 'checkbox',
                 'name' => '标签',
                 'default' => [],
-                'data' => array_merge($this->getTagData(),[[
+                'data' => array_merge($this->tags,[[
                     'id' => 0,
                     'name' => '无'
                 ]])
@@ -614,7 +615,7 @@ class VideoController extends BaseCurlController
                 'type' => 'select',
                 'name' => '分类',
                 'default' => '',
-                'data' => $this->getCatNavData()
+                'data' => $this->cats
             ],
             [
                 'field' => 'type',
@@ -836,7 +837,7 @@ class VideoController extends BaseCurlController
                     break;
                 /*case 'tag_match':
                     $videos = Video::query()->whereIn($id, $id_arr)->get(['id','tag','name'])->toArray();
-                    $tags = $this->getTagData();
+                    $tags = $this->tags;
                     foreach ($videos as $video){
                         $tagIds = [];
                         $tagArr = @json_decode($video['tag'],true);
