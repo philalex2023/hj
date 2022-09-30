@@ -346,33 +346,32 @@ class VideoShortController extends Controller
                 $hasMorePages = false;
                 $idStr = DB::table('topic')->where('id',$cateId)->value('contain_vids');
                 $ids = $idStr ? explode(',',$idStr) : [];
-                $query = [
-                    'bool'=>[
-                        'must' => [
-                            ['terms' => ['id'=>$ids]],
-                            ['term' => ['cid'=>10000]],
-                        ]
-                    ]
-                ];
-
-                if (!empty($words)) {
-                    $query = [
-                        'match_phrase'=>[
-                            'name' => $words
-                        ],
-                        /*'bool'=>[
-                            'must' => [
-//                                ['match'=>['name' => $words],],
-                                ['term' => ['cid'=>10000]],
-                            ]
-                        ]*/
-                    ];
-                }
 
                 $catVideoList = [];
                 //Log::info('==ShortListIds==',$ids);
 //                Log::info('==ShortListSearch==',$query);
-                if(!empty($ids)){
+                if(!empty($ids) || !empty($words)){
+                    $query = [
+                        'bool'=>[
+                            'must' => [
+                                ['terms' => ['id'=>$ids]],
+                                ['term' => ['cid'=>10000]],
+                            ]
+                        ]
+                    ];
+                    if (!empty($words)) {
+                        $query = [
+                            /*'match_phrase'=>[
+                                'name' => $words
+                            ],*/
+                            'bool'=>[
+                                'must' => [
+                                ['match'=>['name' => $words],],
+                                    ['term' => ['cid'=>10000]],
+                                ]
+                            ]
+                        ];
+                    }
                     $searchParams = [
                         'index' => 'video_index',
                         'body' => [
