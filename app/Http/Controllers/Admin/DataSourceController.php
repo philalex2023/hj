@@ -174,6 +174,7 @@ class DataSourceController extends BaseCurlController
     {
         $tagIds = $this->rq->input('tags',[]);
         $dataType = $this->rq->input('data_type',0);
+        $videoType = $this->rq->input('video_type',0);
         $dataValue = $this->rq->input('data_value','');
         $cid = $this->rq->input('cid',0);
         $model->tag = json_encode([]);
@@ -188,7 +189,7 @@ class DataSourceController extends BaseCurlController
                     $model->tag = json_encode($tagIds);
                     //
                     $videoIds = [];
-                    DB::table('video')->where('status',1)->chunkById(100,function ($items) use ($tagIds,&$videoIds,$model){
+                    DB::table('video')->where('video_type',$videoType)->where('status',1)->chunkById(100,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
                             $intersect = array_intersect($jsonArr,$tagIds); //交集
@@ -213,8 +214,9 @@ class DataSourceController extends BaseCurlController
                             'query' => [
                                 'bool'=>[
                                     'must' => [
-                                        'match' => ['name'=>$dataValue],
-                                        'term' => ['status'=>1],
+                                        ['match' => ['name'=>$dataValue]],
+                                        ['term' => ['status'=>1]],
+                                        ['term' => ['video_type'=>$videoType]]
                                     ]
                                 ]
                             ],
@@ -242,7 +244,7 @@ class DataSourceController extends BaseCurlController
                 break;
             case 4: //最新上架
                 $model->data_value = '最新';
-                $videoIds = DB::table('video')->where('status',1)->orderByDesc('updated_at')->take(64)->pluck('id')->all();
+                $videoIds = DB::table('video')->where('video_type',$videoType)->where('status',1)->orderByDesc('updated_at')->take(64)->pluck('id')->all();
                 $model->contain_vids = implode(',',$videoIds);
                 break;
             case 5: //自定义
