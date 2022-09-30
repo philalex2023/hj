@@ -132,6 +132,7 @@ class HomeController extends Controller
                             $searchParams = [
                                 'index' => 'video_index',
                                 'body' => [
+                                    'track_total_hits' => true,
                                     'size' => $size,
                                     '_source' => ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
 //                                '_source' => false,

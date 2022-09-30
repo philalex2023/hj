@@ -487,7 +487,10 @@ class VideoController extends BaseCurlController
             }
             $tags = $tagArr;
         }*/
-        $tagsArr = DB::table('tag')->where('usage',1)->whereIn('id',$tags)->pluck('name','id')->all();
+        $tagsArr = [];
+        foreach ($tags as $tagId){
+            $tagsArr[$tagId] = $tagsArr[$tagId]['name'];
+        }
         $model->tag_kv = json_encode($tagsArr);
     }
 
