@@ -38,7 +38,7 @@ class VideoShortController extends Controller
         'short_rec'
     ];
 
-    private array $cateMapAlias = [
+    /*private array $cateMapAlias = [
         '-1' => 'sub_cat_1',
         '-2' => 'sub_cat_2',
         '-3' => 'sub_cat_3',
@@ -47,6 +47,16 @@ class VideoShortController extends Controller
         '-6' => 'sub_cat_6',
         '-7' => 'sub_cat_7',
         '-8' => 'sub_cat_8',
+    ];*/
+    private array $cateMapAlias = [
+        '-1' => 175,
+        '-2' => 174,
+        '-3' => 173,
+        '-4' => 172,
+        '-5' => 171,
+        '-6' => 170,
+        '-7' => 169,
+        '-8' => 168,
     ];
 
     /**
@@ -332,6 +342,8 @@ class VideoShortController extends Controller
                     $tagId = "";
                     $starId = '0';
                 }
+                $tagId!="" && $cateId = $tagId;
+
                 $total = 0;
                 $perPage = 8;
                 $offset = ($page-1)*$perPage;
@@ -339,7 +351,7 @@ class VideoShortController extends Controller
                 $idStr = DB::table('topic')->where('id',$cateId)->value('contain_vids');
                 $ids = $idStr ? explode(',',$idStr) : [];
                 $catVideoList = [];
-                //Log::info('==ShortListIds==',$ids);
+                Log::info('==ShortListIds==',$ids);
                 if(!empty($ids)){
                     $searchParams = [
                         'index' => 'video_index',
