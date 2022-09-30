@@ -220,7 +220,7 @@ class DataSourceController extends BaseCurlController
                         //['match' => ['name'=>$dataValue]]
                     ];
                     foreach ($keywords as $keyword){
-                        $must['should'][] = ['match'=>[ 'name'=>$keyword]];
+                        $must['should'][] = ['match'=>['name'=>$keyword]];
                     }
                     $es = $this->esClient();
                     $searchParams = [
