@@ -141,6 +141,13 @@ class TopicController extends BaseCurlController
         }
     }
 
+    public function afterSaveSuccessEvent($model, $id = '')
+    {
+        //请除缓存 todo
+        $redis = $this->redis();
+        $redis->del('short_category');
+    }
+
     public function setOutputUiCreateEditForm($show = '')
     {
         $data = [
