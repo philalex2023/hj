@@ -144,7 +144,6 @@ class TopicController extends BaseCurlController
     public function afterSaveSuccessEvent($model, $id = '')
     {
         //请除缓存 todo
-
         $redis = $this->redis();
         $redis->set('homeLists_fresh',1);
         $redis->del('short_category');
