@@ -351,15 +351,16 @@ class VideoShortController extends Controller
                             'query' => [
                                 'bool'=>[
                                     'must' => [
-                                        //['terms' => ['id'=>$ids]],
-                                        ['term' => ['cid'=>10000]],
-//                                        ['term' => ['cid'=>['value'=>10000]]],
+                                        ['terms' => ['id'=>$ids]],
+                                        ['term' => ['status'=>1]],
+                                        ['term' => ['cid'=>['value'=>10000]]],
                                     ]
                                 ]
                             ],
                         ],
                     ];
-                    $response = $this->esGet($searchParams);
+                    $es = $this->esClient();
+                    $response = $es->search($searchParams);
                     Log::info('==ShortResponse==',[$response]);
                     if(isset($response['hits']) && isset($response['hits']['hits'])){
                         $total = $response['hits']['total']['value'];
