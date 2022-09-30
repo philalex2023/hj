@@ -347,12 +347,13 @@ class VideoShortController extends Controller
                             'track_total_hits' => true,
                             'size' => $perPage,
                             'from' => $offset,
-                            '_source' => [],
                             //'_source' => false,
                             'query' => [
                                 'bool'=>[
                                     'must' => [
-                                        'terms' => ['id'=>$ids],
+                                        ['terms' => ['id'=>$ids]],
+                                        ['term' => ['status'=>1]],
+                                        ['term' => ['cid'=>10000]],
                                     ]
                                 ]
                             ],
@@ -360,7 +361,7 @@ class VideoShortController extends Controller
                     ];
                     $es = $this->esClient();
                     $response = $es->search($searchParams);
-                    Log::info('==ShortResponse==',$response);
+                    //Log::info('==ShortResponse==',[$response]);
                     if(isset($response['hits']) && isset($response['hits']['hits'])){
                         $total = $response['hits']['total']['value'];
                         foreach ($response['hits']['hits'] as $item) {

@@ -217,7 +217,9 @@ class SearchController extends Controller
                         'query' => [
                             'bool'=>[
                                 'must' => [
-                                    'terms' => ['id'=>$ids],
+                                    ['terms' => ['id'=>$ids]],
+                                    ['term' => ['status'=>1]],
+                                    ['term' => ['cid'=>$cid]],
                                 ]
                             ]
                         ],
