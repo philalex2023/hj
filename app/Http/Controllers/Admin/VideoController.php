@@ -430,8 +430,8 @@ class VideoController extends BaseCurlController
             $job = new ProcessVideoSlice($model);
             $this->dispatch($job->onQueue('high'));
         }
-        $resetJob = new ProcessResetRedisVideo($model->cat,$model->tag,$model);
-        $this->dispatch($resetJob->onQueue('high'));
+        /*$resetJob = new ProcessResetRedisVideo($model->cat,$model->tag,$model);
+        $this->dispatch($resetJob->onQueue('high'));*/
 
         Cache::forget('cachedVideoById.'.$model->id);
         $this->redis()->set('freshTag_'.$model->type,1);
