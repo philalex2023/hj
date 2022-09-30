@@ -342,7 +342,7 @@ class VideoShortController extends Controller
                     $tagId = "";
                     $starId = '0';
                 }
-                $tagId!="" && $cateId = $tagId;
+                $tagId!="" && $cateId = $this->cateMapAlias[$tagId];
 
                 $total = 0;
                 $perPage = 8;
