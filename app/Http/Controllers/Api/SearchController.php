@@ -377,15 +377,8 @@ class SearchController extends Controller
             $redis->del($freshKey);
             !$redis->exists($key) && $tags = $videoTag;
         }
-        /*$tags = Cache::remember('hotTags',3600*24,function (){
-            return Tag::query()
-                ->orderBy('hits','desc')
-                ->limit(15)
-                ->get(['id','name']);
-        });
-        foreach ($tags->toArray() as &$item){
-            $item = (array)$item;
-        }*/
+
+        $tags = array_slice($tags,0,5);
         return response()->json([
             'state'=>0,
             'data'=>$tags
