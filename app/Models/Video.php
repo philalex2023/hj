@@ -20,7 +20,7 @@ class Video extends BaseModel
             'name' => [
                 'type' => 'text',
             ],
-            'title' => [
+            /*'title' => [
                 'type' => 'text',
             ],
             'tag' => [
@@ -28,7 +28,7 @@ class Video extends BaseModel
             ],
             'cat' => [
                 'type' => 'text',
-            ],
+            ],*/
         ]
     ];
 
