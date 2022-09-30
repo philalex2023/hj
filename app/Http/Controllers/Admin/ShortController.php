@@ -186,7 +186,7 @@ class ShortController extends BaseCurlController
 
     public function setOutputUiCreateEditForm($show = '')
     {
-        $tag = $this->getTagData(2);
+        $tag = $this->getTagData();
         $cats = $this->getCats(10000);
         //Log::info('==ShortCats===',[$cats]);
         $data = [
