@@ -178,6 +178,7 @@ class DataSourceController extends BaseCurlController
         $dataValue = $this->rq->input('data_value','');
         $cid = $this->rq->input('cid',0);
         $model->tag = json_encode([]);
+        $videoIds = [];
         switch ($dataType){
             case 1: //标签
                 if(!empty($tagIds)){
@@ -188,7 +189,6 @@ class DataSourceController extends BaseCurlController
                     $model->data_value = implode(',',$tagName);
                     $model->tag = json_encode($tagIds);
                     //
-                    $videoIds = [];
                     DB::table('video')->where('dev_type',$videoType)->where('status',1)->chunkById(100,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
@@ -211,7 +211,6 @@ class DataSourceController extends BaseCurlController
                     foreach ($keywords as $keyword){
                         $must[] = ['match' => ['name'=>$keyword]];
                     }
-                    $videoIds = [];
                     $es = $this->esClient();
                     $searchParams = [
                         'index' => 'video_index',
@@ -259,7 +258,7 @@ class DataSourceController extends BaseCurlController
                 break;
 
         }
-
+        $model->video_num = count($videoIds);
     }
 
     /*protected function afterSaveSuccessEvent($model, $id = '')
