@@ -202,7 +202,7 @@ class DataSourceController extends BaseCurlController
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
                             $intersect = array_intersect($jsonArr,$tagIds); //交集
-                            if(str_contains($item->tag,"181")){
+                            if(str_contains($item->tag,"23")){
                                 Log::info('test',[$jsonArr,$tagIds,$intersect]);
                             }
                             if(!empty($intersect)){
