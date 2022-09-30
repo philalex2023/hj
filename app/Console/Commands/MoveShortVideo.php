@@ -43,15 +43,17 @@ class MoveShortVideo extends Command
      */
     public function handle(): int
     {
+
+        DB::table('video')->where('type',5)->update(['tag'=>json_encode([115=>181])]);
 //        $topCat = DB::table('categories')
 //            ->where('parent_id',2)
 //            ->where('is_checked',1)
 //            ->orderBy('sort')
 //            ->pluck('id');
 //        foreach ($topCat as $cat){
-            $cat = 10000; //短视频
+            //$cat = 10000; //短视频
 
-        DB::table('video_short')->chunkById(100,function ($items){
+        /*DB::table('video_short')->chunkById(100,function ($items){
             foreach ($items as $item){
                 $insert = (array)$item;
                 if($insert['status']>0){
@@ -63,7 +65,7 @@ class MoveShortVideo extends Command
                     DB::table('video')->insert($insert);
                 }
             }
-        });
+        });*/
             /*$videos = DB::table('video_short')->get();
             foreach ($videos as $video){
                 DB::table('video')->insert([
