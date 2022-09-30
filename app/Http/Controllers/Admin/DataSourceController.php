@@ -219,6 +219,7 @@ class DataSourceController extends BaseCurlController
                         ['term' => ['dev_type'=>$videoType]],
                         //['match' => ['name'=>$dataValue]]
                     ];
+                    $must['should'] = [];
                     foreach ($keywords as $keyword){
                         $must['should'][] = [ 'name'=>$keyword];
                     }
