@@ -486,10 +486,10 @@ class VideoShortController extends Controller
         if ($isCollect) {
             $videoRedis->zAdd($shortCollectsKey,time(),$id);
             $videoRedis->expire($shortCollectsKey,7*24*3600);
-            AdminVideo::query()->where('id', $id)->increment('favors');
+            DB::table('video')->where('id', $id)->increment('favors');
         } else {
             $videoRedis->zRem($shortCollectsKey,$id);
-            VideoShort::query()->where('id', $id)->decrement('favors');
+            DB::table('video')->where('id', $id)->decrement('favors');
         }
         return response()->json([
             'state' => 0,
