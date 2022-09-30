@@ -233,7 +233,7 @@ class DataSourceController extends BaseCurlController
                             '_source' => false,
                             'query' => [
                                 'bool'=>[
-                                    'minimum_should_match'=>'100%',
+                                    'minimum_should_match'=>'80%',
                                     'should' =>$should,
                                     'must' => $must
                                 ]
