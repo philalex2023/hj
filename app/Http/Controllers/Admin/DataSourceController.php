@@ -217,7 +217,7 @@ class DataSourceController extends BaseCurlController
                     $must = [
                         ['term' => ['status'=>1]],
                         ['term' => ['dev_type'=>$videoType]],
-                        //['match' => ['name'=>$dataValue]]
+                        ['match' => ['name'=>$dataValue,"minimum_should_match"=>"75%"]]
                     ];
                     /*$should = [];
                     foreach ($keywords as $keyword){
@@ -232,7 +232,6 @@ class DataSourceController extends BaseCurlController
 //                            '_source' => ['id','name'],
                             '_source' => false,
                             'query' => [
-                                'match' => ['name'=>['query'=>$dataValue,'minimum_should_match'=>'75%']],
                                 'bool'=>[
                                     'must' => $must
                                 ]
