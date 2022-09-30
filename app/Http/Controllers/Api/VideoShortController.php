@@ -353,7 +353,7 @@ class VideoShortController extends Controller
                                     'must' => [
                                         ['terms' => ['id'=>$ids]],
 //                                        ['term' => ['status'=>1]],
-//                                        ['term' => ['cid'=>['value'=>10000]]],
+                                        ['term' => ['cid'=>['value'=>10000]]],
                                     ]
                                 ]
                             ],
