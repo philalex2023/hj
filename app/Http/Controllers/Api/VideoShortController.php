@@ -371,6 +371,7 @@ class VideoShortController extends Controller
 
                 $catVideoList = [];
                 //Log::info('==ShortListIds==',$ids);
+                Log::info('==ShortListSearch==',$query);
                 if(!empty($ids)){
                     $searchParams = [
                         'index' => 'video_index',
