@@ -79,7 +79,7 @@ class DataSourceController extends BaseCurlController
                 'align' => 'center',
             ],
             [
-                'field' => 'show_num',
+                'field' => 'video_num',
                 'minWidth' => 150,
                 'title' => '视频数量',
                 'align' => 'center',
