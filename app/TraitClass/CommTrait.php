@@ -7,6 +7,7 @@ use App\Models\Category;
 use App\Models\CommCate;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 trait CommTrait
 {
@@ -160,7 +161,7 @@ trait CommTrait
             ->where('cid',10000)
             ->where('status',1)
             ->orderBy('sort')->get(['id','name'])->toArray();
-
+        Log::info('short_cat',$rawArr);
         $this->redis()->set('short_category',json_encode($rawArr,JSON_UNESCAPED_UNICODE));
         return $rawArr;
     }
