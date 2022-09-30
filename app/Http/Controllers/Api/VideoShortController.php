@@ -362,6 +362,8 @@ class VideoShortController extends Controller
                 }
                 $res['total'] = $total;
                 $hasMorePages = $total >= $perPage*$page;
+
+                Log::info('==ShortList==',$catVideoList);
                 if(!empty($catVideoList)){
                     $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
                     //广告
