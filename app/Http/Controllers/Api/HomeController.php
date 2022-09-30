@@ -125,7 +125,7 @@ class HomeController extends Controller
                         if(!empty($topic['contain_vids'])){
                             //获取专题数据
                             $topic['title'] = '';
-                            $topic['style'] = (string)$topic['show_type'];
+                            $topic['style'] = $topic['show_type'];
                             $ids = explode(',',$topic['contain_vids']);
                             //Log::info('index_list_str',[$topic['contain_vids']]);
                             $size = $topic['style'] == 7 ? 7: 8;
@@ -144,6 +144,7 @@ class HomeController extends Controller
                                     ],
                                 ],
                             ];
+                            $topic['style'] = (string)$topic['style']; //android要是字符串
                             $es = $this->esClient();
                             $response = $es->search($searchParams);
                             if(isset($response['hits']) && isset($response['hits']['hits'])){
