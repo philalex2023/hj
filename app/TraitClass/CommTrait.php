@@ -150,16 +150,16 @@ trait CommTrait
 
     public function resetShortCate(): array
     {
-        $raw = Category::query()->where('parent_id', 10000)
+        /*$raw = Category::query()->where('parent_id', 10000)
             ->where('is_checked',1)
             ->orderBy('sort', 'desc')
             ->select('id', 'name')
             ->get();
-        $rawArr = $raw->toArray();
-        /*$rawArr = DB::table('topic')
+        $rawArr = $raw->toArray();*/
+        $rawArr = DB::table('topic')
             ->where('cid',10000)
             ->where('status',1)
-            ->orderBy('sort')->get(['id','name'])->toArray();*/
+            ->orderBy('sort')->get(['id','name'])->toArray();
 
         $this->redis()->set('short_category',json_encode($rawArr,JSON_UNESCAPED_UNICODE));
         return $rawArr;

@@ -12,6 +12,7 @@ use App\Models\Video;
 use App\Models\VideoShort;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommTrait;
+use App\TraitClass\EsTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\StatisticTrait;
@@ -29,7 +30,7 @@ use Illuminate\Validation\Rule;
 
 class VideoShortController extends Controller
 {
-    use VideoTrait,PHPRedisTrait,VipRights,StatisticTrait,MemberCardTrait,ApiParamsTrait,VideoShortTrait,CommTrait;
+    use VideoTrait,PHPRedisTrait,VipRights,StatisticTrait,MemberCardTrait,ApiParamsTrait,CommTrait,EsTrait;
 
     private array $mainCateAlias = [
         'short_hot',
@@ -331,8 +332,47 @@ class VideoShortController extends Controller
                     $tagId = "";
                     $starId = '0';
                 }
-                $res = $this->items($page, $user, $starId, $cateId, $tagId, $words);
-                return response()->json(['state' => 0, 'data' => $res]);
+                $perPage = 8;
+                $offset = ($page-1)*$perPage;
+                $ids = explode(',',DB::table('topic')->where('id',$cateId)->value('contain_vids'));
+                $searchParams = [
+                    'index' => 'video_index',
+                    'body' => [
+                        'size' => $perPage,
+                        'from' => $offset,
+                        //'_source' => false,
+                        'query' => [
+                            'bool'=>[
+                                'must' => [
+                                    'terms' => ['id'=>$ids],
+                                ]
+                            ]
+                        ],
+                    ],
+                ];
+                $es = $this->esClient();
+                $response = $es->search($searchParams);
+                $catVideoList = [];
+                $total = 0;
+                if(isset($response['hits']) && isset($response['hits']['hits'])){
+                    $total = $response['hits']['total']['value'];
+                    foreach ($response['hits']['hits'] as $item) {
+                        $catVideoList[] = $item['_source'];
+                    }
+                }
+                $res['total'] = $total;
+                $hasMorePages = $total >= $perPage*$page;
+                if(!empty($catVideoList)){
+                    $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
+                    //广告
+                    //$res['list'] = $this->insertAds($res['list'],'short_video',true, $page, $perPage);
+                    //Log::info('==CatList==',$res['list']);
+                    $res['hasMorePages'] = $hasMorePages;
+                }
+
+                return response()->json(['state'=>0, 'data'=>$res??[]]);
+                //$res = $this->items($page, $user, $starId, $cateId, $tagId, $words);
+                //return response()->json(['state' => 0, 'data' => $res]);
             }
             return response()->json(['state'=>-1, 'msg'=>'参数错误']);
         } catch (Exception $exception) {

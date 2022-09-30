@@ -307,7 +307,7 @@ class ShortController extends BaseCurlController
     {
         // 更新redis
 
-        $isVideo = ($_REQUEST['callback_upload']??0);
+        /*$isVideo = ($_REQUEST['callback_upload']??0);
         if($isVideo){
             $job = new ProcessVideoShort($model);
             $this->dispatch($job->onQueue('high'));
@@ -322,7 +322,7 @@ class ShortController extends BaseCurlController
         }
         foreach ($redis->keys('*shortVideoForUser*') as $k){
             $redis->del($k);
-        }
+        }*/
         return $model;
     }
 
