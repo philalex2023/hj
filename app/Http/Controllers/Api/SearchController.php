@@ -237,20 +237,9 @@ class SearchController extends Controller
                 }
                 $res['total'] = $total;
                 $hasMorePages = $total >= $perPage*$page;
-                /*$catVideoList = Video::search((string)$cid)->where('status',1)->simplePaginate(10000,'catVideo',1)->toArray()['data'];
-                foreach ($catVideoList as &$item){
-                    $item['updated_time'] = strtotime($item['updated_at']);
-                }
-                $updatedAt = array_column($catVideoList,'updated_time');
-                array_multisort($updatedAt,SORT_DESC,$catVideoList);*/
-
-
-//                $pageLists = array_slice($catVideoList,$offset,$perPage);
-//                $hasMorePages = count($catVideoList) > $perPage*$page;
 
                 if(!empty($catVideoList)){
                     $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
-//                    $res['list'] = $this->handleVideoItems($pageLists,false,$user->id);
                     //广告
                     $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
                     //Log::info('==CatList==',$res['list']);
