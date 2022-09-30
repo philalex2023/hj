@@ -73,12 +73,12 @@ class VideoController extends BaseCurlController
                 'align' => 'center',
                 'edit' => 1
             ],
-            [
+            /*[
                 'field' => 'category_name',
                 'width' => 150,
                 'title' => '版块',
                 'align' => 'center',
-            ],
+            ],*/
             [
                 'field' => 'tag_name',
                 'minWidth' => 100,
@@ -583,7 +583,7 @@ class VideoController extends BaseCurlController
                     'name' => '无'
                 ]])
             ],*/
-            [
+            /*[
                 'field' => 'tag',
                 'type' => 'checkbox',
                 'name' => '标签',
@@ -592,7 +592,7 @@ class VideoController extends BaseCurlController
                     'id' => 0,
                     'name' => '无'
                 ]])
-            ],
+            ],*/
             [
                 'field' => 'id',
                 'type' => 'text',
@@ -713,7 +713,7 @@ class VideoController extends BaseCurlController
                     'data-field' => "cat",
                 ]
             ];*/
-            $data[] = [
+            /*$data[] = [
                 'class' => 'layui-btn-dark',
                 'name' => '批量标签',
                 'id' => 'btn-batchTag',
@@ -723,7 +723,7 @@ class VideoController extends BaseCurlController
                     'data-title' => "确定批量操作吗",
                     'data-field' => "tag",
                 ]
-            ];
+            ];*/
             $data[] = [
                 'class' => 'layui-btn-danger',
                 'name' => 'VIP限制',
