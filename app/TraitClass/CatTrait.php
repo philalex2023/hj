@@ -22,7 +22,7 @@ trait CatTrait
                 'name' => $item->name,
             ];
         }
-        return $data;
+        return $data+[10000=>['id'=>10000,'name'=>'短视频']];
     }
 
     public function getCats($parentId = 2): array
