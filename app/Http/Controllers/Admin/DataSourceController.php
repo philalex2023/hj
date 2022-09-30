@@ -213,16 +213,16 @@ class DataSourceController extends BaseCurlController
                 break;
             case 2: //关键字
                 if(!empty($dataValue)){
-                    //$keywords = explode(',',$dataValue);
+                    $keywords = explode(',',$dataValue);
                     $must = [
                         ['term' => ['status'=>1]],
                         ['term' => ['dev_type'=>$videoType]],
-                        ['match' => ['name'=>$dataValue,"minimum_should_match"=>"75%"]]
+                        //['match' => ['name'=>$dataValue]]
                     ];
-                    /*$should = [];
+                    $should = [];
                     foreach ($keywords as $keyword){
                         $should[] = ['match'=>['name'=>$keyword]];
-                    }*/
+                    }
                     $es = $this->esClient();
                     $searchParams = [
                         'index' => 'video_index',
@@ -233,6 +233,8 @@ class DataSourceController extends BaseCurlController
                             '_source' => false,
                             'query' => [
                                 'bool'=>[
+                                    'minimum_should_match'=>'50%',
+                                    'should' =>$should,
                                     'must' => $must
                                 ]
                             ],
