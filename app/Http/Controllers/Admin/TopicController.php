@@ -35,7 +35,7 @@ class TopicController extends BaseCurlController
 
     public function getDataSource(): array
     {
-        return array_column(DataSource::query()->get(['id','name'])->all(),null,'id');
+        return array_column([''=>['id'=>'','name'=>'选择数据源']]+DataSource::query()->get(['id','name'])->all(),null,'id');
     }
 
     public function indexCols(): array
@@ -139,7 +139,6 @@ class TopicController extends BaseCurlController
         }*/
         if($dataSourceId>0){
             $idStr = DB::table('data_source')->where('id',$dataSourceId)->value('contain_vids');
-            //$idStr = implode('', $dataSources);
             $videoIds = array_unique([...$videoIds,...explode(',',$idStr)]);
         }
         if(!empty($videoIds)){
