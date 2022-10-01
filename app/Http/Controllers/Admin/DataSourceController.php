@@ -241,7 +241,8 @@ class DataSourceController extends BaseCurlController
                             ],
                         ],
                     ];
-                    Log::info('ES_keyword_params_should',$should);
+
+                    Log::info('ES_keyword_params',[json_encode($searchParams)]);
                     $response = $es->search($searchParams);
                     if(isset($response['hits']) && isset($response['hits']['hits'])){
                         $searchGet = $response['hits']['hits'];
