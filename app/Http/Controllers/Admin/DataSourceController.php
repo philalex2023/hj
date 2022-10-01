@@ -216,8 +216,8 @@ class DataSourceController extends BaseCurlController
                     $keywords = explode(',',$dataValue);
                     Log::info('ES_keywords',$keywords);
                     $must = [
-                        ['term' => ['status'=>1]],
-                        ['term' => ['dev_type'=>$videoType]],
+                        'term' => ['status'=>1],
+                        //'term' => ['dev_type'=>$videoType],
                         //['match' => ['name'=>$dataValue]]
                     ];
 
