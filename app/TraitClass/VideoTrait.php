@@ -382,48 +382,15 @@ trait VideoTrait
         $_v = date('Ymd');
         foreach ($lists as &$list){
             $list = (array)$list;
-            if (($list['usage']??1) == 2) {
-                /// 重置信息
-                $list['id'] = $list['vs_id'] ;
-                $list['name'] = $list['vs_name'] ;
-                $list['gold'] = $list['vs_gold'] ;
-                $list['cat'] = $list['vs_cat'] ;
-                $list['sync'] = $list['vs_sync'] ;
-                $list['title'] = $list['vs_title'] ;
-                $list['duration'] = $list['vs_duration'] ;
-                $list['type'] = $list['vs_type'] ;
-                $list['restricted'] = $list['vs_restricted'] ;
-                $list['cover_img'] = $list['vs_cover_img'] ;
-                $list['views'] = $list['vs_views'] ;
-//                $list['updated_at'] = $list['vs_updated_at'] ;
-                isset($list['time_at']) && ($list['updated_at'] = $list['time_at']>0 ? date('Y-m-d H:i:s',$list['time_at']) : $list['vs_updated_at']);
-                $list['hls_url'] = $list['vs_hls_url'];
-                $list['dash_url'] = $list['vs_dash_url'] ;
-                $list['gold'] = $list['vs_gold'];
-                $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(5, 9));
-                $list['preview_hls_url'] = '';
-                $list['dash_url'] = '';
-                $list['preview_dash_url'] ='';
-                if (!$display_url) {
-                    unset($list['hls_url']);
-                    unset($list['dash_url']);
-                }
-                $list['url'] = env('RESOURCE_DOMAIN_DEV') . '/' .$list['url'];
-                if ($appendInfo) {
-                    $list['comments'] = $list['vs_comments'] ;
-                    $list['likes'] = $list['vs_comments'] ;
-                }
-            } else {
-                $list['gold'] = $list['gold'] / $this->goldUnit;
-                $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(5, 9));
-                $list['preview_hls_url'] = $this->getPreviewPlayUrl($list['hls_url']??'');
-                if(isset($list['time_at']) && ($list['time_at']>0)){
-                    $list['updated_at'] = date('Y-m-d H:i:s',$list['time_at']);
-                }
-                if (!$display_url) {
-                    unset($list['hls_url']);
-                    unset($list['dash_url']);
-                }
+            $list['gold'] = $list['gold'] / $this->goldUnit;
+            $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(5, 9));
+            $list['preview_hls_url'] = $this->getPreviewPlayUrl($list['hls_url']??'');
+            if(isset($list['time_at']) && ($list['time_at']>0)){
+                $list['updated_at'] = date('Y-m-d H:i:s',$list['time_at']);
+            }
+            if (!$display_url) {
+                unset($list['hls_url']);
+                unset($list['dash_url']);
             }
             $domainSync = self::getDomain($list['sync']);
             //封面图处理
