@@ -395,7 +395,7 @@ class VideoShortController extends Controller
 
                 Log::info('==ShortList==',$catVideoList);
                 if(!empty($catVideoList)){
-                    $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
+                    $res['list'] = $this->handleVideoItems($catVideoList,true,$user->id);
                     //广告
                     //$res['list'] = $this->insertAds($res['list'],'short_video',true, $page, $perPage);
                     //Log::info('==CatList==',$res['list']);
