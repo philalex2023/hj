@@ -226,7 +226,6 @@ class DataSourceController extends BaseCurlController
                         $should[] = ['match_phrase'=>['name'=>$keyword]];
                     }
                     $must['bool'] = ['should'=>$should];
-                    $must['term'] = ['status'=>1];
                     $es = $this->esClient();
                     $searchParams = [
                         'index' => 'video_index',
@@ -237,7 +236,7 @@ class DataSourceController extends BaseCurlController
                             '_source' => false,
                             'query' => [
                                 'bool'=>[
-                                    'must' => $must
+                                    'should' => $should
                                 ]
                             ],
                         ],
