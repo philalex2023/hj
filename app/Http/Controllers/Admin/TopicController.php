@@ -184,9 +184,9 @@ class TopicController extends BaseCurlController
             ],
             [
                 'field' => 'source',
-                'type' => 'checkbox',
+                'type' => 'select',
                 'name' => '数据源',
-                'value' => ($show && ($show->data_source)) ? json_decode($show->data_source,true) : [],
+                //'value' => ($show && ($show->data_source)) ? json_decode($show->data_source,true) : [],
                 'data' => $this->dataSource
             ],
             [
