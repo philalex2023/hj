@@ -94,6 +94,7 @@ class HomeController extends Controller
             if(isset($request->params)){
                 $user = $request->user();
                 $params = self::parse($request->params);
+                Log::info('list_params',[$params]);
                 $validated = Validator::make($params,[
                     'cid' => 'required|integer',
                     'page' => 'required|integer',
