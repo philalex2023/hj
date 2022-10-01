@@ -300,7 +300,7 @@ class VideoController extends Controller
             $upRedis = $this->redis('tv');*/
             $configData = config_cache('app');
             $percentage = round(($configData['up_master_profit_percentage'] ?? 0)/100,2);
-            $goldIncome = $percentage * $one['gold'];
+            $goldIncome = $percentage * $one['gold'] * 100;
             $time = time();
             Log::info('use_gold',['up_uid:'.$one['uid'],$goldIncome]);
             $upIncomeBuild = DB::table('up_income_day')->where('uid',$one['uid'])->where('at_time',$time);
