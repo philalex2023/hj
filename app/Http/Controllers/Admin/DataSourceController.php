@@ -214,6 +214,7 @@ class DataSourceController extends BaseCurlController
             case 2: //关键字
                 if(!empty($dataValue)){
                     $keywords = explode(',',$dataValue);
+                    Log::info('ES_keywords',$keywords);
                     $must = [
                         ['term' => ['status'=>1]],
                         ['term' => ['dev_type'=>$videoType]],
