@@ -220,10 +220,12 @@ class DataSourceController extends BaseCurlController
                         ['term' => ['dev_type'=>$videoType]],
                         //['match' => ['name'=>$dataValue]]
                     ];
-                    $must['bool'] = ['should'=>[]];
+
+                    $should = [];
                     foreach ($keywords as $keyword){
-                        $must['bool']['should'][] = ['match_phrase'=>['name'=>$keyword]];
+                        $should[] = ['match_phrase'=>['name'=>$keyword]];
                     }
+                    $must['bool'] = ['should'=>$should];
                     $es = $this->esClient();
                     $searchParams = [
                         'index' => 'video_index',
