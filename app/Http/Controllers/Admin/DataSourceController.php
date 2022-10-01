@@ -221,7 +221,7 @@ class DataSourceController extends BaseCurlController
                     ];
                     $should = [];
                     foreach ($keywords as $keyword){
-                        $should[] = ['match'=>['name'=>$keyword]];
+                        $should[] = ['match_phrase'=>['name'=>$keyword]];
                     }
                     $es = $this->esClient();
                     $searchParams = [
@@ -233,7 +233,7 @@ class DataSourceController extends BaseCurlController
                             '_source' => false,
                             'query' => [
                                 'bool'=>[
-                                    'minimum_should_match'=>'50%',
+                                    //'minimum_should_match'=>'50%',
                                     'should' =>$should,
                                     'must' => $must
                                 ]
