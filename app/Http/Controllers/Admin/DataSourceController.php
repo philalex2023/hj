@@ -219,9 +219,9 @@ class DataSourceController extends BaseCurlController
                         ['term' => ['dev_type'=>$videoType]],
                         //['match' => ['name'=>$dataValue]]
                     ];
-                    $should = [];
+                    $must['bool'] = ['should'=>[]];
                     foreach ($keywords as $keyword){
-                        $should[] = ['match'=>['name'=>$keyword]];
+                        $must['bool']['should'][] = ['match_phrase'=>['name'=>$keyword]];
                     }
                     $es = $this->esClient();
                     $searchParams = [
@@ -233,13 +233,12 @@ class DataSourceController extends BaseCurlController
                             '_source' => false,
                             'query' => [
                                 'bool'=>[
-                                    'minimum_should_match'=>'50%',
-                                    'should' =>$should,
                                     'must' => $must
                                 ]
                             ],
                         ],
                     ];
+                    Log::info('ES_keyword_params',$searchParams);
                     $response = $es->search($searchParams);
                     if(isset($response['hits']) && isset($response['hits']['hits'])){
                         $searchGet = $response['hits']['hits'];
