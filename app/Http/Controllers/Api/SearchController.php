@@ -379,7 +379,7 @@ class SearchController extends Controller
             !$redis->exists($key) && $tags = $videoTag;
         }
 
-        $tags = array_slice($tags,0,5);
+        //$tags = array_slice($tags,0,5);
         return response()->json([
             'state'=>0,
             'data'=>$tags
