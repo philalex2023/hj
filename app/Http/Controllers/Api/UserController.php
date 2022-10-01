@@ -324,8 +324,8 @@ class UserController extends Controller
                 $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
                 //Log::info('test==',$vidArrShort);
                 $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
-                $videoShort = DB::table('video_short')->whereIn('id',$videoShortIds)->get([
-                    'video_short.id as vs_id','video_short.name as vs_name','video_short.gold as vs_gold','video_short.cat as vs_cat','video_short.sync as vs_sync','video_short.title as vs_title','video_short.duration as vs_duration','video_short.type as vs_type','video_short.restricted as vs_restricted','video_short.cover_img as vs_cover_img','video_short.views as vs_views','video_short.updated_at as vs_updated_at','video_short.hls_url as vs_hls_url','video_short.dash_url as vs_dash_url','video_short.url as url','video_short.comments as vs_comments','video_short.likes as vs_likes',
+                $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get([
+                    'video.id as vs_id','video.name as vs_name','video.gold as vs_gold','video.cat as vs_cat','video.sync as vs_sync','video.title as vs_title','video.duration as vs_duration','video.type as vs_type','video.restricted as vs_restricted','video.cover_img as vs_cover_img','video.views as vs_views','video.updated_at as vs_updated_at','video.hls_url as vs_hls_url','video.dash_url as vs_dash_url','video.url as url','video.comments as vs_comments','video.likes as vs_likes',
                 ])->toArray();
                 foreach ($videoShort as &$sr){
                     $sr = (array)$sr;
@@ -389,8 +389,8 @@ class UserController extends Controller
                 $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
                 //Log::info('test==',$vidArrShort);
                 $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
-                $videoShort = DB::table('video_short')->whereIn('id',$videoShortIds)->get([
-                    'video_short.id as vs_id','video_short.name as vs_name','video_short.gold as vs_gold','video_short.cat as vs_cat','video_short.sync as vs_sync','video_short.title as vs_title','video_short.duration as vs_duration','video_short.type as vs_type','video_short.restricted as vs_restricted','video_short.cover_img as vs_cover_img','video_short.views as vs_views','video_short.updated_at as vs_updated_at','video_short.hls_url as vs_hls_url','video_short.dash_url as vs_dash_url','video_short.url as url','video_short.comments as vs_comments','video_short.likes as vs_likes',
+                $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get([
+                    'video.id as vs_id','video.name as vs_name','video.gold as vs_gold','video.cat as vs_cat','video.sync as vs_sync','video.title as vs_title','video.duration as vs_duration','video.type as vs_type','video.restricted as vs_restricted','video.cover_img as vs_cover_img','video.views as vs_views','video.updated_at as vs_updated_at','video.hls_url as vs_hls_url','video.dash_url as vs_dash_url','video.url as url','video.comments as vs_comments','video.likes as vs_likes',
                 ])->toArray();
                 foreach ($videoShort as &$sr){
                     $sr = (array)$sr;

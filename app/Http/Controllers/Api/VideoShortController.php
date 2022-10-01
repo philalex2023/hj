@@ -437,10 +437,10 @@ class VideoShortController extends Controller
             if ($is_love) {
                 $videoRedis->sAdd($shortLoveKey,$id);
                 $videoRedis->expire($shortLoveKey,7*24*3600);
-                AdminVideo::query()->where('id', $id)->increment('likes');
+                DB::table('video')->where('id', $id)->increment('likes');
             } else {
                 $videoRedis->sRem($shortLoveKey,$id);
-                AdminVideo::query()->where('id', $id)->decrement('likes');
+                DB::table('video')->where('id', $id)->decrement('likes');
             }
             return response()->json([
                 'state' => 0,
