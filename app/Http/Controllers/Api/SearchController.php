@@ -60,7 +60,8 @@ class SearchController extends Controller
                 $project = intval($validated['project'] ?? 1);
                 $project = $project>0 ? $project : 1;
 //                $model = Video::search($words?:"*")->where('status', 1)->where('type',$project);
-                $model = Video::search($words?:"*")->where('status', 1)->where('type',$project);
+                $model = Video::search($words?:"*")->where('status', 1);
+                    //->where('type',$project);
                 // 分类
                 if (!empty($cats) || !empty($bids)) {
                     $cats = !empty($bids) ? $bids : $cats;
