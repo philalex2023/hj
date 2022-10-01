@@ -225,7 +225,7 @@ class DataSourceController extends BaseCurlController
                     foreach ($keywords as $keyword){
                         $should[] = ['match_phrase'=>['name'=>$keyword]];
                     }
-                    $must['bool'] = ['should'=>$should];
+                    //$must['bool'] = ['should'=>$should];
                     $es = $this->esClient();
                     $searchParams = [
                         'index' => 'video_index',
