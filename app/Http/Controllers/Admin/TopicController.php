@@ -116,6 +116,7 @@ class TopicController extends BaseCurlController
     {
         $tag = $this->rq->input('tags',[]);
         $cid = $this->rq->input('cid',0);
+        $dataSourceId = $this->rq->input('data_source_id',0);
         $dataSource = $this->rq->input('source',[]);
         $model->tag = json_encode($tag);
         $model->data_source = json_encode($dataSource);
@@ -131,9 +132,14 @@ class TopicController extends BaseCurlController
                 }
             });
         }
-        if(!empty($dataSource)){
+        /*if(!empty($dataSource)){
             $dataSources = DB::table('data_source')->whereIn('id',$dataSource)->pluck('contain_vids')->all();
             $idStr = implode('', $dataSources);
+            $videoIds = array_unique([...$videoIds,...explode(',',$idStr)]);
+        }*/
+        if($dataSourceId>0){
+            $idStr = DB::table('data_source')->where('id',$dataSourceId)->value('contain_vids');
+            //$idStr = implode('', $dataSources);
             $videoIds = array_unique([...$videoIds,...explode(',',$idStr)]);
         }
         if(!empty($videoIds)){
@@ -182,11 +188,17 @@ class TopicController extends BaseCurlController
                 'default' => 7,
                 'data' => $this->showTypes
             ],
-            [
+            /*[
                 'field' => 'source',
+                'type' => 'checkbox',
+                'name' => '数据源',
+                'value' => ($show && ($show->data_source)) ? json_decode($show->data_source,true) : [],
+                'data' => $this->dataSource
+            ],*/
+            [
+                'field' => 'data_source_id',
                 'type' => 'select',
                 'name' => '数据源',
-                //'value' => ($show && ($show->data_source)) ? json_decode($show->data_source,true) : [],
                 'data' => $this->dataSource
             ],
             [
