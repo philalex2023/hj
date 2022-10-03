@@ -705,7 +705,7 @@ class VideoController extends BaseCurlController
                     'data-field' => "tag",
                 ]
             ];*/
-            $data[] = [
+            /*$data[] = [
                 'class' => 'layui-btn-danger',
                 'name' => 'VIP限制',
                 'id' => 'btn-vipRestricted',
@@ -737,7 +737,7 @@ class VideoController extends BaseCurlController
                     'data-field' => "free_restricted",
                     'data-value' => 0,
                 ]
-            ];
+            ];*/
         }
         $this->uiBlade['btn'] = $data;
     }
