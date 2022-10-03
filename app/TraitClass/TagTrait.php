@@ -3,6 +3,7 @@
 namespace App\TraitClass;
 
 use App\Models\Tag;
+use Illuminate\Support\Facades\DB;
 
 trait TagTrait
 {
@@ -31,5 +32,22 @@ trait TagTrait
             $name .= $t.$characters;
         }
         return rtrim($name,$characters);
+    }
+
+    public function getVideoIdsByTag(array $tag): array
+    {
+        $tagVideoIds = [];
+        if(!empty($tag)){
+            DB::table('video')->where('status',1)->chunkById(100,function ($items) use ($tag,&$tagVideoIds){
+                foreach ($items as $item){
+                    $jsonArr = json_decode($item->tag,true);
+                    $intersect = array_intersect($jsonArr,$tag); //交集
+                    if(!empty($intersect)){
+                        $tagVideoIds[] = $item->id;
+                    }
+                }
+            });
+        }
+        return $tagVideoIds;
     }
 }

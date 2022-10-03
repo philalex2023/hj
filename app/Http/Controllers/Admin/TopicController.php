@@ -116,22 +116,13 @@ class TopicController extends BaseCurlController
     {
         $tag = $this->rq->input('tags',[]);
         $cid = $this->rq->input('cid',0);
+        $model->cid = $cid;
         $dataSourceId = $this->rq->input('data_source_id',0);
         $dataSource = $this->rq->input('source',[]);
         $model->tag = json_encode($tag);
         $model->data_source = json_encode($dataSource);
-        $videoIds = [];
-        if(!empty($tag)){
-            DB::table('video')->where('status',1)->chunkById(100,function ($items) use ($tag,&$videoIds,$model){
-                foreach ($items as $item){
-                    $jsonArr = json_decode($item->tag,true);
-                    $intersect = array_intersect($jsonArr,$tag); //交集
-                    if(!empty($intersect)){
-                        $videoIds[] = $item->id;
-                    }
-                }
-            });
-        }
+
+        $videoIds = $this->getVideoIdsByTag($tag);
         /*if(!empty($dataSource)){
             $dataSources = DB::table('data_source')->whereIn('id',$dataSource)->pluck('contain_vids')->all();
             $idStr = implode('', $dataSources);

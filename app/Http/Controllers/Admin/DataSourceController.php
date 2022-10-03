@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Jobs\ProcessDataSource;
 use App\Models\DataSource;
+use App\Models\Topic;
 use App\Models\Video;
 use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
@@ -241,7 +243,7 @@ class DataSourceController extends BaseCurlController
                         ],
                     ];
 
-                    Log::info('ES_keyword_params',[json_encode($searchParams)]);
+                    //Log::info('ES_keyword_params',[json_encode($searchParams)]);
                     $response = $es->search($searchParams);
                     if(isset($response['hits']) && isset($response['hits']['hits'])){
                         $searchGet = $response['hits']['hits'];
@@ -278,21 +280,12 @@ class DataSourceController extends BaseCurlController
         $model->video_num = count($videoIds);
     }
 
-    /*protected function afterSaveSuccessEvent($model, $id = '')
+    protected function afterSaveSuccessEvent($model, $id = '')
     {
-        switch ($model->data_type){
-            case 1: //标签
-                $tagIds = $this->rq->input('tags',[]);
-
-                break;
-            case 2: //关键字
-                Video::search($model->data_value)->where('status',1)->get();
-                break;
-        }
-        //在ES中创建/更新索引
-        //$es = $this->esClient();
+        $job = new ProcessDataSource($model);
+        $this->dispatch($job);
         return $model;
-    }*/
+    }
     //表单验证
    /* public function checkRule($id = '')
     {
