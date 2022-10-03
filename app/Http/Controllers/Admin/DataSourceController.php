@@ -283,7 +283,7 @@ class DataSourceController extends BaseCurlController
     protected function afterSaveSuccessEvent($model, $id = '')
     {
         $job = new ProcessDataSource($model);
-        $this->dispatch($job->onQueue('high'));
+        $this->dispatch($job);
         return $model;
     }
     //表单验证
