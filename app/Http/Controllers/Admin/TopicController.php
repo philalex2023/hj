@@ -122,7 +122,7 @@ class TopicController extends BaseCurlController
         $model->data_source = json_encode($dataSource);
         $videoIds = [];
         if(!empty($tag)){
-            DB::table('video')->where('cid',$cid)->where('status',1)->chunkById(100,function ($items) use ($tag,&$videoIds,$model){
+            DB::table('video')->where('status',1)->chunkById(100,function ($items) use ($tag,&$videoIds,$model){
                 foreach ($items as $item){
                     $jsonArr = json_decode($item->tag,true);
                     $intersect = array_intersect($jsonArr,$tag); //交集
