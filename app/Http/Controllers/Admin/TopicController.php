@@ -76,7 +76,7 @@ class TopicController extends BaseCurlController
                 'align' => 'center',
             ],
             [
-                'field' => 'data_source',
+                'field' => 'data_source_id',
                 'minWidth' => 100,
                 'title' => '数据源',
                 'align' => 'center',
@@ -240,9 +240,8 @@ class TopicController extends BaseCurlController
     public function setListOutputItemExtend($item)
     {
         $tagArr = json_decode($item->tag,true)??[];
-        $dataSourceArr = json_decode($item->data_source,true)??[];
         $item->tag = $this->transferJsonFieldName($this->tags,$tagArr);
-        $item->data_source = $this->transferJsonFieldName($this->dataSource,$dataSourceArr);
+        $item->data_source_id = $this->dataSource[$item->data_source_id]['name'];
         $item->show_type = $this->showTypes[$item->show_type]['name'];
         //$item->cid = $this->cats[$item->cid]['name'];
         $item->cid = !isset($this->cats[$item->cid])? '-' : $this->cats[$item->cid]['name'];
