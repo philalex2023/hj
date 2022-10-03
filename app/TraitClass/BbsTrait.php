@@ -105,6 +105,8 @@ trait BbsTrait
                 $video[] = $domainSync.$this->transferHlsUrl($itemV);
             }
             $list[$k]['video']  = $video;
+            empty($list[$k]['video_picture']) && $list[$k]['video']=[];
+
             //
             if(isset($re['member_card_type'])){
                 str_contains($re['member_card_type'],'6') && $list[$k]['vipLevel'] = -1;
