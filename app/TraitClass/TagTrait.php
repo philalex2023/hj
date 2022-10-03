@@ -16,7 +16,7 @@ trait TagTrait
     {
         $name = [];
         foreach ($jsonArr as $v){
-            $name[] = $data[$v]['name'];
+            isset($data[$v]) && $name[] = $data[$v]['name'];
         }
         return implode(',',$name);
     }
