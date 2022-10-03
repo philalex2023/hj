@@ -1,4 +1,4 @@
-<script src="/player/spark-md5.min.js"></script>
+{{--<script src="/player/spark-md5.min.js"></script>--}}
 
 <script src="/player/hls.min.js"></script>
 
@@ -16,10 +16,10 @@
 {{--        <button class="layui-btn layui-btn-white layui-btn-sm iupload-area-img-show-btn {{ $form_item['value']?'':'none' }}" type="button">删除</button>--}}
     </div>
     <div class="controls">
-        <label class="layui-btn layui-btn-sm">
+        {{--<label class="layui-btn layui-btn-sm">
             <i class="layui-icon layui-icon-upload-circle"></i> {{ lang('点击上传') }}
             <input type="file" style="display: none" id="aetherupload-resource" onchange="aetherupload(this).setGroup('file').setSavedPathField('#aetherupload-savedpath').setPreprocessRoute('/aetherupload/preprocess').setUploadingRoute('/aetherupload/uploading').setLaxMode(false).success(someCallback).upload()"/>
-        </label>
+        </label>--}}
         <div class="progress" style="height: 6px;margin-bottom: 2px;margin-top: 10px;width: 200px;">
             <div id="aetherupload-progressbar" style="background:#2F4056;height:6px;width:0;"></div><!--需要一个名为aetherupload-progressbar的id，用以标识进度条-->
         </div>

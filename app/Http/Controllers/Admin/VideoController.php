@@ -431,10 +431,10 @@ class VideoController extends BaseCurlController
      */
     protected function afterSaveSuccessEvent($model, $id = '')
     {
-        if( isset($_REQUEST['callback_upload']) && ($_REQUEST['callback_upload']==1)){
+        /*if( isset($_REQUEST['callback_upload']) && ($_REQUEST['callback_upload']==1)){
             $job = new ProcessVideoSlice($model);
             $this->dispatch($job->onQueue('high'));
-        }
+        }*/
         /*$resetJob = new ProcessResetRedisVideo($model->cat,$model->tag,$model);
         $this->dispatch($resetJob->onQueue('high'));*/
 
