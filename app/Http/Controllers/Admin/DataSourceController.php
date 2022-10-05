@@ -6,6 +6,7 @@ use App\Jobs\ProcessDataSource;
 use App\Models\DataSource;
 use App\Models\Topic;
 use App\Models\Video;
+use App\Services\UiService;
 use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
 use App\TraitClass\EsTrait;
@@ -118,64 +119,121 @@ class DataSourceController extends BaseCurlController
 
     public function setOutputUiCreateEditForm($show = '')
     {
-        $data = [
+        //dd(request()->all());
+        $request = request()->all();
+        $indexUrl = action([VideoController::class, 'getList'],['data_source_id'=>$show->id]);
+        $dataConfig = [
+            'index_url' => $indexUrl,//首页列表JSON地址
+            'table_name' => 'video',
+            'page_name' => '视频数据',
+            'edit_field_url' => action([VideoController::class, 'editTable']),//表格编辑提交地址
+            'open_height' => $this->layuiOpenHeight(),//Layui 弹窗弹出高度
+            'open_width' => $this->layuiOpenWidth(),//Layui 弹窗高度窗口
+        ];
+        $cols = [
+            [
+                'type' => 'checkbox',
+                'fixed' => 'left'
+            ],
+            [
+                'field' => 'id',
+                'width' => 80,
+                'title' => '编号',
+                'sort' => 1,
+                'fixed' => 'left',
+                'align' => 'center'
+            ],
             [
                 'field' => 'name',
-                'type' => 'text',
-                'name' => '数据源名称',
-                'must' => 1,
-                'verify' => 'rq',
-                'default' => '',
-            ],
-            [
-                'field' => 'video_type',
-                'type' => 'select',
-                'name' => '视频类型',
-                'must' => 1,
-                'verify' => 'rq',
-                'data' => $this->deviceType
-            ],
-            [
-                'field' => 'data_type',
-                'type' => 'select',
-                'name' => '数据类型',
-                'data' => $this->dataType
-            ],
-            [
-                'field' => 'data_value',
-                'type' => 'text',
-                'name' => '数据值',
-            ],
-            [
-                'field' => 'cid',
-                'type' => 'select',
-                'name' => '分类',
-                'must' => 0,
-                'verify' => '',
-                'data' => $this->cats
-            ],
-            [
-                'field' => 'tags',
-                'type' => 'checkbox',
-                'name' => '标签',
-                'value' => ($show && ($show->tag)) ? json_decode($show->tag,true) : [],
-                'data' => $this->tags
+                'minWidth' => 150,
+                'title' => '片名',
+                'align' => 'center',
             ],
             /*[
                 'field' => 'sort',
-                'type' => 'number',
-                'name' => '排序',
-                'default' => 0,
-            ],*/
-            /*[
-                'field' => 'status',
-                'type' => 'radio',
-                'name' => '状态',
-                'verify' => '',
-                'default' => 1,
-                'data' => $this->uiService->trueFalseData()
+                'minWidth' => 80,
+                'title' => '排序',
+                'edit' => 1,
+                'sort' => 1,
+                'align' => 'center',
             ],*/
         ];
+
+        if(isset($request['getVideo'])){
+            $this->pageName = '视频数据';
+            $data = [
+                [
+                    'field' => 'video_list',
+                    'type' => 'childVideo',
+                    'name' => '数据源名称',
+                    'must' => 1,
+                    'data' => $this->deviceType,
+                    'list_config' => $dataConfig,
+                    'cols' => $cols,
+                    'default' => '',
+                ],
+            ];
+        }else{
+            $data = [
+                [
+                    'field' => 'name',
+                    'type' => 'text',
+                    'name' => '数据源名称',
+                    'must' => 1,
+                    'verify' => 'rq',
+                    'default' => '',
+                ],
+                [
+                    'field' => 'video_type',
+                    'type' => 'select',
+                    'name' => '视频类型',
+                    'must' => 1,
+                    'verify' => 'rq',
+                    'data' => $this->deviceType
+                ],
+                [
+                    'field' => 'data_type',
+                    'type' => 'select',
+                    'name' => '数据类型',
+                    'data' => $this->dataType
+                ],
+                [
+                    'field' => 'data_value',
+                    'type' => 'text',
+                    'name' => '数据值',
+                ],
+                [
+                    'field' => 'cid',
+                    'type' => 'select',
+                    'name' => '分类',
+                    'must' => 0,
+                    'verify' => '',
+                    'data' => $this->cats
+                ],
+                [
+                    'field' => 'tags',
+                    'type' => 'checkbox',
+                    'name' => '标签',
+                    'value' => ($show && ($show->tag)) ? json_decode($show->tag,true) : [],
+                    'data' => $this->tags
+                ],
+                /*[
+                    'field' => 'sort',
+                    'type' => 'number',
+                    'name' => '排序',
+                    'default' => 0,
+                ],*/
+                /*[
+                    'field' => 'status',
+                    'type' => 'radio',
+                    'name' => '状态',
+                    'verify' => '',
+                    'default' => 1,
+                    'data' => $this->uiService->trueFalseData()
+                ],*/
+            ];
+        }
+
         $this->uiBlade['form'] = $data;
     }
 
@@ -306,6 +364,26 @@ class DataSourceController extends BaseCurlController
         ];
     }*/
 
+    //编辑链接赋值检查权限
+    public function editUrlShow($item)
+    {
+        $item['edit_url'] = '';
+        $item['edit_post_url'] = '';
+        $edit_true=0;
+
+
+        if (acan($this->getRouteInfo('controller_route_name') . 'edit' )) {
+            $edit_true = 1;
+        }
+        if ($edit_true) {
+            $item['edit_url'] = action($this->route['controller_name'] . '@edit', ['id' => $item->id]);
+            $item['edit_post_url'] = action($this->route['controller_name'] . '@update', ['id' => $item->id]);
+            $item['edit_video_list_url'] = action($this->route['controller_name'] . '@edit', ['id' => $item->id,'getVideo'=>1]);
+        }
+        return $item;
+
+    }
+
     public function setListOutputItemExtend($item)
     {
         $item->video_type = $this->deviceType[$item->video_type]['name'];
@@ -314,11 +392,11 @@ class DataSourceController extends BaseCurlController
             0 => '-',
             default => $item->show_num,
         };
-        $url = action([VideoController::class, 'getList'],request()->all()+['did'=>$item->id]);
-        /*$item->video_num = match ($item->video_num){
+        //$url = action([VideoController::class, 'getList'],request()->all()+['did'=>$item->id]);
+        $item->video_num = match ($item->video_num){
             0 => '-',
-            default => '<a class="event-link" data-title="视频数据" lay-event="openVideoPost" data-w="75%" data-h="75%" href="javascript:void(0)" data-url="' . $url . '" >' . $item->video_num . '</a> ',
-        };*/
+            default => '<a class="event-link" data-title="视频数据" lay-event="editVideoList" data-w="75%" data-h="75%" href="javascript:void(0)" >' . $item->video_num . '</a> ',
+        };
         return $item;
     }
 

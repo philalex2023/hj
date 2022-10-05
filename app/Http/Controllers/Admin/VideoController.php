@@ -12,6 +12,7 @@ use App\Jobs\VideoSlice;
 use App\Models\AdminVideo;
 use App\Models\AdminVideoShort;
 use App\Models\Category;
+use App\Models\DataSource;
 use App\Models\Tag;
 use App\Models\Topic;
 use App\Models\Video;
@@ -524,6 +525,11 @@ class VideoController extends BaseCurlController
         //$cat = $this->rq->input('cat');
         //$tag = $this->rq->input('tag');
         $type = (int)$this->rq->input('type',0);
+        $dataSourceId = (int)$this->rq->input('data_source_id',0);
+        if($dataSourceId>0){
+            $contain_ids = DataSource::query()->where('id',$dataSourceId)->value('contain_vids');
+            $model = $model->whereIn('id',explode(',',$contain_ids));
+        }
 
         $type>0 && $model=$model->where('type',$type);
         $cid>0 && $model=$model->where('cid',$cid);

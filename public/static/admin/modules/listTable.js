@@ -224,6 +224,25 @@ layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent'],
             }
           )
           break;
+          case 'editVideoList':
+          url = data.copy_url;
+          w = listConfig.open_width;
+          h = listConfig.open_height;
+          //是否父级弹窗
+
+
+          topLayui.custormEvent.openIframePost(
+            data.edit_video_list_url,
+            data.edit_post_url,
+            w, h,
+            appLang.trans('编辑') + appLang.trans(listConfig.page_name),
+            [appLang.trans('立即更新'), appLang.trans('取消')],
+            tableNameId,
+            function (res) {
+              callFun && callFun(res)
+            }
+          )
+          break;
         //查看图片
         case 'showImg':
           var src = $(this).data('src');
@@ -249,19 +268,6 @@ layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent'],
           topLayui.custormEvent.openIframePost(
             url, post_url, w, h, title, btn, tableNameId, function (res) {
               callFun && callFun(res)
-            });
-          break;
-        case 'openVideoPost':
-          w = $(this).data('w');
-          h = $(this).data('h');
-          btn = $(this).data('btn');
-          title = $(this).data('title');
-          url = $(this).data('url');
-          var post_url = $(this).data('post_url');
-          topLayui.custormEvent.openIframePost(
-            url, post_url, w, h, title, btn, tableNameId, function (res) {
-              //callFun && callFun(res)
-              //   console.log(res);
             });
           break;
         //直接询问是否提交，需要一个post url
