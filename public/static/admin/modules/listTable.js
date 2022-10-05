@@ -229,14 +229,12 @@ layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent'],
           w = listConfig.open_width;
           h = listConfig.open_height;
           //是否父级弹窗
-
-
           topLayui.custormEvent.openIframePost(
             data.edit_video_list_url,
-            data.edit_post_url,
+            data.edit_video_list_post_url,
             w, h,
             appLang.trans('编辑') + appLang.trans(listConfig.page_name),
-            [appLang.trans('立即更新'), appLang.trans('取消')],
+            [appLang.trans('确定'), appLang.trans('取消')],
             tableNameId,
             function (res) {
               callFun && callFun(res)

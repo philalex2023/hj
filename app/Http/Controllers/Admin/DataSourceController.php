@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Jobs\ProcessDataSource;
+use App\Models\AdminVideo;
 use App\Models\DataSource;
 use App\Models\Topic;
 use App\Models\Video;
@@ -11,6 +12,7 @@ use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
 use App\TraitClass\EsTrait;
 use App\TraitClass\TagTrait;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -149,19 +151,25 @@ class DataSourceController extends BaseCurlController
                 'title' => '片名',
                 'align' => 'center',
             ],
-            /*[
+            [
                 'field' => 'sort',
                 'minWidth' => 80,
                 'title' => '排序',
                 'edit' => 1,
                 'sort' => 1,
                 'align' => 'center',
-            ],*/
+            ],
         ];
 
         if(isset($request['getVideo'])){
             $this->pageName = '视频数据';
             $data = [
+                [
+                    'field' => '_method',
+                    'type' => 'hidden',
+                    'name' => '_method',
+                    'default' => 'PUT',
+                ],
                 [
                     'field' => 'video_list',
                     'type' => 'childVideo',
@@ -364,6 +372,17 @@ class DataSourceController extends BaseCurlController
         ];
     }*/
 
+    public function updatePost(Request $request, $id)
+    {
+        /*dump($request->all());
+        dump($id);*/
+        $model = DataSource::query()->where('id',$id);
+        $containIds = explode(',',$model->value('contain_vids'));
+        $updateIds = DB::table('video')->whereIn('id',$containIds)->orderByDesc('sort')->pluck('id')->all();
+        $model->update(['contain_vids'=>implode(',',$updateIds)]);
+        return $this->returnSuccessApi();
+    }
+
     //编辑链接赋值检查权限
     public function editUrlShow($item)
     {
@@ -379,6 +398,7 @@ class DataSourceController extends BaseCurlController
             $item['edit_url'] = action($this->route['controller_name'] . '@edit', ['id' => $item->id]);
             $item['edit_post_url'] = action($this->route['controller_name'] . '@update', ['id' => $item->id]);
             $item['edit_video_list_url'] = action($this->route['controller_name'] . '@edit', ['id' => $item->id,'getVideo'=>1]);
+            $item['edit_video_list_post_url'] = action($this->route['controller_name'] . '@updatePost', ['id' => $item->id,'getVideo'=>1]);
         }
         return $item;
 

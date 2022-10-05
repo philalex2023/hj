@@ -142,7 +142,8 @@ $route->middleware(['admin_auth'])->name($route_name)->group(function ($route) {
             $route->post('edit_list/', $c . '@editTable')->name($route_name . ".edit_list")->middleware($permission_rule . 'edit');
             $route->any('/list', $c . '@getList')->name($route_name . ".list")->middleware($permission_rule . 'index');
             $route->any('copy/', $c . '@copy')->name($route_name . ".copy")->middleware($permission_rule . 'create');
-
+            //
+            $c === 'DataSourceController' && $route->post('updatePost/{id}', $c . '@updatePost')->name($route_name . ".update_post")->middleware($permission_rule . 'edit');
         });
     }
     //批量导入和批量添加
