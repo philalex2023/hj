@@ -123,15 +123,18 @@ class DataSourceController extends BaseCurlController
     {
         //dd(request()->all());
         $request = request()->all();
-        $show!=='' && $indexUrl = action([VideoController::class, 'getList'],['data_source_id'=>$show->id]);
-        $dataConfig = [
-            'index_url' => $indexUrl,//首页列表JSON地址
-            'table_name' => 'video',
-            'page_name' => '视频数据',
-            'edit_field_url' => action([VideoController::class, 'editTable']),//表格编辑提交地址
-            'open_height' => $this->layuiOpenHeight(),//Layui 弹窗弹出高度
-            'open_width' => $this->layuiOpenWidth(),//Layui 弹窗高度窗口
-        ];
+        if($show!==''){
+            $indexUrl = action([VideoController::class, 'getList'],['data_source_id'=>$show->id]);
+            $dataConfig = [
+                'index_url' => $indexUrl,//首页列表JSON地址
+                'table_name' => 'video',
+                'page_name' => '视频数据',
+                'edit_field_url' => action([VideoController::class, 'editTable']),//表格编辑提交地址
+                'open_height' => $this->layuiOpenHeight(),//Layui 弹窗弹出高度
+                'open_width' => $this->layuiOpenWidth(),//Layui 弹窗高度窗口
+            ];
+        }
+
         $cols = [
             [
                 'type' => 'checkbox',
@@ -176,7 +179,7 @@ class DataSourceController extends BaseCurlController
                     'name' => '数据源名称',
                     'must' => 1,
                     'data' => $this->deviceType,
-                    'list_config' => $dataConfig,
+                    'list_config' => $dataConfig ?? [],
                     'cols' => $cols,
                     'default' => '',
                 ],
