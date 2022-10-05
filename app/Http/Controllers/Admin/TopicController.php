@@ -131,6 +131,8 @@ class TopicController extends BaseCurlController
         if($dataSourceId>0){
             $idStr = DB::table('data_source')->where('id',$dataSourceId)->value('contain_vids');
             $videoIds = array_unique([...$videoIds,...explode(',',$idStr)]);
+        }else{
+            $videoIds = array_unique([...$videoIds]);
         }
         $model->contain_vids = implode(',',$videoIds);
     }
