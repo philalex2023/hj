@@ -123,7 +123,7 @@ class DataSourceController extends BaseCurlController
     {
         //dd(request()->all());
         $request = request()->all();
-        $indexUrl = action([VideoController::class, 'getList'],['data_source_id'=>$show->id]);
+        $show!=='' && $indexUrl = action([VideoController::class, 'getList'],['data_source_id'=>$show->id]);
         $dataConfig = [
             'index_url' => $indexUrl,//首页列表JSON地址
             'table_name' => 'video',
