@@ -314,6 +314,11 @@ class DataSourceController extends BaseCurlController
             0 => '-',
             default => $item->show_num,
         };
+        $url = action([VideoController::class, 'getList'],request()->all()+['did'=>$item->id]);
+        /*$item->video_num = match ($item->video_num){
+            0 => '-',
+            default => '<a class="event-link" data-title="视频数据" lay-event="openVideoPost" data-w="75%" data-h="75%" href="javascript:void(0)" data-url="' . $url . '" >' . $item->video_num . '</a> ',
+        };*/
         return $item;
     }
 

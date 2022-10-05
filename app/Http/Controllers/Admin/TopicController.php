@@ -132,9 +132,7 @@ class TopicController extends BaseCurlController
             $idStr = DB::table('data_source')->where('id',$dataSourceId)->value('contain_vids');
             $videoIds = array_unique([...$videoIds,...explode(',',$idStr)]);
         }
-        if(!empty($videoIds)){
-            $model->contain_vids = implode(',',$videoIds);
-        }
+        $model->contain_vids = implode(',',$videoIds);
     }
 
     public function afterSaveSuccessEvent($model, $id = '')

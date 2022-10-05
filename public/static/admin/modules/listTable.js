@@ -251,6 +251,19 @@ layui.define(['utable', 'uform', 'request', 'laypage', 'layer', 'custormEvent'],
               callFun && callFun(res)
             });
           break;
+        case 'openVideoPost':
+          w = $(this).data('w');
+          h = $(this).data('h');
+          btn = $(this).data('btn');
+          title = $(this).data('title');
+          url = $(this).data('url');
+          var post_url = $(this).data('post_url');
+          topLayui.custormEvent.openIframePost(
+            url, post_url, w, h, title, btn, tableNameId, function (res) {
+              //callFun && callFun(res)
+              //   console.log(res);
+            });
+          break;
         //直接询问是否提交，需要一个post url
         case 'post':
           btn = $(this).data('btn');
