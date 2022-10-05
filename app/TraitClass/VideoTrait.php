@@ -416,7 +416,7 @@ trait VideoTrait
             //标签
             isset($list['tag_kv']) && $list['tag_kv'] = json_decode($list['tag_kv'],true);
             //片名加前缀
-            $list['name'] = '【海角原创】：'.$list['name'];
+            $list['name'] = '[海角原创]:'.$list['name'];
         }
         return $lists;
     }
