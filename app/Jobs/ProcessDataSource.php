@@ -10,6 +10,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\DB;
 
 class ProcessDataSource implements ShouldQueue
 {
@@ -53,7 +54,12 @@ class ProcessDataSource implements ShouldQueue
             $tag  = !$topic->tag ? [] : json_decode($topic->tag,true);
             $tagVideoIds = $this->getVideoIdsByTag($tag);
             $sourceIds = !$model->contain_vids ? [] : explode(',',$model->contain_vids);
-            $ids = array_unique([...$sourceIds,...$tagVideoIds]);
+            $firstIds = [];
+            if($this->row->show_num > 0){
+                $containIds = explode(',',$model->value('contain_vids'));
+                $firstIds = DB::table('video')->whereIn('id',$containIds)->limit($this->row->show_num)->orderByDesc('sort')->pluck('id')->all();
+            }
+            $ids = array_unique([...$firstIds,...$tagVideoIds,...$sourceIds]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>implode(',',$ids)]);
         }
     }

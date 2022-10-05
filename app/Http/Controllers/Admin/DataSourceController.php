@@ -219,6 +219,12 @@ class DataSourceController extends BaseCurlController
                     'data' => $this->cats
                 ],
                 [
+                    'field' => 'show_num',
+                    'type' => 'text',
+                    'name' => '首页展示数量',
+                    'value' => ($show && ($show->show_num>0)) ? $show->show_num : '',
+                ],
+                [
                     'field' => 'tags',
                     'type' => 'checkbox',
                     'name' => '标签',
