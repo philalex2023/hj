@@ -122,6 +122,7 @@ class HomeController extends Controller
                     //Log::info('index_list_topics',[$topics]);
                     foreach ($topics as &$topic){
                         $topic = (array)$topic;
+                        $topic['style'] = (string)$topic['style']; //android要是字符串
                         $videoList = [];
                         if(!empty($topic['contain_vids'])){
                             //获取专题数据
@@ -167,7 +168,7 @@ class HomeController extends Controller
                                     ]
                                 ],
                             ];
-                            $topic['style'] = (string)$topic['style']; //android要是字符串
+
                             $es = $this->esClient();
                             $response = $es->search($searchParams);
 
