@@ -31,15 +31,16 @@ class HomeController extends Controller
         $data = $cacheData ? $cacheData->toArray() : [];
 
         //隐藏最后一个
-        $res = [];
+        /*$res = [];
         foreach ($data as $v){
             if(isset($v->id) && $v->id!=10058){
                 $res[] = $v;
             }
-        }
+        }*/
         /*if($request->user()->id==8490593){
             Log::info('==Category==',[8490593,$res]);
         }*/
+        Log::info('==Category==',[$request->user()->id,$res]);
         return response()->json([
             'state'=>0,
             'data'=>$res
