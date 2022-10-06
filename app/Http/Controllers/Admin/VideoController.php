@@ -41,6 +41,12 @@ class VideoController extends BaseCurlController
 
     public array $topics=[];
 
+    public array $dev_type = [
+        '' => ['id'=>'','name'=>'全部'],
+        0 => ['id'=>0,'name'=>'横屏'],
+        1 => ['id'=>1,'name'=>'竖屏'],
+    ];
+
     public array $video_source = [
         ''=>['id'=>'','name'=>'全部'],
 //        1=>['id'=>1,'name'=>'上传'],
@@ -416,11 +422,8 @@ class VideoController extends BaseCurlController
         $item->tag_name = $this->getTagName($item->tag_kv??[]);
         $item->status = UiService::switchTpl('status', $item,'','上架|下架');
         $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
-        $item->type = !isset($this->video_source[$item->type]) ? '' : $this->video_source[$item->type]['name'];
-        $item->dev_type = match ($item->dev_type){
-            1 => '竖屏',
-            default => '横屏'
-        };
+        $item->type = !isset($this->video_source[$item->type]) ? '-' : $this->video_source[$item->type]['name'];
+        $item->dev_type = !isset($this->dev_type[$item->dev_type]) ? '-' : $this->dev_type[$item->dev_type]['name'];
         $item->restricted = $this->restrictedType[$item->restricted]['name'];
         $item->gold = $item->gold/$this->goldUnit;
         return $item;
@@ -526,6 +529,7 @@ class VideoController extends BaseCurlController
         //$tag = $this->rq->input('tag');
         $type = (int)$this->rq->input('type',0);
         $topicId = (int)$this->rq->input('topic',0);
+        $dev_type = (int)$this->rq->input('dev_type');
         if($topicId>0){
             $contain_ids = DataSource::query()->where('id',$topicId)->value('contain_vids');
             $model = $model->whereIn('id',explode(',',$contain_ids));
@@ -533,6 +537,9 @@ class VideoController extends BaseCurlController
 
         $type>0 && $model=$model->where('type',$type);
         $cid>0 && $model=$model->where('cid',$cid);
+        if($dev_type){
+            $model=$model->where('dev_type',$dev_type);
+        }
 
         return parent::handleResultModel($model);
 
@@ -591,6 +598,13 @@ class VideoController extends BaseCurlController
                 'name' => '专题',
                 'default' => '',
                 'data' => $this->topics
+            ],
+            [
+                'field' => 'dev_type',
+                'type' => 'select',
+                'name' => '视频类型',
+                'default' => '',
+                'data' => $this->dev_type
             ],
             [
                 'field' => 'type',
