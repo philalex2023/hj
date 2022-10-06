@@ -6,6 +6,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\TraitClass\AdTrait;
 use App\TraitClass\PHPRedisTrait;
+use Illuminate\Support\Facades\Log;
 
 class ConfigController extends Controller
 {
@@ -13,6 +14,7 @@ class ConfigController extends Controller
 
     public function ack(): \Illuminate\Http\JsonResponse
     {
+        Log::info('==ack==',[request()->all()]);
         $configKey = 'api_config';
         $configData = $this->redis()->get($configKey);
         $res = $configData ? (array)json_decode($configData,true) : $this->getConfigDataFromDb();
