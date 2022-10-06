@@ -110,11 +110,11 @@ class HomeController extends Controller
                 $res = $redis->get($sectionKey);
                 $res = json_decode($res,true);
                 if(!$res || $redis->get('homeLists_fresh')){
-                    $lock = Cache::lock('homeLists_lock');
+                    /*$lock = Cache::lock('homeLists_lock');
                     if(!$lock->get()){
                         Log::info('index_list',[$sectionKey]);
                         return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
-                    }
+                    }*/
 
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
@@ -171,7 +171,7 @@ class HomeController extends Controller
 //                    $redis->expire($sectionKey,3600);
                     $redis->expire($sectionKey,600);
                     $redis->del('homeLists_fresh');
-                    $lock->release();
+                    //$lock->release();
                 }
 
                 if(isset($res['list'])){
