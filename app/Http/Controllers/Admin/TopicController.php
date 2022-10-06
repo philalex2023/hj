@@ -135,6 +135,9 @@ class TopicController extends BaseCurlController
             $videoIds = array_unique([...$videoIds]);
         }
         $model->contain_vids = implode(',',$videoIds);
+        if(empty($cid) && $dataSourceId==0){
+            $model->contain_vids = '';
+        }
     }
 
     public function afterSaveSuccessEvent($model, $id = '')
