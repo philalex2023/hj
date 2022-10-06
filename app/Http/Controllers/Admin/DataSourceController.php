@@ -332,12 +332,13 @@ class DataSourceController extends BaseCurlController
                 }
                 break;
             case 3: //分类
-                if($cid>0){
+                /*if($cid>0){
                     $videoIds = DB::table('video')->where('status',1)->where('cid',$cid)->pluck('id')->all();
                     //dd($videoIds);
                     $model->data_value = $this->cats[$cid]['name'];
                     $model->contain_vids = implode(',',$videoIds);
-                }
+                }*/
+                $model->cid = $cid;
                 break;
             case 4: //最新上架
                 $model->data_value = '最新';
