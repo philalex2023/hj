@@ -529,10 +529,16 @@ class VideoController extends BaseCurlController
         //$tag = $this->rq->input('tag');
         $type = (int)$this->rq->input('type',0);
         $topicId = (int)$this->rq->input('topic',0);
+        $data_source_id = (int)$this->rq->input('data_source_id',0);
         $dev_type = $this->rq->input('dev_type');
         if($topicId>0){
-            $contain_ids = DataSource::query()->where('id',$topicId)->value('contain_vids');
+            $contain_ids = Topic::query()->where('id',$topicId)->value('contain_vids');
             $model = $model->whereIn('id',explode(',',$contain_ids));
+        }
+        if($data_source_id>0){
+            $contain_ids = DataSource::query()->where('id',$data_source_id)->value('contain_vids');
+            $ids = explode(',',$contain_ids);
+            $model = $model->whereIn('id',$ids);
         }
 
         $type>0 && $model=$model->where('type',$type);
