@@ -352,11 +352,27 @@ class VideoShortController extends Controller
                 //Log::info('==ShortListIds==',$ids);
 //                Log::info('==ShortListSearch==',$query);
                 if(!empty($ids) || !empty($words)){
+                    $idParams = [];
+                    $length = count($ids);
+                    foreach ($ids as $key => $id) {
+                        $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+                    }
                     $query = [
-                        'bool'=>[
-                            'must' => [
-                                ['terms' => ['id'=>$ids]],
-                                ['term' => ['dev_type'=>1]],
+                        'function_score' => [
+                            'query' => [
+                                'bool'=>[
+                                    'must' => [
+                                        ['terms' => ['id'=>$ids]],
+                                    ]
+                                ]
+                            ],
+                            'script_score' => [
+                                'script' => [
+                                    'params' => [
+                                        'scoring' => $idParams
+                                    ],
+                                    'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                ]
                             ]
                         ]
                     ];
