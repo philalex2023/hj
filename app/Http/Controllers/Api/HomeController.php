@@ -154,7 +154,7 @@ class HomeController extends Controller
                                                     ]
                                                 ]
                                             ],
-                                            /*'script_score' => [
+                                            'script_score' => [
                                                 'script' => [
                                                     'lang' => 'painless',
                                                     'params' => [
@@ -162,7 +162,7 @@ class HomeController extends Controller
                                                     ],
                                                     'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
                                                 ]
-                                            ]*/
+                                            ]
                                         ]
                                     ]
                                 ],
