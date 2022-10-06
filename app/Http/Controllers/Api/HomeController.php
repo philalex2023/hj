@@ -134,7 +134,7 @@ class HomeController extends Controller
                             foreach ($ids as $key => $id) {
                                 $idParams[] = ['id' => $id, 'score' => $length - $key];
                             }
-                            //Log::info('index_list_str',[$topic['contain_vids']]);
+                            Log::info('index_list_str',$idParams);
                             $size = $topic['style'] == 7 ? 7: 8;
                             $searchParams = [
                                 'index' => 'video_index',
