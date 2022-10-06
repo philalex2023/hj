@@ -19,7 +19,7 @@ class ConfigController extends Controller
         $res = $configData ? (array)json_decode($configData,true) : $this->getConfigDataFromDb();
         $this->frontFilterAd($res['open_screen_ads']);
         $this->frontFilterAd($res['activity_ads']);
-        Log::info('==ack==',[$res]);
+        //Log::info('==ack==',[$res]);
         return response()->json([
             'state'=>0,
             'data'=>$res
