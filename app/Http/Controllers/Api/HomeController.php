@@ -128,6 +128,12 @@ class HomeController extends Controller
                             $topic['title'] = '';
                             $topic['style'] = $topic['show_type'];
                             $ids = explode(',',$topic['contain_vids']);
+                            //
+                            $idParams = [];
+                            $length = count($ids);
+                            foreach ($ids as $key => $id) {
+                                $idParams[] = ['id' => $id, 'score' => $length - $key];
+                            }
                             //Log::info('index_list_str',[$topic['contain_vids']]);
                             $size = $topic['style'] == 7 ? 7: 8;
                             $searchParams = [
@@ -146,6 +152,15 @@ class HomeController extends Controller
                                             ]
                                         ]
                                     ],
+                                    'script_score' => [
+                                        'script' => [
+                                            'lang' => 'painless',
+                                            'params' => [
+                                                'scoring' => $idParams
+                                            ],
+                                            'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                        ]
+                                    ]
                                 ],
                             ];
                             $topic['style'] = (string)$topic['style']; //android要是字符串
