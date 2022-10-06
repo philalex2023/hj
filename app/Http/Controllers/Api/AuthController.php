@@ -55,6 +55,45 @@ class AuthController extends Controller
         ], 201);
     }
 
+    public function reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$accountRedis,$login_info){
+        //创建新用户
+        $user = new User();
+        $user->did = $validated['did'];
+        $user->last_did = $validated['did'];
+        $user->create_ip = $ip;
+        $user->last_ip = $ip;
+        $user->gold = 0;
+        $user->balance = 0;
+        $user->sex = 0;
+        $user->member_card_type = 0;
+        $user->vip_start_last = '';
+        //分配默认相关设置
+        $configData = config_cache('app');
+        $user->long_vedio_times = $configData['free_view_long_video_times'] ?? 0;
+        $user->avatar = rand(1,13);
+
+        $user->device_system = $deviceSystem;
+
+        $user->device_info = $deviceInfo;
+        $user->app_info = $appInfo ?? [];
+        //
+        $nickNames = $this->createNickNames;
+        $randNickName = $this->createNickNames[array_rand($nickNames)];
+        $getAccountV = $accountRedis->get('account_v');
+        $accountV = !$getAccountV ? 1 : $getAccountV;
+        $user->account = 'AD-'.$accountV;
+        $user->nickname = $randNickName;
+
+        $bindInfo = $this->bindChannel($login_info);
+        $user->pid = $bindInfo['pid'];
+        $user->channel_id = $bindInfo['channel_id'];
+        $user->channel_pid = $bindInfo['channel_pid'];
+        $user->save();
+
+        $accountRedis->sAdd('account_did',$validated['did']);
+        $accountRedis->incr('account_v');
+        return $user;
+    }
     /**
      * Login user and create token
      * @throws ValidationException
@@ -106,48 +145,18 @@ class AuthController extends Controller
                 return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
             }
 
-            //创建新用户
-            $user = new User();
-            $user->did = $validated['did'];
-            $user->last_did = $validated['did'];
-            $user->create_ip = $ip;
-            $user->last_ip = $ip;
-            $user->gold = 0;
-            $user->balance = 0;
-            $user->sex = 0;
-            $user->member_card_type = 0;
-            $user->vip_start_last = '';
-            //分配默认相关设置
-            $configData = config_cache('app');
-            $user->long_vedio_times = $configData['free_view_long_video_times'] ?? 0;
-            $user->avatar = rand(1,13);
+            $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$accountRedis,$login_info);
 
-            $user->device_system = $deviceSystem;
-
-            $user->device_info = $deviceInfo;
-            $user->app_info = $appInfo ?? [];
-            //
-            $nickNames = $this->createNickNames;
-            $randNickName = $this->createNickNames[array_rand($nickNames)];
-            $getAccountV = $accountRedis->get('account_v');
-            $accountV = !$getAccountV ? 1 : $getAccountV;
-            $user->account = 'AD-'.$accountV;
-            $user->nickname = $randNickName;
-
-            $bindInfo = $this->bindChannel($login_info);
-            $user->pid = $bindInfo['pid'];
-            $user->channel_id = $bindInfo['channel_id'];
-            $user->channel_pid = $bindInfo['channel_pid'];
-            $user->save();
-
-            $accountRedis->sAdd('account_did',$validated['did']);
-            $accountRedis->incr('account_v');
             $regLock->release();
         }else{ //第二次及以后登录
-            $user = User::query()->where('did',$validated['did'])->where('status',1)->first($this->loginUserFields);
+            $user = User::query()->where('did',$validated['did'])->first($this->loginUserFields);
             if(!$user){
                 Log::info('Login',['login_type:'.$loginType,'did:'.$validated['did']]);
-                return response()->json(['state' => -1, 'msg' => '用户不存在或被禁用!']);
+                return response()->json(['state' => -1, 'msg' => '用户不存在!']);
+            }else{
+                if($user->status!=1){
+                    return response()->json(['state' => -1, 'msg' => '用户被禁用!']);
+                }
             }
         }
         $login_info = $user->only($this->loginUserFields);
