@@ -150,9 +150,10 @@ class AuthController extends Controller
             $regLock->release();
         }else{ //第二次及以后登录
             $user = User::query()->where('did',$validated['did'])->first($this->loginUserFields);
-            if(!$user){
-                Log::info('Login',['login_type:'.$loginType,'did:'.$validated['did']]);
-                return response()->json(['state' => -1, 'msg' => '用户不存在!']);
+            if(!$user){ //重新注册
+                $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$accountRedis,$login_info);
+//                Log::info('Login',['login_type:'.$loginType,'did:'.$validated['did']]);
+//                return response()->json(['state' => -1, 'msg' => '用户不存在!']);
             }else{
                 if($user->status!=1){
                     return response()->json(['state' => -1, 'msg' => '用户被禁用!']);
