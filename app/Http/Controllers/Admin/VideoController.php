@@ -43,7 +43,7 @@ class VideoController extends BaseCurlController
 
     public array $video_source = [
         ''=>['id'=>'','name'=>'全部'],
-        1=>['id'=>1,'name'=>'上传'],
+//        1=>['id'=>1,'name'=>'上传'],
         3=>['id'=>3,'name'=>'萌堆采集'],
         4=>['id'=>4,'name'=>'up主上传'],
         5=>['id'=>5,'name'=>'海角采集'],
@@ -416,7 +416,7 @@ class VideoController extends BaseCurlController
         $item->tag_name = $this->getTagName($item->tag_kv??[]);
         $item->status = UiService::switchTpl('status', $item,'','上架|下架');
         $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
-        $item->type = $item->type==0 ? '' : $this->video_source[$item->type]['name'];
+        $item->type = !isset($this->video_source[$item->type]) ? '' : $this->video_source[$item->type]['name'];
         $item->dev_type = match ($item->dev_type){
             1 => '竖屏',
             default => '横屏'
@@ -525,9 +525,9 @@ class VideoController extends BaseCurlController
         //$cat = $this->rq->input('cat');
         //$tag = $this->rq->input('tag');
         $type = (int)$this->rq->input('type',0);
-        $dataSourceId = (int)$this->rq->input('data_source_id',0);
-        if($dataSourceId>0){
-            $contain_ids = DataSource::query()->where('id',$dataSourceId)->value('contain_vids');
+        $topicId = (int)$this->rq->input('topic',0);
+        if($topicId>0){
+            $contain_ids = DataSource::query()->where('id',$topicId)->value('contain_vids');
             $model = $model->whereIn('id',explode(',',$contain_ids));
         }
 
