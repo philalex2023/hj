@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ProcessDataSource implements ShouldQueue
 {
@@ -60,6 +61,7 @@ class ProcessDataSource implements ShouldQueue
                 $firstIds = DB::table('video')->whereIn('id',$containIds)->limit($this->row->show_num)->orderByDesc('sort')->pluck('id')->all();
             }
             $ids = array_unique([...$firstIds,...$tagVideoIds,...$sourceIds]);
+            //Log::info('processDS',[$ids,$topic->id]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>implode(',',$ids)]);
         }
     }

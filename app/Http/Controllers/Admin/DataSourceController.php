@@ -384,12 +384,9 @@ class DataSourceController extends BaseCurlController
 
     public function updatePost(Request $request, $id)
     {
-        /*dump($request->all());
-        dump($id);*/
-        $model = DataSource::query()->where('id',$id);
-        $containIds = explode(',',$model->value('contain_vids'));
-        $updateIds = DB::table('video')->whereIn('id',$containIds)->orderByDesc('sort')->pluck('id')->all();
-        $model->update(['contain_vids'=>implode(',',$updateIds)]);
+        $model = DataSource::query()->where('id',$id)->first();
+        $job = new ProcessDataSource($model);
+        $this->dispatch($job->onQueue('default'));
         return $this->returnSuccessApi();
     }
 
