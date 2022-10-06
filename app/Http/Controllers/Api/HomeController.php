@@ -170,7 +170,7 @@ class HomeController extends Controller
 
                             $es = $this->esClient();
                             $response = $es->search($searchParams);
-                            Log::info('test_home_list',[$idParams,$response]);
+                            Log::info('searchParam_home_list',[json_encode($searchParams)]);
                             if(isset($response['hits']) && isset($response['hits']['hits'])){
                                 foreach ($response['hits']['hits'] as $item) {
                                     $videoList[] = $item['_source'];
