@@ -133,7 +133,7 @@ class HomeController extends Controller
                             $idParams = [];
                             $length = count($ids);
                             foreach ($ids as $key => $id) {
-                                $idParams[] = ['id' => $id, 'score' => $length - $key];
+                                $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
                             }
                             //Log::info('index_list_str',$idParams);
                             $size = $topic['style'] == 7 ? 7: 8;
