@@ -92,6 +92,7 @@ class HomeController extends Controller
     public function lists(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
+            Log::info('==lists_uid==',[$request->user()->id]);
             if(isset($request->params)){
                 $user = $request->user();
                 $params = self::parse($request->params);
