@@ -156,6 +156,7 @@ class AuthController extends Controller
 //                return response()->json(['state' => -1, 'msg' => '用户不存在!']);
             }else{
                 if($user->status!=1){
+                    Log::info('status',$user->status);
                     return response()->json(['state' => -1, 'msg' => '用户被禁用!']);
                 }
             }
