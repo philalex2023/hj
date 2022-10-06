@@ -14,12 +14,12 @@ class ConfigController extends Controller
 
     public function ack(): \Illuminate\Http\JsonResponse
     {
-        Log::info('==ack==',[request()->all()]);
         $configKey = 'api_config';
         $configData = $this->redis()->get($configKey);
         $res = $configData ? (array)json_decode($configData,true) : $this->getConfigDataFromDb();
         $this->frontFilterAd($res['open_screen_ads']);
         $this->frontFilterAd($res['activity_ads']);
+        Log::info('==ack==',[$res]);
         return response()->json([
             'state'=>0,
             'data'=>$res
