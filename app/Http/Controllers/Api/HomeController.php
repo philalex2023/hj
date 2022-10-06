@@ -139,11 +139,9 @@ class HomeController extends Controller
                             $source = ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
                             $searchParams = [
                                 'index' => 'video_index',
-                                'type' => 'video',
-                                'size' => $size,
-                                'from' => 0,
                                 'body' => [
                                     'track_total_hits' => true,
+                                    'size' => $size,
                                     '_source' => $source,
 //                                '_source' => false,
                                     'query' => [
@@ -152,8 +150,7 @@ class HomeController extends Controller
                                                 'bool'=>[
                                                     'must' => [
                                                         ['terms' => ['id'=>$ids]],
-                                                        ['term' => ['dev_type'=>0]],
-        //                                                ['term' => ['cid'=>$cid]],
+                                                        //['term' => ['dev_type'=>0]],
                                                     ]
                                                 ]
                                             ],
@@ -173,7 +170,7 @@ class HomeController extends Controller
                             $topic['style'] = (string)$topic['style']; //android要是字符串
                             $es = $this->esClient();
                             $response = $es->search($searchParams);
-                            //Log::info('index_list_res',$response);
+
                             if(isset($response['hits']) && isset($response['hits']['hits'])){
                                 foreach ($response['hits']['hits'] as $item) {
                                     $videoList[] = $item['_source'];
