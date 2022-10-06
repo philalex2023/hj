@@ -144,21 +144,25 @@ class HomeController extends Controller
                                     '_source' => ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
 //                                '_source' => false,
                                     'query' => [
-                                        'bool'=>[
-                                            'must' => [
-                                                ['terms' => ['id'=>$ids]],
-                                                ['term' => ['dev_type'=>0]],
-//                                                ['term' => ['cid'=>$cid]],
-                                            ]
-                                        ]
-                                    ],
-                                    'script_score' => [
-                                        'script' => [
-                                            'lang' => 'painless',
-                                            'params' => [
-                                                'scoring' => $idParams
+                                        'function_score' => [
+                                            'query' => [
+                                                'bool'=>[
+                                                    'must' => [
+                                                        ['terms' => ['id'=>$ids]],
+                                                        ['term' => ['dev_type'=>0]],
+        //                                                ['term' => ['cid'=>$cid]],
+                                                    ]
+                                                ]
                                             ],
-                                            'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                            'script_score' => [
+                                                'script' => [
+                                                    'lang' => 'painless',
+                                                    'params' => [
+                                                        'scoring' => $idParams
+                                                    ],
+                                                    'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                                ]
+                                            ]
                                         ]
                                     ]
                                 ],
