@@ -156,7 +156,7 @@ class HomeController extends Controller
                                             ],
                                             'script_score' => [
                                                 'script' => [
-                                                    'lang' => 'painless',
+                                                    //'lang' => 'painless',
                                                     'params' => [
                                                         'scoring' => $idParams
                                                     ],
