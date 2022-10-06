@@ -173,7 +173,7 @@ class HomeController extends Controller
                             $topic['style'] = (string)$topic['style']; //android要是字符串
                             $es = $this->esClient();
                             $response = $es->search($searchParams);
-
+                            Log::info('index_list_res',$response);
                             if(isset($response['hits']) && isset($response['hits']['hits'])){
                                 foreach ($response['hits']['hits'] as $item) {
                                     $videoList[] = $item['_source'];
