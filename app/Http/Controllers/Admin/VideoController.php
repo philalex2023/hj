@@ -529,7 +529,7 @@ class VideoController extends BaseCurlController
         //$tag = $this->rq->input('tag');
         $type = (int)$this->rq->input('type',0);
         $topicId = (int)$this->rq->input('topic',0);
-        $dev_type = (int)$this->rq->input('dev_type');
+        $dev_type = $this->rq->input('dev_type');
         if($topicId>0){
             $contain_ids = DataSource::query()->where('id',$topicId)->value('contain_vids');
             $model = $model->whereIn('id',explode(',',$contain_ids));
@@ -537,7 +537,7 @@ class VideoController extends BaseCurlController
 
         $type>0 && $model=$model->where('type',$type);
         $cid>0 && $model=$model->where('cid',$cid);
-        if($dev_type){
+        if($dev_type!==null){
             $model=$model->where('dev_type',$dev_type);
         }
 
