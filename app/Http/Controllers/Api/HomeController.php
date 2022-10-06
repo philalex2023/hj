@@ -90,109 +90,108 @@ class HomeController extends Controller
      */
     public function lists(Request $request): \Illuminate\Http\JsonResponse
     {
-        if(isset($request->params)){
-            $user = $request->user();
-            $params = self::parse($request->params);
-            //Log::info('list_params',[$params]);
-            $validated = Validator::make($params,[
-                'cid' => 'required|integer',
-                'page' => 'required|integer',
-            ])->validated();
-            $cid = $validated['cid'];
-            $perPage = 4;
-            $page = $validated['page'];
+        try {
+            if(isset($request->params)){
+                $user = $request->user();
+                $params = self::parse($request->params);
+                //Log::info('list_params',[$params]);
+                $validated = Validator::make($params,[
+                    'cid' => 'required|integer',
+                    'page' => 'required|integer',
+                ])->validated();
+                $cid = $validated['cid'];
+                $perPage = 4;
+                $page = $validated['page'];
 
-            $redis = $this->redis();
-            $sectionKey = 'homeLists_'.$cid.'-'.$page;
+                $redis = $this->redis();
+                $sectionKey = 'homeLists_'.$cid.'-'.$page;
 
-            //二级分类列表
-            $res = $redis->get($sectionKey);
-            $res = json_decode($res,true);
-            if(!$res || $redis->get('homeLists_fresh')){
-                /*$lock = Cache::lock('homeLists_lock');
-                if(!$lock->get()){
-                    Log::info('index_list',[$sectionKey]);
-                    return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
-                }*/
+                //二级分类列表
+                $res = $redis->get($sectionKey);
+                $res = json_decode($res,true);
+                if(!$res || $redis->get('homeLists_fresh')){
+                    $lock = Cache::lock('homeLists_lock');
+                    if(!$lock->get()){
+                        Log::info('index_list',[$sectionKey]);
+                        return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
+                    }
 
-                $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
-                $res['hasMorePages'] = $paginator->hasMorePages();
-                $topics = $paginator->items();
-                //Log::info('index_list_topics',[$topics]);
-                foreach ($topics as &$topic){
-                    $topic = (array)$topic;
-                    $videoList = [];
-                    if(!empty($topic['contain_vids'])){
-                        //获取专题数据
-                        $topic['title'] = '';
-                        $topic['style'] = $topic['show_type'];
-                        $ids = explode(',',$topic['contain_vids']);
-                        //Log::info('index_list_str',[$topic['contain_vids']]);
-                        $size = $topic['style'] == 7 ? 7: 8;
-                        $searchParams = [
-                            'index' => 'video_index',
-                            'body' => [
-                                'track_total_hits' => true,
-                                'size' => $size,
-                                '_source' => ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
+                    $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
+                    $res['hasMorePages'] = $paginator->hasMorePages();
+                    $topics = $paginator->items();
+                    //Log::info('index_list_topics',[$topics]);
+                    foreach ($topics as &$topic){
+                        $topic = (array)$topic;
+                        $videoList = [];
+                        if(!empty($topic['contain_vids'])){
+                            //获取专题数据
+                            $topic['title'] = '';
+                            $topic['style'] = $topic['show_type'];
+                            $ids = explode(',',$topic['contain_vids']);
+                            //Log::info('index_list_str',[$topic['contain_vids']]);
+                            $size = $topic['style'] == 7 ? 7: 8;
+                            $searchParams = [
+                                'index' => 'video_index',
+                                'body' => [
+                                    'track_total_hits' => true,
+                                    'size' => $size,
+                                    '_source' => ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'],
 //                                '_source' => false,
-                                'query' => [
-                                    'bool'=>[
-                                        'must' => [
-                                            ['terms' => ['id'=>$ids]],
-                                            ['term' => ['dev_type'=>0]],
+                                    'query' => [
+                                        'bool'=>[
+                                            'must' => [
+                                                ['terms' => ['id'=>$ids]],
+                                                ['term' => ['dev_type'=>0]],
 //                                                ['term' => ['cid'=>$cid]],
+                                            ]
                                         ]
-                                    ]
+                                    ],
                                 ],
-                            ],
-                        ];
-                        $topic['style'] = (string)$topic['style']; //android要是字符串
-                        $es = $this->esClient();
-                        $response = $es->search($searchParams);
-                        if(isset($response['hits']) && isset($response['hits']['hits'])){
-                            foreach ($response['hits']['hits'] as $item) {
-                                $videoList[] = $item['_source'];
+                            ];
+                            $topic['style'] = (string)$topic['style']; //android要是字符串
+                            $es = $this->esClient();
+                            $response = $es->search($searchParams);
+                            if(isset($response['hits']) && isset($response['hits']['hits'])){
+                                foreach ($response['hits']['hits'] as $item) {
+                                    $videoList[] = $item['_source'];
+                                }
                             }
                         }
+
+
+                        //$videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
+                        //$videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
+                        $topic['small_video_list'] = $videoList;
+                        unset($topic['contain_vids']);
                     }
-
-
-                    //$videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
-                    //$videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
-                    $topic['small_video_list'] = $videoList;
-                    unset($topic['contain_vids']);
-                }
-                //广告
-                $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
-                $res['list'] = $topics;
-                $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
+                    //广告
+                    $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
+                    $res['list'] = $topics;
+                    $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
 //                    $redis->expire($sectionKey,3600);
-                $redis->expire($sectionKey,600);
-                $redis->del('homeLists_fresh');
-                //$lock->release();
-            }
-
-            if(isset($res['list'])){
-                $domain = env('RESOURCE_DOMAIN2');
-                foreach ($res['list'] as &$r){
-                    if(!empty($r['ad_list'])){
-                        $this->frontFilterAd($r['ad_list'],$domain);
-                    }
-                    if(!empty($r['small_video_list'])){
-                        $r['small_video_list'] = $this->handleVideoItems($r['small_video_list'],false,$user->id);
-                    }
+                    $redis->expire($sectionKey,600);
+                    $redis->del('homeLists_fresh');
+                    //$lock->release();
                 }
-                return response()->json(['state'=>0, 'data'=>$res]);
-            }
-            return response()->json(['state'=>0, 'data'=>[]]);
-        }
-        return response()->json(['state' => -1, 'msg' => "参数错误"]);
-        /*try {
 
+                if(isset($res['list'])){
+                    $domain = env('RESOURCE_DOMAIN2');
+                    foreach ($res['list'] as &$r){
+                        if(!empty($r['ad_list'])){
+                            $this->frontFilterAd($r['ad_list'],$domain);
+                        }
+                        if(!empty($r['small_video_list'])){
+                            $r['small_video_list'] = $this->handleVideoItems($r['small_video_list'],false,$user->id);
+                        }
+                    }
+                    return response()->json(['state'=>0, 'data'=>$res]);
+                }
+                return response()->json(['state'=>0, 'data'=>[]]);
+            }
+            return response()->json(['state' => -1, 'msg' => "参数错误"]);
         }catch (\Exception $exception){
             return $this->returnExceptionContent($exception->getMessage());
-        }*/
+        }
 
     }
 
