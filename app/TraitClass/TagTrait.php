@@ -42,7 +42,7 @@ trait TagTrait
             DB::table('video')->where('status',1)->chunkById(100,function ($items) use ($tag,&$tagVideoIds){
                 foreach ($items as $item){
                     $jsonArr = json_decode($item->tag,true);
-                    Log::info('video_tag',$jsonArr);
+                    Log::info('video_tag',[$jsonArr,$tag]);
                     $intersect = array_intersect($jsonArr,$tag); //交集
                     if(!empty($intersect)){
                         $tagVideoIds[] = $item->id;
