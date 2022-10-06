@@ -3,6 +3,7 @@
 namespace App\TraitClass;
 
 use App\Models\Tag;
+use AWS\CRT\Log;
 use Illuminate\Support\Facades\DB;
 
 trait TagTrait
@@ -40,6 +41,7 @@ trait TagTrait
         if(!empty($tag)){
             DB::table('video')->where('status',1)->chunkById(100,function ($items) use ($tag,&$tagVideoIds){
                 foreach ($items as $item){
+                    Log::log('video_tag',[$item->tag]);
                     $jsonArr = json_decode($item->tag,true);
                     $intersect = array_intersect($jsonArr,$tag); //交集
                     if(!empty($intersect)){
