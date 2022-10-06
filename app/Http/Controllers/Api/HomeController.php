@@ -128,7 +128,7 @@ class HomeController extends Controller
                             //获取专题数据
                             $topic['title'] = '';
                             $ids = explode(',',$topic['contain_vids']);
-                            $ids = array_slice($ids,0,3);
+                            //$ids = array_slice($ids,0,3);
                             //
                             $idParams = [];
                             $length = count($ids);
