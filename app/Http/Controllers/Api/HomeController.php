@@ -40,10 +40,10 @@ class HomeController extends Controller
         /*if($request->user()->id==8490593){
             Log::info('==Category==',[8490593,$res]);
         }*/
-        Log::info('==Category==',[$request->user()->id,$res]);
+        Log::info('==Category==',[$request->user()->id,$data]);
         return response()->json([
             'state'=>0,
-            'data'=>$res
+            'data'=>$data
         ]);
     }
 
