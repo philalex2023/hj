@@ -12,6 +12,7 @@ trait WhiteListTrait
     public function whitelistPolice(): bool
     {
         $ip = $this->getRealIp();
+        Log::info('at ip',[$this->getRealIp()]);
         //白名单
         $whiteList = WhiteList::query()
             ->where('status',1)
@@ -20,6 +21,7 @@ trait WhiteListTrait
         //Log::info('===adminLoginIPS===',[$whiteList,$ip]);
         //Log::info('===adminSERVER===',[$_SERVER]);
         if(!in_array($ip, $whiteList)){
+            Log::info('not at white list ip',[$ip]);
             return false;
         }
         return true;

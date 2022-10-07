@@ -85,7 +85,6 @@ class LoginController extends BaseController
     {
         if($request->input('account')!=='root'){
             if(!$this->whitelistPolice()){
-                Log::info('not at white list ip',[$this->getRealIp()]);
                 return (['code' => 1, 'msg' => lang('不在白名单')]);
             }
         }
