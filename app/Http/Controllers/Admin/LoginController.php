@@ -15,6 +15,7 @@ namespace App\Http\Controllers\Admin;
 use App\Models\WhiteList;
 use App\TraitClass\IpTrait;
 use App\TraitClass\WhiteListTrait;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Foundation\Auth\AuthenticatesUsers;
 use Illuminate\Http\Request;
@@ -84,6 +85,7 @@ class LoginController extends BaseController
     {
         if($request->input('account')!=='root'){
             if(!$this->whitelistPolice()){
+                Log::info('not at white list ip',[$this->getRealIp()]);
                 return (['code' => 1, 'msg' => lang('不在白名单')]);
             }
         }
