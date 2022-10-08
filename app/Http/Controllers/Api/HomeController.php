@@ -40,7 +40,7 @@ class HomeController extends Controller
         /*if($request->user()->id==8490593){
             Log::info('==Category==',[8490593,$res]);
         }*/
-        Log::info('==Category==',[$request->user()->id,$data]);
+        //Log::info('==Category==',[$request->user()->id,$data]);
         return response()->json([
             'state'=>0,
             'data'=>$data
@@ -92,7 +92,7 @@ class HomeController extends Controller
     public function lists(Request $request): \Illuminate\Http\JsonResponse
     {
         try {
-            Log::info('==lists_uid==',[$request->user()->id]);
+            //Log::info('==lists_uid==',[$request->user()->id]);
             if(isset($request->params)){
                 $user = $request->user();
                 $params = self::parse($request->params);
