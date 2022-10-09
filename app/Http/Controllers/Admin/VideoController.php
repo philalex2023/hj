@@ -52,7 +52,7 @@ class VideoController extends BaseCurlController
 //        1=>['id'=>1,'name'=>'上传'],
         3=>['id'=>3,'name'=>'萌堆采集'],
         4=>['id'=>4,'name'=>'up主上传'],
-        5=>['id'=>5,'name'=>'海角采集'],
+//        5=>['id'=>5,'name'=>'海角采集'],
     ];
 
     public function setModel(): AdminVideo
