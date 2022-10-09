@@ -279,6 +279,7 @@ class DataSourceController extends BaseCurlController
                         ->chunkById(1000,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
+                            !$jsonArr && $jsonArr = [];
                             $intersect = array_intersect($jsonArr,$tagIds); //交集
                             if(!empty($intersect)){
                                 $videoIds[] = $item->id;
