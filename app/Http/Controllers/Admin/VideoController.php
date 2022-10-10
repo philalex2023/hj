@@ -619,6 +619,13 @@ class VideoController extends BaseCurlController
                 'default' => '',
                 'data' => $this->video_source
             ],
+            [
+                'field' => 'query_created_at',
+                'type' => 'datetime',
+//                'attr' => 'data-range=true',
+                'attr' => 'data-range=~',//需要特殊分割
+                'name' => '时间范围',
+            ],
         ];
         //赋值到ui数组里面必须是`search`的key值
         $this->uiBlade['search'] = $data;
