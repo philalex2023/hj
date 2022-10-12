@@ -142,6 +142,7 @@ class SearchController extends Controller
             $project = $project>0 ? $project : 1;
 
             $tagName = DB::table('tag')->where('id',$id)->value('name');
+            Log::info('SearchTagParams:',[$params,$tagName]);
             $searchParams = [
                 'index' => 'video_index',
                 'body' => [
@@ -151,9 +152,6 @@ class SearchController extends Controller
                     //'_source' => false,
                     'query' => [
                         'bool'=>[
-                            /*'must' => [
-                                ['term' => ['dev_type'=>$project]],
-                            ]*/
                             "should" => [
                                 [ "match"=>["name"=>$tagName]],
                                 [ "match"=> ["tag_kv"=>$tagName]],
