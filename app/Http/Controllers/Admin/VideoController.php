@@ -429,7 +429,8 @@ class VideoController extends BaseCurlController
         $item->dev_type = !isset($this->dev_type[$item->dev_type]) ? '-' : $this->dev_type[$item->dev_type]['name'];
         $item->restricted = $this->restrictedType[$item->restricted]['name'];
         $item->gold = $item->gold/$this->goldUnit;
-        $item->cover_img = UiService::layuiTplImg($this->resDomain.$item->cover_img);
+        $coverImg = str_replace(['jpg','png','gif','jpeg'],'htm',$item->cover_img);
+        $item->cover_img = UiService::layuiTplImg($this->resDomain.$coverImg);
         return $item;
     }
 
