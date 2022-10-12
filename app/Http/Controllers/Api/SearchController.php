@@ -36,7 +36,6 @@ class SearchController extends Controller
         try {
             if (isset($request->params)) {
                 $params = self::parse($request->params);
-                Log::info('SearchParams:',[$params]);
                 $validated = Validator::make($params, [
                     'words' => 'nullable',
                     'page' => 'required|integer',
@@ -126,6 +125,7 @@ class SearchController extends Controller
     //标签
     public function tag(Request $request): JsonResponse
     {
+        Log::info('SearchParams:',[$request->params??[]]);
         if(isset($request->params)){
             $perPage = 16;
             $params = self::parse($request->params);
