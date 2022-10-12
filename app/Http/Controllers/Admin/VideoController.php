@@ -88,6 +88,12 @@ class VideoController extends BaseCurlController
                 'align' => 'center',
             ],
             [
+                'field' => 'cover_img',
+                'minWidth' => 150,
+                'title' => '封面图',
+                'align' => 'center',
+            ],
+            [
                 'field' => 'cid',
                 'width' => 150,
                 'title' => '分类',
@@ -166,13 +172,6 @@ class VideoController extends BaseCurlController
                 'title' => '播放次数',
                 'sort' => 1,
                 'align' => 'center',
-            ],
-            [
-                'field' => 'cover_img',
-                'minWidth' => 150,
-                'title' => '封面图',
-                'align' => 'center',
-//                'hide' => true
             ],
             [
                 'field' => 'url',
@@ -423,8 +422,12 @@ class VideoController extends BaseCurlController
         $item->cid = !isset($this->cats[$item->cid])? '-' : $this->cats[$item->cid]['name'];
         $item->category_name = $this->getCatName($item->cat);
         $item->tag_name = $this->getTagName($item->tag_kv??[]);
-        $item->status = UiService::switchTpl('status', $item,'','上架|下架');
-        $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
+        $item->status = match ($item->status){
+            0 => '下架',
+            1 => '上架'
+        };
+//        $item->status = UiService::switchTpl('status', $item,'','上架|下架');
+//        $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
         $item->type = !isset($this->video_source[$item->type]) ? '-' : $this->video_source[$item->type]['name'];
         $item->dev_type = !isset($this->dev_type[$item->dev_type]) ? '-' : $this->dev_type[$item->dev_type]['name'];
         $item->restricted = $this->restrictedType[$item->restricted]['name'];
