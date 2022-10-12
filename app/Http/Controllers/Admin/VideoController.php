@@ -528,7 +528,6 @@ class VideoController extends BaseCurlController
         $pagesize = $this->rq->input('limit', 30);
         $order_by_name = $this->orderByName();
         $order_by_type = $this->orderByType();
-
         $cid = $this->rq->input('cid');
         //$cat = $this->rq->input('cat');
         //$tag = $this->rq->input('tag');
@@ -544,6 +543,8 @@ class VideoController extends BaseCurlController
         if($dataSourceId>0){
             $contain_ids = DataSource::query()->where('id',$dataSourceId)->value('contain_vids');
             $model = $model->whereIn('id',explode(',',$contain_ids));
+            $order_by_name = 'sort';
+            $order_by_type = 'desc';
         }
 
         $type>0 && $model=$model->where('type',$type);
@@ -552,6 +553,7 @@ class VideoController extends BaseCurlController
             $model=$model->where('dev_type',$dev_type);
         }
 
+
         $model = $this->orderBy($model, $order_by_name, $order_by_type);
         $total = $model->count();
         $result = $model->forPage($page, $pagesize)->get();
@@ -559,7 +561,6 @@ class VideoController extends BaseCurlController
             'total' => $total,
             'result' => $result
         ];
-//        return parent::handleResultModel($model);
 
     }
 
