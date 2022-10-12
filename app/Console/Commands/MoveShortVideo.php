@@ -44,7 +44,7 @@ class MoveShortVideo extends Command
     public function handle(): int
     {
 
-        DB::table('video')->where('type',5)->update(['tag'=>json_encode([115=>181])]);
+        //DB::table('video')->where('type',5)->update(['tag'=>json_encode([115=>181])]);
 //        $topCat = DB::table('categories')
 //            ->where('parent_id',2)
 //            ->where('is_checked',1)
@@ -52,8 +52,8 @@ class MoveShortVideo extends Command
 //            ->pluck('id');
 //        foreach ($topCat as $cat){
             //$cat = 10000; //短视频
-
-        /*DB::table('video_short')->chunkById(100,function ($items){
+        $tagAll = DB::table('tag')->pluck('name','id')->all();
+        DB::table('video_short')->chunkById(100,function ($items) use ($tagAll){
             foreach ($items as $item){
                 $insert = (array)$item;
                 if($insert['status']>0){
@@ -62,23 +62,32 @@ class MoveShortVideo extends Command
                     unset($insert['favors']);
                     $insert['cid'] = 10000;
                     $insert['dev_type'] = 1;
+
+                    $tagKvJson = json_decode($insert['tag_kv'],true);
+                    $tagKv = $tagKvJson ?? [];
+                    $intersection = array_intersect($tagAll,$tagKv);
+                    if(!empty($intersection)){
+                        $insert['tag_kv'] = json_encode($intersection);
+                    }else{
+                        $insert['tag_kv'] = json_encode([]);
+                    }
                     DB::table('video')->insert($insert);
                 }
             }
-        });*/
-            /*$videos = DB::table('video_short')->get();
-            foreach ($videos as $video){
-                DB::table('video')->insert([
-                    'name' => $video->name,
-                    'dev_type' => 1,
-                    'cid' => $cat,
-                    'tag' => json_encode([]),
-                    'data_source' => json_encode([]),
-                    'show_type' => $video->group_type,
-                    'created_at' => date('Y-m-d H:i:s'),
-                    'updated_at' => date('Y-m-d H:i:s'),
-                ]);
-            }*/
+        });
+        /*$videos = DB::table('video_short')->get();
+        foreach ($videos as $video){
+            DB::table('video')->insert([
+                'name' => $video->name,
+                'dev_type' => 1,
+                'cid' => 10000,
+                'tag' => json_encode([]),
+                'data_source' => json_encode([]),
+                'show_type' => $video->group_type,
+                'created_at' => date('Y-m-d H:i:s'),
+                'updated_at' => date('Y-m-d H:i:s'),
+            ]);
+        }*/
 //        }
 
         //$bar = $this->output->createProgressBar(count($Items));
