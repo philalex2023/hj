@@ -400,9 +400,9 @@ class SearchController extends Controller
             foreach ($videoAll as $item){
                 $tagKvJson = json_decode($item->tag_kv,true);
                 $tagKv = $tagKvJson ?? [];
-                $intersection = array_diff($tagKv,$tagAll);
+                $intersection = array_diff($tagAll,$tagKv);
                 if(!empty($intersection)){
-                    $videoTag = $videoTag + (array)json_decode($item->tag_kv,true);
+                    $videoTag = $videoTag + $intersection;
                 }
             }
 
