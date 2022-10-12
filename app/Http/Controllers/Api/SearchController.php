@@ -142,7 +142,14 @@ class SearchController extends Controller
             $project = $project>0 ? $project : 1;
 
             $tagName = DB::table('tag')->where('id',$id)->value('name');
-            Log::info('SearchTagParams:',[$params,$tagName]);
+            if(!$tagName){
+                Log::info('SearchTagParams:',[$params,$tagName]);
+                return response()->json([
+                    'state'=>-1,
+                    'msg'=>'此标签不存在或被删除',
+                    'data'=>[]
+                ]);
+            }
             $searchParams = [
                 'index' => 'video_index',
                 'body' => [
@@ -388,27 +395,19 @@ class SearchController extends Controller
         $tags = [];
         if($redis->get($freshKey)==1 || empty($tagFromRedis)){
             $videoAll = DB::table('video')->where('status',1)->where('dev_type',$project)->get(['tag_kv']);
+            $tagAll = DB::table('tag')->pluck('name','id')->all();
             $videoTag = [];
             foreach ($videoAll as $item){
-                $videoTag = $videoTag + (array)json_decode($item->tag_kv,true);
+                $tagKvJson = json_decode($item->tag_kv,true);
+                $tagKv = $tagKvJson ?? [];
+                $intersection = array_diff($tagKv,$tagAll);
+                if(!empty($intersection)){
+                    $videoTag = $videoTag + (array)json_decode($item->tag_kv,true);
+                }
             }
-            $tagNamesFromDb = $videoTag;
-            if(!empty($tags)){
-                $tagNamesFromRedis = array_column($tags,'name','id');
-                foreach ($tagNamesFromDb as $id => $name){
-                    if(!isset($tagNamesFromRedis[$id])){
-                        $redis->zAdd($key,1,json_encode(['id'=>(int)$id,'name'=>$name],JSON_UNESCAPED_UNICODE));
-                    }
-                }
-                foreach ($tagNamesFromRedis as $idKey => $nameVal){
-                    if(!isset($tagNamesFromDb[$idKey])){
-                        $redis->zRem($key,json_encode(['id'=>(int)$idKey,'name'=>$nameVal],JSON_UNESCAPED_UNICODE));
-                    }
-                }
-            }else{
-                foreach ($videoTag as $k => $t){
-                    $redis->zAdd($key,1,json_encode(['id'=>(int)$k,'name'=>$t],JSON_UNESCAPED_UNICODE));
-                }
+
+            foreach ($videoTag as $k => $t){
+                $redis->zAdd($key,1,json_encode(['id'=>(int)$k,'name'=>$t],JSON_UNESCAPED_UNICODE));
             }
 
             $redis->del($freshKey);
