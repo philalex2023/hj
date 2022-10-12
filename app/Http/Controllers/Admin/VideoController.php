@@ -41,6 +41,8 @@ class VideoController extends BaseCurlController
 
     public array $topics=[];
 
+    public string $resDomain = '';
+
     public array $dev_type = [
         '' => ['id'=>'','name'=>'全部'],
         0 => ['id'=>0,'name'=>'横屏'],
@@ -59,6 +61,7 @@ class VideoController extends BaseCurlController
     {
         $this->cats = $this->getCatNavData();
         $this->tags = $this->getTagData();
+        $this->resDomain = self::getDomain(2);
         $this->topics = [''=>['id'=>'','name'=>'请选择专题']]+$this->getSelectTopicData();
         return $this->model = new AdminVideo();
     }
@@ -169,7 +172,7 @@ class VideoController extends BaseCurlController
                 'minWidth' => 150,
                 'title' => '封面图',
                 'align' => 'center',
-                'hide' => true
+//                'hide' => true
             ],
             [
                 'field' => 'url',
@@ -426,6 +429,7 @@ class VideoController extends BaseCurlController
         $item->dev_type = !isset($this->dev_type[$item->dev_type]) ? '-' : $this->dev_type[$item->dev_type]['name'];
         $item->restricted = $this->restrictedType[$item->restricted]['name'];
         $item->gold = $item->gold/$this->goldUnit;
+        $item->cover_img = UiService::layuiTplImg($this->resDomain.$item->cover_img);
         return $item;
     }
 
@@ -552,7 +556,6 @@ class VideoController extends BaseCurlController
         if($dev_type!==null){
             $model=$model->where('dev_type',$dev_type);
         }
-
 
         $model = $this->orderBy($model, $order_by_name, $order_by_type);
         $total = $model->count();
