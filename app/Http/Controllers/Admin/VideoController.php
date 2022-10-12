@@ -524,6 +524,11 @@ class VideoController extends BaseCurlController
 
     public function handleResultModel($model): array
     {
+        $page = $this->rq->input('page', 1);
+        $pagesize = $this->rq->input('limit', 30);
+        $order_by_name = $this->orderByName();
+        $order_by_type = $this->orderByType();
+
         $cid = $this->rq->input('cid');
         //$cat = $this->rq->input('cat');
         //$tag = $this->rq->input('tag');
@@ -547,7 +552,14 @@ class VideoController extends BaseCurlController
             $model=$model->where('dev_type',$dev_type);
         }
 
-        return parent::handleResultModel($model);
+        $model = $this->orderBy($model, $order_by_name, $order_by_type);
+        $total = $model->count();
+        $result = $model->forPage($page, $pagesize)->get();
+        return [
+            'total' => $total,
+            'result' => $result
+        ];
+//        return parent::handleResultModel($model);
 
     }
 

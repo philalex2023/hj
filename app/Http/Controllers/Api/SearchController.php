@@ -279,27 +279,49 @@ class SearchController extends Controller
                     'vid' => 'required|integer',
                 ])->validated();
                 $page = $validated['page'] ?? 1;
-                $perPage = 9;
                 $vid = $validated['vid'];
-                $cat = $this->getVideoById($vid)->cat;
+                $cid = $this->getVideoById($vid)->cid;
                 $res = ['list'=>[], 'hasMorePages'=>false];
+                $perPage = 8;
+                $offset = ($page-1)*$perPage;
 
-                if(!empty($cat)){
-                    $keyWordsArr = (array)@json_decode($cat,true);
-                    $keyWords = implode(' ',$keyWordsArr);
-                    $paginator = Video::search($keyWords)->where('status',1)->simplePaginate($perPage,'searchCat',$page);
-                    $paginatorArr = $paginator->toArray()['data'];
-                    foreach ($paginatorArr as $key=>$value){
-                        if($value['id']==$vid){
-                            unset($paginatorArr[$key]);
+                if($cid > 0){
+                    $searchParams = [
+                        'index' => 'video_index',
+                        'body' => [
+                            'track_total_hits' => true,
+                            'size' => $perPage,
+                            'from' => $offset,
+                            //'_source' => false,
+                            'query' => [
+                                'bool'=>[
+                                    'must' => [
+//                                        ['terms' => ['id'=>$ids]],
+//                                    ['term' => ['status'=>1]],
+                                        ['term' => ['cid'=>$cid]],
+                                    ]
+                                ]
+                            ],
+                        ],
+                    ];
+                    $es = $this->esClient();
+                    $response = $es->search($searchParams);
+                    $catVideoList = [];
+                    $total = 0;
+                    if(isset($response['hits']) && isset($response['hits']['hits'])){
+                        $total = $response['hits']['total']['value'];
+                        foreach ($response['hits']['hits'] as $item) {
+                            $catVideoList[] = $item['_source'];
                         }
                     }
-                    $paginatorArr = array_slice($paginatorArr,0,8);
-                    if(!empty($paginatorArr)){
-                        $res['list'] = $this->handleVideoItems($paginatorArr,false,$request->user()->id);
+                    $res['total'] = $total;
+                    $hasMorePages = $total >= $perPage*$page;
+
+                    if(!empty($catVideoList)){
+                        $res['list'] = $this->handleVideoItems($catVideoList,false,$request->user()->id);
                         //广告
                         $res['list'] = $this->insertAds($res['list'],'recommend',true, $page, $perPage);
-                        $res['hasMorePages'] = false;
+                        $res['hasMorePages'] = $hasMorePages;
                     }
                     if(!empty($res['list'])){
                         $domain = env('RESOURCE_DOMAIN2');
