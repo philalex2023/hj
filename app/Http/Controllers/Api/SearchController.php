@@ -36,6 +36,7 @@ class SearchController extends Controller
         try {
             if (isset($request->params)) {
                 $params = self::parse($request->params);
+                Log::info('SearchParams:',[$params]);
                 $validated = Validator::make($params, [
                     'words' => 'nullable',
                     'page' => 'required|integer',
