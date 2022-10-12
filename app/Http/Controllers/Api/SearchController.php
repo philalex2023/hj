@@ -380,6 +380,7 @@ class SearchController extends Controller
             $params = self::parse($request->params);
             $project = intval($params['project'] ?? 1);
         }
+
         $project = $project>0 ? $project : 1;
         $key = 'projectTag_'.$project;
         $freshKey = 'freshTag_'.$project;
@@ -420,7 +421,7 @@ class SearchController extends Controller
             $redis->del($freshKey);
             !$redis->exists($key) && $tags = $videoTag;
         }
-
+        Log::info('hotTagsParams:',[request()->all(),$tags]);
         //$tags = array_slice($tags,0,5);
         return response()->json([
             'state'=>0,
