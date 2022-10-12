@@ -125,10 +125,10 @@ class SearchController extends Controller
     //标签
     public function tag(Request $request): JsonResponse
     {
-        Log::info('SearchParams:',[$request->params??[]]);
         if(isset($request->params)){
             $perPage = 16;
             $params = self::parse($request->params);
+            Log::info('SearchTagParams:',[$params]);
             if (isset($params['pageSize']) && ($params['pageSize'] < $perPage)) {
                 $perPage = $params['pageSize'];
             }
