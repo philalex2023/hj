@@ -155,6 +155,13 @@ class DataSourceController extends BaseCurlController
                 'align' => 'center',
             ],
             [
+                'field' => 'cover_img',
+                'minWidth' => 150,
+                'title' => '封面图',
+                'align' => 'center',
+//                'hide' => true
+            ],
+            [
                 'field' => 'sort',
                 'minWidth' => 80,
                 'title' => '排序',
