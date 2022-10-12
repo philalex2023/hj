@@ -126,40 +126,56 @@ class SearchController extends Controller
     public function tag(Request $request): JsonResponse
     {
         if(isset($request->params)){
-            $perPage = 16;
             $params = self::parse($request->params);
-            Log::info('SearchTagParams:',[$params]);
+            $perPage = 16;
+            $page = $params['page'] ?? 1;
+            $offset = ($page-1)*$perPage;
+            //Log::info('SearchTagParams:',[$params]);
             if (isset($params['pageSize']) && ($params['pageSize'] < $perPage)) {
                 $perPage = $params['pageSize'];
             }
-            $page = $params['page'] ?? 1;
+
             $id = $params['id'] ?? 0;
             //$words = '*';
             $project = intval($params['project'] ?? 1);
             //
-            /*$key = 'projectTag_'.$project;
-            $redis = $this->redis();
-            $tagFromRedis = (array) $redis->zRevRange($key,0,-1,true);
-            if(!empty($tagFromRedis)){
-                $tagFromRedisKeys = array_keys($tagFromRedis);
-                foreach ($tagFromRedisKeys as $r){
-                    $tagItem = json_decode($r,true);
-                    if($tagItem['id'] == $id){
-                        $words = $tagItem['name'];
-                        break;
-                    }
-                }
-
-            }*/
-
             $project = $project>0 ? $project : 1;
-            $paginator = Video::search((string)$id)->where('status',1)->where('type',$project)->simplePaginate($perPage,'searchTag',$page);
-            $paginatorArr = $paginator->toArray()['data'];
-            if(!empty($paginatorArr)){
-                $res['list'] = $this->handleVideoItems($paginatorArr,false,$request->user()->id);
+
+            $searchParams = [
+                'index' => 'video_index',
+                'body' => [
+                    'track_total_hits' => true,
+                    'size' => $perPage,
+                    'from' => $offset,
+                    //'_source' => false,
+                    'query' => [
+                        'bool'=>[
+                            'must' => [
+                                ['term' => ['dev_type'=>$project]],
+                            ]
+                        ]
+                    ],
+                ],
+            ];
+            $es = $this->esClient();
+            $response = $es->search($searchParams);
+            $videoList = [];
+            $total = 0;
+            if(isset($response['hits']) && isset($response['hits']['hits'])){
+                $total = $response['hits']['total']['value'];
+                foreach ($response['hits']['hits'] as $item) {
+                    $videoList[] = $item['_source'];
+                }
+            }
+            $res['total'] = $total;
+            $hasMorePages = $total >= $perPage*$page;
+
+
+            if(!empty($videoList)){
+                $res['list'] = $this->handleVideoItems($videoList,false,$request->user()->id);
                 //广告
                 $res['list'] = $this->insertAds($res['list'],'tag_page',true, $page, $perPage);
-                $res['hasMorePages'] = $paginator->hasMorePages();
+                $res['hasMorePages'] = $hasMorePages;
             }
             if(isset($res['list']) && !empty($res['list'])){
                 $domain = env('RESOURCE_DOMAIN2');
