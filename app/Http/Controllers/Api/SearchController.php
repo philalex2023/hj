@@ -375,20 +375,19 @@ class SearchController extends Controller
 
     public function hotTags(Request $request): JsonResponse
     {
-        $project = 1;
         if(isset($request->params)){
             $params = self::parse($request->params);
             $project = intval($params['project'] ?? 1);
         }
 
-        $project = $project>0 ? $project : 1;
+        $project = $project ?? 0;
         $key = 'projectTag_'.$project;
         $freshKey = 'freshTag_'.$project;
         $redis = $this->redis();
         $tagFromRedis = (array) $redis->zRevRange($key,0,-1,true);
         $tags = [];
         if($redis->get($freshKey)==1 || empty($tagFromRedis)){
-            $videoAll = DB::table('video')->where('status',1)->where('type',$project)->get(['tag_kv']);
+            $videoAll = DB::table('video')->where('status',1)->where('dev_type',$project)->get(['tag_kv']);
             $videoTag = [];
             foreach ($videoAll as $item){
                 $videoTag = $videoTag + (array)json_decode($item->tag_kv,true);
@@ -420,8 +419,7 @@ class SearchController extends Controller
                 $tags[] = json_decode($r,true);
             }
         }
-        Log::info('hotTagsParams:',[request()->all(),$tags]);
-        //$tags = array_slice($tags,0,5);
+        $tags = array_slice($tags,0,5);
         return response()->json([
             'state'=>0,
             'data'=>$tags
