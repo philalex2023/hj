@@ -387,13 +387,7 @@ class SearchController extends Controller
         $redis = $this->redis();
         $tagFromRedis = (array) $redis->zRevRange($key,0,-1,true);
         $tags = [];
-        if(!empty($tagFromRedis)){
-            $tagFromRedisKeys = array_keys($tagFromRedis);
-            foreach ($tagFromRedisKeys as $r){
-                $tags[] = json_decode($r,true);
-            }
-        }
-        if($redis->get($freshKey)==1){
+        if($redis->get($freshKey)==1 || empty($tagFromRedis)){
             $videoAll = DB::table('video')->where('status',1)->where('type',$project)->get(['tag_kv']);
             $videoTag = [];
             foreach ($videoAll as $item){
@@ -420,6 +414,11 @@ class SearchController extends Controller
 
             $redis->del($freshKey);
             !$redis->exists($key) && $tags = $videoTag;
+        }else{
+            $tagFromRedisKeys = array_keys($tagFromRedis);
+            foreach ($tagFromRedisKeys as $r){
+                $tags[] = json_decode($r,true);
+            }
         }
         Log::info('hotTagsParams:',[request()->all(),$tags]);
         //$tags = array_slice($tags,0,5);
