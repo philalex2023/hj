@@ -53,7 +53,11 @@ class ProcessDataSource implements ShouldQueue
         $topics = Topic::query()->where('data_source_id',$model->id)->get(['id','tag']);
         foreach ($topics as $topic) {
             $tag  = !$topic->tag ? [] : json_decode($topic->tag,true);
-            $tagVideoIds = $this->getVideoIdsByTag($tag);
+            $tag = !$tag ? [] : $tag;
+            $tagVideoIds = [];
+            if(!empty($tagVideoIds)){
+                $tagVideoIds = $this->getVideoIdsByTag($tag);
+            }
             $sourceIds = !$model->contain_vids ? [] : explode(',',$model->contain_vids);
             $firstIds = [];
             if($this->row->show_num > 0){
