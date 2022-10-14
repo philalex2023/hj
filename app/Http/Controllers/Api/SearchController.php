@@ -409,7 +409,7 @@ class SearchController extends Controller
             foreach ($videoTag as $k => $t){
                 $redis->zAdd($key,1,json_encode(['id'=>(int)$k,'name'=>$t],JSON_UNESCAPED_UNICODE));
             }
-
+            $redis->expire($key,24*3600);
             $redis->del($freshKey);
             $tags = $videoTag;
         }else{
