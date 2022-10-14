@@ -65,7 +65,7 @@ class ProcessDataSource implements ShouldQueue
                 $firstIds = DB::table('video')->whereIn('id',$containIds)->limit($this->row->show_num)->orderByDesc('sort')->pluck('id')->all();
             }
             $ids = array_unique([...$firstIds,...$tagVideoIds,...$sourceIds]);
-            Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
+            //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             //Log::info('processDS',[$ids,$topic->id]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>implode(',',$ids)]);
         }
