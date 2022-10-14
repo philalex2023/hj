@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ProcessDataSourceOne implements ShouldQueue
+class ProcessDataSource implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TagTrait;
 
@@ -52,6 +52,7 @@ class ProcessDataSourceOne implements ShouldQueue
         $model = $this->row;
         $topics = Topic::query()->where('data_source_id',$model->id)->get(['id','tag']);
         foreach ($topics as $topic) {
+            Log::info('testDataSourceHandleTopic',[$topic]);
             $tag  = !$topic->tag ? [] : json_decode($topic->tag,true);
             $tag = !$tag ? [] : $tag;
             $tagVideoIds = [];
