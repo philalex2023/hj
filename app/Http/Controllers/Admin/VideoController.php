@@ -51,7 +51,7 @@ class VideoController extends BaseCurlController
 
     public array $video_source = [
         ''=>['id'=>'','name'=>'全部'],
-//        1=>['id'=>1,'name'=>'上传'],
+        1=>['id'=>1,'name'=>'咪咪'],
         3=>['id'=>3,'name'=>'萌堆采集'],
         4=>['id'=>4,'name'=>'up主上传'],
 //        5=>['id'=>5,'name'=>'海角采集'],
