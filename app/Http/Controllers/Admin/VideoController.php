@@ -584,7 +584,7 @@ class VideoController extends BaseCurlController
                     'name' => '无'
                 ]])
             ],*/
-            /*[
+            [
                 'field' => 'tag',
                 'type' => 'checkbox',
                 'name' => '标签',
@@ -593,7 +593,7 @@ class VideoController extends BaseCurlController
                     'id' => 0,
                     'name' => '无'
                 ]])
-            ],*/
+            ],
             [
                 'field' => 'id',
                 'type' => 'text',
@@ -723,6 +723,17 @@ class VideoController extends BaseCurlController
                     'data-value' => 0,
                 ]
             ];
+            $data[] = [
+                'class' => 'layui-btn-dark',
+                'name' => '批量标签',
+                'id' => 'btn-batchTag',
+                'data'=>[
+                    'data-type' => "batchHandle",
+                    'data-input-type' => "checkbox",
+                    'data-title' => "确定批量操作吗",
+                    'data-field' => "tag",
+                ]
+            ];
             /*$data[] = [
                 'class' => 'layui-btn-dark',
                 'name' => '智能打标签',
@@ -746,17 +757,7 @@ class VideoController extends BaseCurlController
                     'data-field' => "cat",
                 ]
             ];*/
-            /*$data[] = [
-                'class' => 'layui-btn-dark',
-                'name' => '批量标签',
-                'id' => 'btn-batchTag',
-                'data'=>[
-                    'data-type' => "batchHandle",
-                    'data-input-type' => "checkbox",
-                    'data-title' => "确定批量操作吗",
-                    'data-field' => "tag",
-                ]
-            ];*/
+            /**/
             /*$data[] = [
                 'class' => 'layui-btn-danger',
                 'name' => 'VIP限制',
@@ -863,9 +864,9 @@ class VideoController extends BaseCurlController
                     $buildQueryVideo = Video::query()->whereIn($id, $id_arr);
                     $tagPluck = DB::table('tag')->whereIn('id',$value_arr)->pluck('name','id');
                     $buildQueryVideo->update(['tag'=>json_encode($value_arr),'tag_kv'=>json_encode($tagPluck)]);
-                    $redis = $this->redis();
+                    /*$redis = $this->redis();
                     $redis->set('freshTag_1',1);
-                    $redis->set('freshTag_3',1);
+                    $redis->set('freshTag_3',1);*/
                     $r=true;
                     break;
                 case 'batch_topic':
