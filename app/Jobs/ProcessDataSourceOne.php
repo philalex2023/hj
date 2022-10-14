@@ -57,19 +57,18 @@ class ProcessDataSourceOne implements ShouldQueue
             $tagVideoIds = [];
             if(!empty($tagVideoIds)){
                 $tagVideoIds = $this->getVideoIdsByTag($tag);
-                Log::info('_tagVideoIds',[$tagVideoIds]);
+                //Log::info('_tagVideoIds',[$tagVideoIds]);
             }
             $sourceIds = !$model->contain_vids ? [] : explode(',',$model->contain_vids);
-            Log::info('_sourceIds',[$sourceIds]);
+            //Log::info('_sourceIds',[$sourceIds]);
             $firstIds = [];
             if($this->row->show_num > 0){
                 $containIds = explode(',',$model->contain_vids);
-                Log::info('_contain_vids',[$containIds]);
+                //Log::info('_contain_vids',[$containIds]);
                 $firstIds = DB::table('video')->whereIn('id',$containIds)->limit($this->row->show_num)->orderByDesc('sort')->pluck('id')->all();
             }
             $ids = array_unique([...$firstIds,...$tagVideoIds,...$sourceIds]);
-            Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
-            //Log::info('processDS',[$ids,$topic->id]);
+            //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>implode(',',$ids)]);
         }
     }
