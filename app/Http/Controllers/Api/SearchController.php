@@ -411,14 +411,14 @@ class SearchController extends Controller
             }
 
             $redis->del($freshKey);
-            !$redis->exists($key) && $tags = $videoTag;
+            $tags = $videoTag;
         }else{
             $tagFromRedisKeys = array_keys($tagFromRedis);
             foreach ($tagFromRedisKeys as $r){
                 $tags[] = json_decode($r,true);
             }
         }
-        $tags = array_slice($tags,0,5);
+        //$tags = array_slice($tags,0,5);
         return response()->json([
             'state'=>0,
             'data'=>$tags
