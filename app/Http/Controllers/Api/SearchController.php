@@ -411,7 +411,7 @@ class SearchController extends Controller
                 $tags[] = $item;
                 $redis->zAdd($key,1,json_encode($item,JSON_UNESCAPED_UNICODE));
             }
-            $redis->expire($key,24*3600);
+            //$redis->expire($key,24*3600);
             $redis->del($freshKey);
         }else{
             $tagFromRedisKeys = array_keys($tagFromRedis);
