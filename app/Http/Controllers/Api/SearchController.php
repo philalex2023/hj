@@ -391,7 +391,7 @@ class SearchController extends Controller
         $key = 'projectTag_'.$project;
         $freshKey = 'freshTag_'.$project;
         $redis = $this->redis();
-        $tagFromRedis = (array) $redis->zRevRange($key,0,-1,true);
+        $tagFromRedis = (array) $redis->zRevRangeByScore($key,0,-1);
         $tags = [];
         if($redis->get($freshKey)==1 || empty($tagFromRedis)){
             $videoAll = DB::table('video')->where('status',1)->where('dev_type',$project)->get(['tag_kv']);
