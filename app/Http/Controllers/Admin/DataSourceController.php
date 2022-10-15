@@ -6,7 +6,6 @@ use App\Jobs\ProcessDataSourceNew;
 use App\Models\AdminVideo;
 use App\Models\DataSource;
 use App\Models\Topic;
-use App\Models\Video;
 use App\Services\UiService;
 use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
@@ -342,6 +341,8 @@ class DataSourceController extends BaseCurlController
                         foreach ($searchGet as $item){
                             $videoIds[] = $item['_id'];
                         }
+                        //排序
+                        $videoIds = DB::table('video')->whereIn('id',$videoIds)->orderByDesc('created_at')->pluck('id')->all();
                         //dd($videoIds);
                         $model->contain_vids = implode(',',$videoIds);
                     }
