@@ -229,12 +229,19 @@ class SearchController extends Controller
                     'page' => 'required|integer',
                 ])->validated();
                 $user = $request->user();
-                $cid = $validated['cid'];
+                $tid = $validated['cid'];
                 $page = $validated['page'];
                 $perPage = 16;
                 $offset = ($page-1)*$perPage;
 
-                $ids = explode(',',DB::table('topic')->where('id',$cid)->value('contain_vids'));
+                $ids = explode(',',DB::table('topic')->where('id',$tid)->value('contain_vids'));
+
+                $idParams = [];
+                $length = count($ids);
+                foreach ($ids as $key => $id) {
+                    $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+                }
+
                 $searchParams = [
                     'index' => 'video_index',
                     'body' => [
@@ -243,14 +250,26 @@ class SearchController extends Controller
                         'from' => $offset,
                         //'_source' => false,
                         'query' => [
-                            'bool'=>[
-                                'must' => [
-                                    ['terms' => ['id'=>$ids]],
-//                                    ['term' => ['status'=>1]],
-//                                    ['term' => ['cid'=>$cid]],
+                            'function_score' => [
+                                'query' => [
+                                    'bool'=>[
+                                        'must' => [
+                                            ['terms' => ['id'=>$ids]],
+                                            //['term' => ['dev_type'=>0]],
+                                        ]
+                                    ]
+                                ],
+                                'script_score' => [
+                                    'script' => [
+                                        //'lang' => 'painless',
+                                        'params' => [
+                                            'scoring' => $idParams
+                                        ],
+                                        'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                    ]
                                 ]
                             ]
-                        ],
+                        ]
                     ],
                 ];
                 $es = $this->esClient();
