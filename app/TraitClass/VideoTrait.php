@@ -41,6 +41,25 @@ trait VideoTrait
         ],
     ];
 
+/*推荐-海角原创
+精选-海角原创
+网黄-海角自制
+AV-海角伙伴
+国产-海角原创
+日韩-海角收录
+动漫-海角推荐*/
+    public function getVideoPrefix(): array
+    {
+        return [
+            18 => '海角原创',
+            10058 => '海角原创',
+            1 => '海角伙伴',
+            10065 => '海角原创',
+            28 => '海角收录',
+            30 => '海角推荐',
+        ];
+    }
+
     public function setRow(): object
     {
         return $this->row;
@@ -416,7 +435,11 @@ trait VideoTrait
             //标签
             isset($list['tag_kv']) && $list['tag_kv'] = json_decode($list['tag_kv'],true);
             //片名加前缀
-            $list['name'] = '【海角原创】:'.$list['name'];
+            if(isset($list['cid'])){
+                $videoPrefix = $this->getVideoPrefix();
+                $prefix = $videoPrefix[$list['cid']] ?? false;
+                $prefix && $list['name'] = '【'.$prefix.'】:'.$list['name'];
+            }
         }
         return $lists;
     }

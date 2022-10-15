@@ -181,9 +181,6 @@ class HomeController extends Controller
                             }
                         }
 
-
-                        //$videoBuild = DB::table('video')->where('status',1)->whereIn('id',$ids);
-                        //$videoList = $videoBuild->limit(8)->get(['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'])->toArray();
                         $topic['small_video_list'] = $videoList;
                         unset($topic['contain_vids']);
                     }

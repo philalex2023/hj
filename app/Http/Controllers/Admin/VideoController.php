@@ -575,8 +575,6 @@ class VideoController extends BaseCurlController
         if($dataSourceId>0){
             $contain_ids = $this->dataSource->contain_vids;
             $model = $model->whereIn('id',explode(',',$contain_ids));
-            $order_by_name = 'sort';
-            $order_by_type = 'desc';
             $resultAll = $model->orderBy('created_at','desc')->get()->all();
             //排序
             $idItems = array_column($resultAll,null,'id');
