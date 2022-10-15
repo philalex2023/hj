@@ -70,13 +70,14 @@ class ProcessDataSourceTwo implements ShouldQueue
                 Log::info('firstIds',[$firstIds]);
                 //更新数据源
                 $updateIdStr = implode(',',array_unique($firstIds,$sourceIds));
+                Log::info('idStr-1',[$updateIdStr]);
                 DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr]);
             }
             $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
             $ids = array_unique($mergerArr);
-            Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
+            //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             $idStr = implode(',',$ids);
-            Log::info('idStr',[$idStr]);
+            Log::info('idStr-2',[$idStr]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
         }
     }
