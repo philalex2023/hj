@@ -370,6 +370,9 @@ class DataSourceController extends BaseCurlController
                 break;
 
         }
+
+        //去重
+        $videoIds = array_unique($videoIds);
         $model->video_num = count($videoIds);
     }
 
