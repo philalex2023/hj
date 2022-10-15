@@ -235,7 +235,7 @@ class SearchController extends Controller
                 $offset = ($page-1)*$perPage;
 
                 $ids = explode(',',DB::table('topic')->where('id',$tid)->value('contain_vids'));
-
+                Log::info('SearchCat',[$ids]);
                 $idParams = [];
                 $length = count($ids);
                 foreach ($ids as $key => $id) {
@@ -255,7 +255,6 @@ class SearchController extends Controller
                                     'bool'=>[
                                         'must' => [
                                             ['terms' => ['id'=>$ids]],
-                                            //['term' => ['dev_type'=>0]],
                                         ]
                                     ]
                                 ],
