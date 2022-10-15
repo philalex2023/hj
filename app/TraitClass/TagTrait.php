@@ -40,7 +40,7 @@ trait TagTrait
         $tagAll = DB::table('tag')->pluck('name','id')->all();
         $tagVideoIds = [];
         if(!empty($tag)){
-            DB::table('video')->where('status',1)->orderByDesc('created_at')->chunkById(100,function ($items) use ($tagAll, $tag, &$tagVideoIds){
+            DB::table('video')->where('status',1)->orderByDesc('created_at')->chunk(100,function ($items) use ($tagAll, $tag, &$tagVideoIds){
                 foreach ($items as $item){
                     $jsonArr = json_decode($item->tag,true);
                     !$jsonArr && $jsonArr = [];

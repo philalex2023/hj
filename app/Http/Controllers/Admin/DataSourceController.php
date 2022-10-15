@@ -286,15 +286,16 @@ class DataSourceController extends BaseCurlController
                     }
                     $model->data_value = implode(',',$tagName);
                     $model->tag = json_encode($tagIds);
-                    //
+
                     DB::table('video')
                         ->where('dev_type',$videoType)
                         ->where('status',1)
                         ->orderByDesc('created_at')
-                        ->chunkById(1000,function ($items) use ($tagIds,&$videoIds,$model){
+                        ->chunk(1000,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
                             !$jsonArr && $jsonArr = [];
+
                             $intersect = array_intersect($jsonArr,$tagIds); //交集
                             if(!empty($intersect)){
                                 $videoIds[] = $item->id;
