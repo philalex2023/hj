@@ -2,6 +2,7 @@
 
 namespace App\Jobs;
 
+use App\Models\DataSource;
 use App\Models\Topic;
 use App\TraitClass\TagTrait;
 use Illuminate\Bus\Queueable;
@@ -67,6 +68,9 @@ class ProcessDataSourceTwo implements ShouldQueue
                 $firstIds = $this->getDataSourceSortArr($model->sort_vids);
                 krsort($firstIds);
                 Log::info('firstIds',[$firstIds]);
+                //更新数据源
+                $updateIdStr = implode(',',array_unique($firstIds,$sourceIds));
+                DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr]);
             }
             $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
             $ids = array_unique($mergerArr);
