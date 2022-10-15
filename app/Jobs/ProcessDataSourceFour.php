@@ -14,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ProcessDataSourceThree implements ShouldQueue
+class ProcessDataSourceFour implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TagTrait;
 
@@ -69,7 +69,7 @@ class ProcessDataSourceThree implements ShouldQueue
                 krsort($firstIds);
                 Log::info('firstIds',[$firstIds]);
                 //更新数据源
-                $updateIdStr = implode(',',array_unique($firstIds,$sourceIds));
+                $updateIdStr = implode(',',array_unique([...$firstIds,...$sourceIds]));
                 Log::info('idStr-1',[$updateIdStr]);
                 DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr]);
             }
