@@ -139,7 +139,7 @@ class HomeController extends Controller
                             }
                             //Log::info('index_list_str',$idParams);
                             $size = $topic['style'] == 7 ? 7: 8;
-                            $source = ['id','cid','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
+                            $source = ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
                             $searchParams = [
                                 'index' => 'video_index',
                                 'body' => [
@@ -202,7 +202,7 @@ class HomeController extends Controller
                             $this->frontFilterAd($r['ad_list'],$domain);
                         }
                         if(!empty($r['small_video_list'])){
-                            $r['small_video_list'] = $this->handleVideoItems($r['small_video_list'],false,$user->id);
+                            $r['small_video_list'] = $this->handleVideoItems($r['small_video_list'],false,$user->id,['cid'=>$cid]);
                         }
                     }
                     return response()->json(['state'=>0, 'data'=>$res]);

@@ -396,7 +396,7 @@ AV-海角伙伴
         return $h*3600 + $i*60 + $s;
     }
 
-    public function handleVideoItems($lists,$display_url=false,$uid = 0,$appendInfo = false)
+    public function handleVideoItems($lists,$display_url=false,$uid = 0,$appendInfo = [])
     {
         $_v = date('Ymd');
         foreach ($lists as &$list){
@@ -435,9 +435,9 @@ AV-海角伙伴
             //标签
             isset($list['tag_kv']) && $list['tag_kv'] = json_decode($list['tag_kv'],true);
             //片名加前缀
-            if(isset($list['cid'])){
+            if(isset($appendInfo['cid'])){
                 $videoPrefix = $this->getVideoPrefix();
-                $prefix = $videoPrefix[$list['cid']] ?? false;
+                $prefix = $videoPrefix[$appendInfo['cid']] ?? false;
                 $prefix && $list['name'] = '【'.$prefix.'】:'.$list['name'];
             }
         }
