@@ -291,7 +291,7 @@ class DataSourceController extends BaseCurlController
                         ->where('dev_type',$videoType)
                         ->where('status',1)
                         ->orderByDesc('created_at')
-                        ->chunk(1000,function ($items) use ($tagIds,&$videoIds,$model){
+                        ->chunk(100,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
                             !$jsonArr && $jsonArr = [];
