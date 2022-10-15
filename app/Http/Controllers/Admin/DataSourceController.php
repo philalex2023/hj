@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Jobs\ProcessDataSourceTwo;
+use App\Jobs\ProcessDataSourceThree;
 use App\Models\AdminVideo;
 use App\Models\DataSource;
 use App\Models\Topic;
@@ -376,7 +376,7 @@ class DataSourceController extends BaseCurlController
 
     protected function afterSaveSuccessEvent($model, $id = '')
     {
-        $job = new ProcessDataSourceTwo($model);
+        $job = new ProcessDataSourceThree($model);
         $this->dispatch($job->onQueue('default'));
         return $model;
     }
@@ -403,7 +403,7 @@ class DataSourceController extends BaseCurlController
     public function updatePost(Request $request, $id)
     {
         $model = DataSource::query()->where('id',$id)->first();
-        $job = new ProcessDataSourceTwo($model);
+        $job = new ProcessDataSourceThree($model);
         $this->dispatch($job->onQueue('default'));
         return $this->returnSuccessApi();
     }
