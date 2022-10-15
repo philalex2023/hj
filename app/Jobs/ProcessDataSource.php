@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ProcessDataSourceOne implements ShouldQueue
+class ProcessDataSource implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TagTrait;
 
@@ -60,6 +60,7 @@ class ProcessDataSourceOne implements ShouldQueue
                 //Log::info('_tagVideoIds',[$tagVideoIds]);
             }
             $sourceIds = !$model->contain_vids ? [] : explode(',',$model->contain_vids);
+            $sourceIds = array_unique($sourceIds);
             Log::info('_sourceIds',[$sourceIds]);
             $firstIds = [];
             if($this->row->show_num > 0){
