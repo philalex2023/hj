@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ProcessDataSourceNew implements ShouldQueue
+class ProcessDataSource implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TagTrait;
 
@@ -64,10 +64,9 @@ class ProcessDataSourceNew implements ShouldQueue
             //Log::info('_sourceIds',[$sIds]);
             $firstIds = [];
             if($this->row->show_num > 0){
-                $containIds = explode(',',$model->contain_vids);
-                Log::info('_contain_vids',[$containIds]);
                 $firstIds = $this->getDataSourceSortArr($model->sort_vids);
                 krsort($firstIds);
+                Log::info('firstIds',[$firstIds]);
             }
             $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
             $ids = array_unique($mergerArr);
