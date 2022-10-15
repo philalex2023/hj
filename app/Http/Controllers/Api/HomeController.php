@@ -139,7 +139,7 @@ class HomeController extends Controller
                             }
                             //Log::info('index_list_str',$idParams);
                             $size = $topic['style'] == 7 ? 7: 8;
-                            $source = ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
+                            $source = ['id','cid','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
                             $searchParams = [
                                 'index' => 'video_index',
                                 'body' => [
