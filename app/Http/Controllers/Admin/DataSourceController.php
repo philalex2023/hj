@@ -374,6 +374,7 @@ class DataSourceController extends BaseCurlController
 
         //去重
         $videoIds = array_unique($videoIds);
+        $model->contain_vids = $videoIds;
         $model->video_num = count($videoIds);
     }
 
