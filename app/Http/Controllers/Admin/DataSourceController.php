@@ -367,9 +367,9 @@ class DataSourceController extends BaseCurlController
         }
 
         //去重
-        !$videoIds && $videoIds=[];
+        !$videoIds && $videoIds='';
         $videoIds = array_unique($videoIds);
-        $model->contain_vids = $videoIds;
+        $model->contain_vids = implode(',',$videoIds);
         $model->video_num = count($videoIds);
     }
 
