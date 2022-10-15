@@ -43,6 +43,10 @@ class VideoController extends BaseCurlController
 
     public string $resDomain = '';
 
+    public int $dataSourceId = 0;
+
+    public mixed $dataSource = null;
+
     public array $dev_type = [
         '' => ['id'=>'','name'=>'全部'],
         0 => ['id'=>0,'name'=>'横屏'],
@@ -59,6 +63,9 @@ class VideoController extends BaseCurlController
 
     public function setModel(): AdminVideo
     {
+        $requestAll = request()->all();
+        $this->dataSourceId = $requestAll['data_source_id'] ?? 0;
+        $this->dataSourceId>0 && $this->dataSource = DataSource::query()->where('id',$this->dataSourceId)->first();
         $this->cats = $this->getCatNavData();
         $this->tags = $this->getTagData();
         $this->resDomain = self::getDomain(2);
@@ -228,14 +235,14 @@ class VideoController extends BaseCurlController
                 'title' => '是否上架',
                 'align' => 'center',
             ],
-            [
+            /*[
                 'field' => 'sort',
                 'minWidth' => 80,
                 'title' => '排序',
                 'edit' => 1,
                 'sort' => 1,
                 'align' => 'center',
-            ],
+            ],*/
             /*[
                 'field' => 'is_top',
                 'minWidth' => 80,
@@ -434,7 +441,21 @@ class VideoController extends BaseCurlController
         $item->gold = $item->gold/$this->goldUnit;
         $coverImg = str_replace(['jpg','png','gif','jpeg'],'htm',$item->cover_img);
         $item->cover_img = UiService::layuiTplImg($this->resDomain.$coverImg);
+
+        $data_source_id = $this->dataSourceId;
+        if($data_source_id>0){
+            $sortArr = $this->getDataSourceSortArr($this->dataSource->sort_vids);
+            $flip = array_flip($sortArr);
+            $item->sort = $flip[$item->id] ?? 0;
+        }
         return $item;
+    }
+
+    public function getDataSourceSortArr($sort_vid)
+    {
+        $originSort = !$sort_vid ? [] : json_decode($sort_vid, true);
+        !$originSort && $originSort=[];
+        return $originSort;
     }
 
     /**
@@ -532,8 +553,11 @@ class VideoController extends BaseCurlController
 
     public function handleResultModel($model): array
     {
+        $dataSourceId = $this->dataSourceId;
+
         $page = $this->rq->input('page', 1);
         $pagesize = $this->rq->input('limit', 30);
+
         $order_by_name = $this->orderByName();
         $order_by_type = $this->orderByType();
         $cid = $this->rq->input('cid');
@@ -547,27 +571,46 @@ class VideoController extends BaseCurlController
             $contain_ids = Topic::query()->where('id',$topicId)->value('contain_vids');
             $model = $model->whereIn('id',explode(',',$contain_ids));
         }
-        $dataSourceId = (int)$this->rq->input('data_source_id',0);
+
         if($dataSourceId>0){
-            $contain_ids = DataSource::query()->where('id',$dataSourceId)->value('contain_vids');
+            $contain_ids = $this->dataSource->contain_vids;
             $model = $model->whereIn('id',explode(',',$contain_ids));
             $order_by_name = 'sort';
             $order_by_type = 'desc';
-        }
+            $resultAll = $model->get()->all();
+            //排序 todo
+            $idItems = array_column($resultAll,null,'id');
 
-        $type>0 && $model=$model->where('type',$type);
-        $cid>0 && $model=$model->where('cid',$cid);
-        if($dev_type!==null){
-            $model=$model->where('dev_type',$dev_type);
-        }
+            $sorts = $this->getDataSourceSortArr($this->dataSource->sort_vids);
+            krsort($sorts);
+            $unshiftArr = [];
+            foreach ($sorts as $id){
+                $unshiftArr[] = $idItems[$id];
+                unset($idItems[$id]);
+            }
+            array_unshift($idItems,...$unshiftArr);
+            //dd($idItems);
+            //获取当前页数据
+            $offset = ($page-1)*$pagesize;
+            $result = array_slice($idItems,$offset,$pagesize);
+            $total = count($result);
+        }else{
+            $type>0 && $model=$model->where('type',$type);
+            $cid>0 && $model=$model->where('cid',$cid);
+            if($dev_type!==null){
+                $model=$model->where('dev_type',$dev_type);
+            }
 
-        $model = $this->orderBy($model, $order_by_name, $order_by_type);
-        $total = $model->count();
-        $result = $model->forPage($page, $pagesize)->get();
+            $model = $this->orderBy($model, $order_by_name, $order_by_type);
+            $total = $model->count();
+            $result = $model->forPage($page, $pagesize)->get();
+
+        }
         return [
             'total' => $total,
             'result' => $result
         ];
+
 
     }
 
@@ -921,6 +964,17 @@ class VideoController extends BaseCurlController
                     }else{
                         $r = $this->editTableAddWhere()->whereIn($id, $id_arr)->update(['status' => $value]);
                     }
+                    break;
+                case 'sort':
+                    if($this->dataSourceId>0 && $ids){
+                        $originSort = $this->getDataSourceSortArr($this->dataSource->sort_vids);
+                        $sortArr = [$value => $ids];
+                        $jsonArr = array_unique($sortArr + $originSort);
+                        //krsort($jsonArr);
+                        //dd($jsonArr);
+                        DataSource::query()->where('id',$this->dataSource->id)->update(['sort_vids' => json_encode($jsonArr)]);
+                    }
+                    $r = true;
                     break;
                 default:
                     $r = $this->editTableAddWhere()->whereIn($id, $id_arr)->update([$field => $value]);

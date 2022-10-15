@@ -129,7 +129,7 @@ class DataSourceController extends BaseCurlController
                 'index_url' => $indexUrl,//首页列表JSON地址
                 'table_name' => 'video',
                 'page_name' => '视频数据',
-                'edit_field_url' => action([VideoController::class, 'editTable']),//表格编辑提交地址
+                'edit_field_url' => action([VideoController::class, 'editTable'],['data_source_id'=>$show->id]),//表格编辑提交地址
                 'open_height' => $this->layuiOpenHeight(),//Layui 弹窗弹出高度
                 'open_width' => $this->layuiOpenWidth(),//Layui 弹窗高度窗口
             ];
@@ -165,6 +165,14 @@ class DataSourceController extends BaseCurlController
                 'field' => 'sort',
                 'minWidth' => 80,
                 'title' => '排序',
+                'edit' => 1,
+                'sort' => 1,
+                'align' => 'center',
+            ],
+            [
+                'field' => 'created_at',
+                'minWidth' => 80,
+                'title' => '上架时间',
                 'edit' => 1,
                 'sort' => 1,
                 'align' => 'center',
