@@ -578,7 +578,7 @@ class VideoController extends BaseCurlController
             $order_by_name = 'sort';
             $order_by_type = 'desc';
             $resultAll = $model->orderBy('created_at','desc')->get()->all();
-            //排序 todo
+            //排序
             $idItems = array_column($resultAll,null,'id');
 
             $sorts = $this->getDataSourceSortArr($this->dataSource->sort_vids);

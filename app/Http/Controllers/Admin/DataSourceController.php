@@ -291,6 +291,7 @@ class DataSourceController extends BaseCurlController
                     DB::table('video')
                         ->where('dev_type',$videoType)
                         ->where('status',1)
+                        ->orderByDesc('created_at')
                         ->chunkById(1000,function ($items) use ($tagIds,&$videoIds,$model){
                         foreach ($items as $item){
                             $jsonArr = json_decode($item->tag,true);
@@ -358,7 +359,7 @@ class DataSourceController extends BaseCurlController
                 break;
             case 4: //最新上架
                 $model->data_value = '最新';
-                $videoIds = DB::table('video')->where('dev_type',$videoType)->where('status',1)->orderByDesc('updated_at')->take(64)->pluck('id')->all();
+                $videoIds = DB::table('video')->where('dev_type',$videoType)->where('status',1)->orderByDesc('created_at')->take(64)->pluck('id')->all();
                 $model->contain_vids = implode(',',$videoIds);
                 break;
             case 5: //自定义

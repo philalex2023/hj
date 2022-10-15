@@ -65,12 +65,20 @@ class ProcessDataSource implements ShouldQueue
             if($this->row->show_num > 0){
                 $containIds = explode(',',$model->contain_vids);
                 Log::info('_contain_vids',[$containIds]);
-                $firstIds = DB::table('video')->whereIn('id',$containIds)->limit($this->row->show_num)->orderByDesc('sort')->pluck('id')->all();
+                $firstIds = $this->getDataSourceSortArr($model->sort_vids);
+                krsort($firstIds);
             }
             $ids = array_unique([...$firstIds,...$tagVideoIds,...$sourceIds]);
             Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>implode(',',$ids)]);
         }
+    }
+
+    public function getDataSourceSortArr($sort_vid)
+    {
+        $originSort = !$sort_vid ? [] : json_decode($sort_vid, true);
+        !$originSort && $originSort=[];
+        return $originSort;
     }
 
 
