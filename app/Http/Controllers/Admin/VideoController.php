@@ -577,7 +577,7 @@ class VideoController extends BaseCurlController
             $model = $model->whereIn('id',explode(',',$contain_ids));
             $order_by_name = 'sort';
             $order_by_type = 'desc';
-            $resultAll = $model->get()->all();
+            $resultAll = $model->orderBy('created_at','desc')->get()->all();
             //排序 todo
             $idItems = array_column($resultAll,null,'id');
 
