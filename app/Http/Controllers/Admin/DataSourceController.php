@@ -301,7 +301,6 @@ class DataSourceController extends BaseCurlController
                             }
                         }
                     });
-                    $model->contain_vids = implode(',',$videoIds);
                 }
                 break;
             case 2: //关键字
@@ -344,7 +343,6 @@ class DataSourceController extends BaseCurlController
                         //排序
                         $videoIds = DB::table('video')->whereIn('id',$videoIds)->orderByDesc('created_at')->pluck('id')->all();
                         //dd($videoIds);
-                        $model->contain_vids = implode(',',$videoIds);
                     }
 
                 }
@@ -361,18 +359,15 @@ class DataSourceController extends BaseCurlController
             case 4: //最新上架
                 $model->data_value = '最新';
                 $videoIds = DB::table('video')->where('dev_type',$videoType)->where('status',1)->orderByDesc('created_at')->take(64)->pluck('id')->all();
-                $model->contain_vids = implode(',',$videoIds);
                 break;
             case 5: //自定义
                 $videoIds = explode(',',$dataValue);
-                if(!empty($videoIds)){
-                    $model->contain_vids = $dataValue;
-                }
                 break;
 
         }
 
         //去重
+        !$videoIds && $videoIds=[];
         $videoIds = array_unique($videoIds);
         $model->contain_vids = $videoIds;
         $model->video_num = count($videoIds);
