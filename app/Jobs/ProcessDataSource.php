@@ -13,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ProcessDataSourceOne implements ShouldQueue
+class ProcessDataSource implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TagTrait;
 
@@ -72,8 +72,9 @@ class ProcessDataSourceOne implements ShouldQueue
             $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
             $ids = array_unique($mergerArr);
             Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
-            Log::info('ids',[$ids]);
-            Topic::query()->where('id',$topic->id)->update(['contain_vids'=>implode(',',$ids)]);
+            $idStr = implode(',',$ids);
+            Log::info('idStr',[$idStr]);
+            Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
         }
     }
 
