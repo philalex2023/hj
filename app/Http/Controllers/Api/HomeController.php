@@ -202,7 +202,7 @@ class HomeController extends Controller
                             $this->frontFilterAd($r['ad_list'],$domain);
                         }
                         if(!empty($r['small_video_list'])){
-                            $r['small_video_list'] = $this->handleVideoItems($r['small_video_list'],false,$user->id,['cid'=>$cid]);
+                            $r['small_video_list'] = $this->handleVideoItems($r['small_video_list'],false,$user->id,['cid'=>$cid,'device_system'=>$user->device_system]);
                         }
                     }
                     return response()->json(['state'=>0, 'data'=>$res]);

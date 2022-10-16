@@ -413,6 +413,9 @@ AV-海角伙伴
                 unset($list['dash_url']);
             }
             $domainSync = self::getDomain($list['sync']);
+            if(isset($appendInfo['device_system'])){
+                $appendInfo['device_system']!=2 && $domainSync = self::getDomain(0);
+            }
             //封面图处理
             $list['cover_img'] = $this->transferImgOut($list['cover_img'],$domainSync,$_v);
             if ($list['usage']??false) {
