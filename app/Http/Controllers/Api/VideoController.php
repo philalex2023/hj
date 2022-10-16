@@ -93,7 +93,7 @@ class VideoController extends Controller
                 $useGold = intval($validated['use_gold'] ?? 1);
                 $one = (array)$this->getVideoById($id);
                 if (!empty($one)) {
-                    $one = $this->handleVideoItems([$one], true,$user->id)[0];
+                    $one = $this->handleVideoItems([$one], true,$user->id,['cid'=>$one['cid'],'device_system'=>$user->device_system])[0];
                     $one['limit'] = 0;
                     $this->processViewVideo($user, $one);
                     //观看限制
