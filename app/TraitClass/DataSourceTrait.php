@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 Trait DataSourceTrait
 {
-    use EsTrait;
+    use EsTrait,TagTrait;
     public function getDataSourceIdsForVideo(&$model,$args=null)
     {
         if($args === null){
@@ -29,8 +29,9 @@ Trait DataSourceTrait
             case 1: //标签
                 if(!empty($tagIds)){
                     $tagName = [];
+                    $tags = $this->getTagData();
                     foreach ($tagIds as $v){
-                        $tagName[] = $this->tags[$v]['name'];
+                        $tagName[] = $tags[$v]['name'];
                     }
                     $model->data_value = implode(',',$tagName);
                     $model->tag = json_encode($tagIds);
