@@ -46,7 +46,14 @@ class GoldController extends BaseCurlController
             [
                 'field' => 'money',
                 'minWidth' => 100,
-                'title' => '展示金额',
+                'title' => '价格',
+                'align' => 'center',
+//                'edit' => 1
+            ],
+            [
+                'field' => 'bonus',
+                'minWidth' => 100,
+                'title' => '额外赠送',
                 'align' => 'center',
 //                'edit' => 1
             ],
@@ -96,7 +103,7 @@ class GoldController extends BaseCurlController
             [
                 'field' => 'money',
                 'type' => 'text',
-                'name' => '展示金额',
+                'name' => '价格/数量',
                 'must' => 1,
                 'verify' => 'rq',
             ],
@@ -136,7 +143,7 @@ class GoldController extends BaseCurlController
             [
                 'field' => 'bonus',
                 'type' => 'text',
-                'name' => '赠送金币',
+                'name' => '额外赠送',
             ],
             /*[
                 'field' => 'proportion',
