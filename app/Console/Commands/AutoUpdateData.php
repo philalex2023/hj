@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessDataSource;
+use App\Models\DataSource;
 use App\TraitClass\DataSourceTrait;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -49,7 +50,8 @@ class AutoUpdateData extends Command
         foreach ($dataSource as $model){
             //
             $this->getDataSourceIdsForVideo($model);
-            $model->save();
+            $dataSourceModel = new DataSource((array)$model);
+            $dataSourceModel->save();
             $job = new ProcessDataSource($model);
             $this->dispatch($job->onQueue('default'));
             //$this->info('######key:'.$key.'######');
