@@ -14,7 +14,7 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
-class ProcessDataSourceFour implements ShouldQueue
+class ProcessDataSource implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TagTrait;
 
@@ -77,7 +77,7 @@ class ProcessDataSourceFour implements ShouldQueue
             $ids = array_unique($mergerArr);
             //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             $idStr = implode(',',$ids);
-            //Log::info('idStr-2',[$idStr]);
+            Log::info('id-num',[count($ids)]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
         }
     }
