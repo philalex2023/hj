@@ -13,7 +13,7 @@ use App\Models\Video;
 use App\Models\VideoShort;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommTrait;
-use App\TraitClass\EsTrait;
+use App\TraitClass\DataSourceTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\StatisticTrait;
@@ -31,7 +31,7 @@ use Illuminate\Validation\Rule;
 
 class VideoShortController extends Controller
 {
-    use VideoTrait,PHPRedisTrait,VipRights,StatisticTrait,MemberCardTrait,ApiParamsTrait,CommTrait,EsTrait;
+    use VideoTrait,PHPRedisTrait,VipRights,StatisticTrait,MemberCardTrait,ApiParamsTrait,CommTrait,DataSourceTrait;
 
     private array $mainCateAlias = [
         'short_hot',

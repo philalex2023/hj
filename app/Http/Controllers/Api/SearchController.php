@@ -12,7 +12,7 @@ use App\Models\Tag;
 use App\Models\Video;
 use App\TraitClass\AdTrait;
 use App\TraitClass\ApiParamsTrait;
-use App\TraitClass\EsTrait;
+use App\TraitClass\DataSourceTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
 use Elasticsearch\ClientBuilder;
@@ -25,7 +25,7 @@ use Illuminate\Support\Facades\Validator;
 
 class SearchController extends Controller
 {
-    use VideoTrait,PHPRedisTrait,AdTrait,ApiParamsTrait,EsTrait;
+    use VideoTrait,PHPRedisTrait,AdTrait,ApiParamsTrait,DataSourceTrait;
 
     /**
      * 搜索功能

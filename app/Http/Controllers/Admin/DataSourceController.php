@@ -9,7 +9,7 @@ use App\Models\Topic;
 use App\Services\UiService;
 use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
-use App\TraitClass\EsTrait;
+use App\TraitClass\DataSourceTrait;
 use App\TraitClass\TagTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Log;
 
 class DataSourceController extends BaseCurlController
 {
-    use CatTrait,TagTrait,CommTrait,EsTrait;
+    use CatTrait,TagTrait,CommTrait,DataSourceTrait;
 
     public $pageName = '数据源';
 
@@ -276,102 +276,13 @@ class DataSourceController extends BaseCurlController
         $dataValue = $this->rq->input('data_value','');
         $cid = $this->rq->input('cid',0);
         $model->tag = json_encode([]);
-        $videoIds = [];
-        switch ($dataType){
-            case 1: //标签
-                if(!empty($tagIds)){
-                    $tagName = [];
-                    foreach ($tagIds as $v){
-                        $tagName[] = $this->tags[$v]['name'];
-                    }
-                    $model->data_value = implode(',',$tagName);
-                    $model->tag = json_encode($tagIds);
-
-                    DB::table('video')
-                        ->where('dev_type',$videoType)
-                        ->where('status',1)
-                        ->orderByDesc('created_at')
-                        ->chunk(100,function ($items) use ($tagIds,&$videoIds,$model){
-                        foreach ($items as $item){
-                            $jsonArr = json_decode($item->tag,true);
-                            !$jsonArr && $jsonArr = [];
-
-                            $intersect = array_intersect($jsonArr,$tagIds); //交集
-                            if(!empty($intersect)){
-                                $videoIds[] = $item->id;
-                            }
-                        }
-                    });
-                }
-                break;
-            case 2: //关键字
-                if(!empty($dataValue)){
-                    $keywords = explode(',',$dataValue);
-                    Log::info('ES_keywords',$keywords);
-                    $must = [
-                        //'term' => ['status'=>1],
-                        //'term' => ['dev_type'=>$videoType],
-                        //['match' => ['name'=>$dataValue]]
-                    ];
-                    $should = [];
-                    foreach ($keywords as $keyword){
-                        $should[] = ['match_phrase'=>['name'=>$keyword]];
-                    }
-                    $must['bool'] = ['should'=>$should];
-                    $es = $this->esClient();
-                    $searchParams = [
-                        'index' => 'video_index',
-                        'body' => [
-                            'track_total_hits' => true,
-                            'size' => 10000,
-//                            '_source' => ['id','name'],
-                            '_source' => false,
-                            'query' => [
-                                'bool'=>[
-                                    'must' => $must
-                                ]
-                            ],
-                        ],
-                    ];
-
-                    //Log::info('ES_keyword_params',[json_encode($searchParams)]);
-                    $response = $es->search($searchParams);
-                    if(isset($response['hits']) && isset($response['hits']['hits'])){
-                        $searchGet = $response['hits']['hits'];
-                        foreach ($searchGet as $item){
-                            $videoIds[] = $item['_id'];
-                        }
-                        //排序
-                        $videoIds = DB::table('video')->whereIn('id',$videoIds)->orderByDesc('created_at')->pluck('id')->all();
-                        //dd($videoIds);
-                    }
-
-                }
-                break;
-            case 3: //分类
-                /*if($cid>0){
-                    $videoIds = DB::table('video')->where('status',1)->where('cid',$cid)->pluck('id')->all();
-                    //dd($videoIds);
-                    $model->data_value = $this->cats[$cid]['name'];
-                    $model->contain_vids = implode(',',$videoIds);
-                }*/
-                $model->cid = $cid;
-                break;
-            case 4: //最新上架
-                $model->data_value = '最新';
-                $videoIds = DB::table('video')->where('dev_type',$videoType)->where('status',1)->orderByDesc('created_at')->take(64)->pluck('id')->all();
-                break;
-            case 5: //自定义
-                $videoIds = explode(',',$dataValue);
-                break;
-
-        }
-
-        //去重
-        !$videoIds && $videoIds='';
-        $videoIds = array_unique($videoIds);
-        $model->contain_vids = implode(',',$videoIds);
-        $model->video_num = count($videoIds);
+        $this->getDataSourceIdsForVideo($model,[
+            'tagIds' => $tagIds,
+            'dataType' => $dataType,
+            'videoType' => $videoType,
+            'dataValue' => $dataValue,
+            'cid' => $cid,
+        ]);
     }
 
     protected function afterSaveSuccessEvent($model, $id = '')

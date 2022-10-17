@@ -9,7 +9,7 @@ use App\Models\Category;
 use App\Models\Video;
 use App\TraitClass\AdTrait;
 use App\TraitClass\ApiParamsTrait;
-use App\TraitClass\EsTrait;
+use App\TraitClass\DataSourceTrait;
 use App\TraitClass\GoldTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PHPRedisTrait;
@@ -23,7 +23,7 @@ use Illuminate\Validation\ValidationException;
 
 class HomeController extends Controller
 {
-    use PHPRedisTrait, GoldTrait, VideoTrait, AdTrait, MemberCardTrait,ApiParamsTrait,EsTrait;
+    use PHPRedisTrait, GoldTrait, VideoTrait, AdTrait, MemberCardTrait,ApiParamsTrait,DataSourceTrait;
 
     public function category(Request $request): \Illuminate\Http\JsonResponse
     {
