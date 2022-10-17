@@ -50,9 +50,9 @@ class AutoUpdateData extends Command
         foreach ($dataSource as $model){
             //
             $this->getDataSourceIdsForVideo($model);
-            $dataSourceModel = new DataSource((array)$model);
-            $dataSourceModel->save();
-            $job = new ProcessDataSource($model);
+            $dataSourceModel = DataSource::query()->findOrFail($model->id);
+            $dataSourceModel->fill((array)$model)->save();
+            $job = new ProcessDataSource($dataSourceModel);
             $this->dispatch($job->onQueue('default'));
             //$this->info('######key:'.$key.'######');
             $bar->advance();
