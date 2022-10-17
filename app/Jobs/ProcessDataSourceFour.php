@@ -67,17 +67,17 @@ class ProcessDataSourceFour implements ShouldQueue
             if($this->row->show_num > 0){
                 $firstIds = $this->getDataSourceSortArr($model->sort_vids);
                 krsort($firstIds);
-                Log::info('firstIds',[$firstIds]);
+                //Log::info('firstIds',[$firstIds]);
                 //更新数据源
                 $updateIdStr = implode(',',array_unique([...$firstIds,...$sourceIds]));
-                Log::info('idStr-1',[$updateIdStr]);
+                //Log::info('idStr-1',[$updateIdStr]);
                 DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr]);
             }
             $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
             $ids = array_unique($mergerArr);
             //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             $idStr = implode(',',$ids);
-            Log::info('idStr-2',[$idStr]);
+            //Log::info('idStr-2',[$idStr]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
         }
     }

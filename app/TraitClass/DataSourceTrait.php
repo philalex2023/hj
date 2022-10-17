@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Log;
 
 Trait DataSourceTrait
 {
+    use EsTrait;
     public function getDataSourceIdsForVideo(&$model,$args=null)
     {
         if($args === null){
