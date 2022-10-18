@@ -73,7 +73,7 @@ trait BbsTrait
 
             $list[$k]['video_picture'] = [];
             if($re['id']==2296){
-                Log::info('TEST_commBbs',$re);
+                Log::info('TEST_commBbs',[$re]);
             }
             if (isset($re['video_picture'])) {
                 $videoPictures = is_array($re['video_picture']) ? $re['video_picture'] : json_decode($re['video_picture'],true) ;
