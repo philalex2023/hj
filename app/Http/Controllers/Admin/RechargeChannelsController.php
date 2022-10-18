@@ -126,6 +126,19 @@ class RechargeChannelsController extends BaseCurlController
         ];
     }
 
+    public function setListOutputItemExtend($item)
+    {
+        $item->pay_type = match ($item->pay_type){
+            $item->pay_type => $this->pay_type[$item->pay_type],
+            default => '-',
+        };
+        $item->status = match ($item->status){
+            0 => '关闭',
+            1 => '开启',
+        };
+        return $item;
+    }
+
     public function beforeSaveEvent($model, $id = '')
     {
         $match_amount = $this->rq->input('match_nums',[]);
