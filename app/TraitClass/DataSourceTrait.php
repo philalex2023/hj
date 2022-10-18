@@ -35,6 +35,7 @@ Trait DataSourceTrait
                     }
                     $model->data_value = implode(',',$tagName);
                     $model->tag = json_encode($tagIds);
+                    //Log::info('testTag_dev_type',[$videoType]);
                     DB::table('video')
                         ->where('dev_type',$videoType)
                         ->where('status',1)
@@ -43,9 +44,9 @@ Trait DataSourceTrait
                             foreach ($items as $item){
                                 $jsonArr = json_decode($item->tag,true);
                                 !$jsonArr && $jsonArr = [];
-                                if($item->id==30551){
+                                /*if($item->id==30551){
                                     Log::info('testTag_30551_',[$jsonArr,$tagIds]);
-                                }
+                                }*/
                                 $intersect = array_intersect($jsonArr,$tagIds); //交集
                                 if(!empty($intersect)){
                                     $videoIds[] = $item->id;
