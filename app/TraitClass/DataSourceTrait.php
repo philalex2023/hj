@@ -40,11 +40,13 @@ Trait DataSourceTrait
                         ->where('dev_type',$videoType)
                         ->where('status',1)
                         ->orderByDesc('created_at')
-                        ->chunk(100,function ($items) use ($tagIds,&$videoIds,$model){
+                        ->chunk(10000,function ($items) use ($tagIds,&$videoIds,$model){
                             foreach ($items as $item){
                                 $jsonArr = json_decode($item->tag,true);
                                 !$jsonArr && $jsonArr = [];
-
+                                if(in_array('339',$jsonArr)){
+                                    Log::info('testTag_1018_',[$jsonArr,$tagIds]);
+                                }
                                 $intersect = array_intersect($jsonArr,$tagIds); //交集
                                 if(!empty($intersect)){
                                     $videoIds[] = $item->id;
@@ -52,6 +54,7 @@ Trait DataSourceTrait
                             }
                         });
                 }
+
                 break;
             case 2: //关键字
                 if(!empty($dataValue)){
