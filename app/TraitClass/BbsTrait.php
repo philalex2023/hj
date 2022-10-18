@@ -71,10 +71,6 @@ trait BbsTrait
             $list[$k]['all_game_gold'] = $this->getAllGameNeedGold();
             $list[$k]['official_type'] = (int)($re['official_type']??0);
 
-            //$list[$k]['video_picture'] = [];
-            if($re['id']==2297){
-                Log::info('TEST_commBbs',[$re]);
-            }
             if (isset($re['video_picture'])) {
                 $videoPictures = is_array($re['video_picture']) ? $re['video_picture'] : json_decode($re['video_picture'],true) ;
                 isset($videoPictures[0]) && $list[$k]['video_picture'] = [$domainSync . $videoPictures[0]];
