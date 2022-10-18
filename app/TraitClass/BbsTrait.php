@@ -72,7 +72,7 @@ trait BbsTrait
             $list[$k]['official_type'] = (int)($re['official_type']??0);
 
             $list[$k]['video_picture'] = [];
-            if($re['id']==2296){
+            if($re['id']==2297){
                 Log::info('TEST_commBbs',[$re]);
             }
             if (isset($re['video_picture'])) {
