@@ -77,26 +77,29 @@ class MoveShortVideo extends Command
             '345' => '竖版Cosplay',
             '346' => '竖版动漫',
         ];
-//        foreach ($tags as $key => $tag){
-            $items = DB::table('video_short')->whereIn('id',$ids['339'])->get();
-            $this->info('total-'.count($items));
-            foreach ($items as $item) {
-                $insert = (array)$item;
-                unset($insert['id']);
-                unset($insert['tid']);
-                unset($insert['favors']);
-                $insert['dev_type'] = 1;
-                $insert['type'] = 1;
-                $insert['gold'] = 100*$insert['gold'];
-                $insert['cid'] = 10000;
-                $insert['cat'] = json_encode([]);
-                $insert['tagNames'] = '';
-                $insert['tag'] = json_encode([$key]);
-                $insert['tag_kv'] = json_encode([$key => $tag]);
+        foreach ($tags as $key => $tag){
+            if($key == 339){
+                $items = DB::table('video_short')->whereIn('id',$ids[$key])->get();
+                $this->info('total-'.count($items));
+                foreach ($items as $item) {
+                    $insert = (array)$item;
+                    unset($insert['id']);
+                    unset($insert['tid']);
+                    unset($insert['favors']);
+                    $insert['dev_type'] = 1;
+                    $insert['type'] = 1;
+                    $insert['gold'] = 100*$insert['gold'];
+                    $insert['cid'] = 10000;
+                    $insert['cat'] = json_encode([]);
+                    $insert['tagNames'] = '';
+                    $insert['tag'] = json_encode([$key]);
+                    $insert['tag_kv'] = json_encode([$key => $tag]);
 
-                DB::table('video')->insert($insert);
+                    DB::table('video')->insert($insert);
+                }
             }
-//        }
+
+        }
 
         $this->info('######执行完成######');
         return 0;
