@@ -7,7 +7,7 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\DB;
 
-class BackupRes extends Command
+class BackupResFromOrigin extends Command
 {
     use DispatchesJobs;
     /**
@@ -15,7 +15,7 @@ class BackupRes extends Command
      *
      * @var string
      */
-    protected $signature = 'backup:res {tableName?}';
+    protected $signature = 'backup_res_from_origin';
 
     /**
      * The console command description.
@@ -41,9 +41,8 @@ class BackupRes extends Command
      */
     public function handle()
     {
-        $paramTableName = $this->argument('tableName')??'video';
-        $Items = DB::table($paramTableName)
-            ->where('id','<=',16000)
+        $Items = DB::table('video')
+            ->where('id','<=',30497)
             //->where('id','>=',11665)
             //->where('sync',1)
             //->take(1)
