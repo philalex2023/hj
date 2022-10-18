@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
-use App\Models\RechargeChannel;
+use App\Models\RechargeChannels;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CacheTableTrait;
 use App\TraitClass\MemberCardTrait;

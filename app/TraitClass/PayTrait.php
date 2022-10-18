@@ -11,7 +11,7 @@ use App\Models\MemberCard;
 use App\Models\Order;
 use App\Models\PayLog;
 use App\Models\Recharge;
-use App\Models\RechargeChannel;
+use App\Models\RechargeChannels;
 use App\Models\User;
 use App\Models\Video;
 use Exception;
@@ -69,7 +69,7 @@ trait PayTrait
 
     public function getAllPayChannel(){
         $data[] = ['id'=>'0','name'=>'全部'];
-        $raw = RechargeChannel::where('status',1)->get();
+        $raw = RechargeChannels::where('status',1)->get();
         foreach ($raw as $v) {
             $data[] = ['id'=>$v->id,'name'=>$v->remark];
         }
@@ -291,6 +291,6 @@ trait PayTrait
 
     public function getPayChannels(): array
     {
-        return RechargeChannel::query()->pluck('remark','id')->all();
+        return RechargeChannels::query()->pluck('remark','id')->all();
     }
 }

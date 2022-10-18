@@ -2,6 +2,7 @@
 
 namespace App\TraitClass;
 
+use GuzzleHttp\Client;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Storage;
 
@@ -40,16 +41,12 @@ trait AboutEncryptTrait
 
     }
 
-    public function getContentByUrl($url): bool|string
+    public function getContentByUrl($url)
     {
-        $ch = curl_init();
-        $timeout = 6000;
-        curl_setopt ($ch, CURLOPT_URL, $url);
-        curl_setopt ($ch, CURLOPT_RETURNTRANSFER, 1);
-        curl_setopt ($ch, CURLOPT_CONNECTTIMEOUT, $timeout);
-        $file_contents = curl_exec($ch);
-        curl_close($ch);
-        return $file_contents;
+        $client = new Client([
+            'verify' => false,
+        ]);
+        return $client->get($url)->getBody()->getContents();
     }
 
     /**
