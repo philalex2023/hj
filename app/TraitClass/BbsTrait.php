@@ -14,7 +14,7 @@ trait BbsTrait
 {
     use UserTrait,AboutEncryptTrait,VideoTrait;
 
-    public array $bbsFields = ['id', 'official_type', 'title', 'content', 'thumbs','game_gold', 'likes', 'comments', 'rewards', 'author_location_name as location_name', 'updated_at', 'sync', 'author_nickname as nickname', 'author_sex as sex', 'author_is_office as is_office', 'video', 'author_id as uid', 'author_avatar as avatar', 'author_level as level', 'author_vip as vipLevel', 'author_member_card_type as member_card_type', 'video_picture'];
+    public array $bbsFields = ['id', 'official_type', 'title', 'content', 'thumbs','game_gold', 'likes', 'comments', 'rewards', 'author_location_name as location_name', 'updated_at', 'sync', 'author_nickname as nickname', 'author_sex as sex', 'author_is_office as is_office', 'video', 'author_id as uid', 'author_avatar as avatar', 'author_level as level', 'author_vip as vipLevel', 'author_member_card_type as member_card_type','video_picture'];
 
     public function getOfficialUsers()
     {
@@ -71,13 +71,15 @@ trait BbsTrait
             $list[$k]['all_game_gold'] = $this->getAllGameNeedGold();
             $list[$k]['official_type'] = (int)($re['official_type']??0);
 
-            $list[$k]['video_picture'] = [];
+            //$list[$k]['video_picture'] = [];
             if($re['id']==2297){
                 Log::info('TEST_commBbs',[$re]);
             }
             if (isset($re['video_picture'])) {
                 $videoPictures = is_array($re['video_picture']) ? $re['video_picture'] : json_decode($re['video_picture'],true) ;
                 isset($videoPictures[0]) && $list[$k]['video_picture'] = [$domainSync . $videoPictures[0]];
+            }else{
+                $list[$k]['video_picture'] = [];
             }
 
             if ($videoRedis->sIsMember('bbsLike_'.$uid,$re['id'])) {
