@@ -408,7 +408,7 @@ class CommContentController extends Controller
         if ($cid2 > 0) {
             $rawKey = 'comm_other_cache_'.$cid2;
             $raw = $redis->hGet($rawKey, $page);
-            $raw = false;
+//            $raw = false;
             if ($raw) {
                 $data = json_decode($raw,true);
             } else {
@@ -436,7 +436,7 @@ class CommContentController extends Controller
         if ($cid1) {
             $oneKey = 'comm_other_cache_one_'.$cid1;
             $oneData = $redis->hGet($oneKey, $page);
-            $oneData = false;
+//            $oneData = false;
             if($oneData){
                 $data = json_decode($oneData,true);
             }else{
