@@ -4,14 +4,14 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Models\RechargeChannel;
 use App\Models\RechargeChannels;
-use App\TraitClass\ChannelTrait;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Support\Facades\Cache;
 
 class RechargeChannelsController extends BaseCurlController
 {
-    use PHPRedisTrait,ChannelTrait;
+    use PHPRedisTrait;
     public $pageName = "充值通道";
     public array $payChannel = [];
     public array $pay_type = [
@@ -29,7 +29,7 @@ class RechargeChannelsController extends BaseCurlController
 
     public function setModel(): RechargeChannels
     {
-        $this->payChannel = $this->getAllChannels();
+        $this->payChannel = [''=>['id'=>'','name'=>'选择充值渠道']]+array_column(RechargeChannel::query()->get(['id','name'])->all(),null,'id');
         return $this->model = new RechargeChannels();
     }
 
@@ -171,6 +171,7 @@ class RechargeChannelsController extends BaseCurlController
                 'type' => 'number',
                 'name' => '预付款',
                 'must' => 1,
+                'verify' => 'rq',
             ],
             [
                 'field' => 'match_nums',
@@ -185,6 +186,7 @@ class RechargeChannelsController extends BaseCurlController
                 'name' => '支付渠道',
                 'data' => $this->payChannel,
                 'must' => 1,
+                'verify' => 'rq',
             ],
             [
                 'field' => 'pay_type',
