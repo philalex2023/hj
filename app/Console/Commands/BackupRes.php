@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Jobs\ProcessBackupRes;
 use App\Jobs\ProcessBackupResFromOrigin;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
@@ -43,7 +44,8 @@ class BackupRes extends Command
     {
         $paramTableName = $this->argument('tableName')??'video';
         $Items = DB::table($paramTableName)
-            ->where('id','<=',16000)
+//            ->where('id','<=',16000)
+            ->whereIn('id',[5058, 5074, 5026, 5011, 5023, 5013, 5020, 5073, 4999, 5018, 5016, 4994, 5025, 5012, 5021, 5024, 5022, 4998, 5007, 4987, 4989, 4990, 4991, 4992, 4993, 4995, 4996, 4997, 5000, 5005, 5015])
             //->where('id','>=',11665)
             //->where('sync',1)
             //->take(1)
@@ -53,7 +55,7 @@ class BackupRes extends Command
         foreach ($Items as $item)
         {
             $this->info('#id:'.$item->id.'##url:'.$item->url);
-            $job = new ProcessBackupResFromOrigin($item);
+            $job = new ProcessBackupRes($item);
             $this->dispatch($job->onQueue('default'));
             $bar->advance();
         }
