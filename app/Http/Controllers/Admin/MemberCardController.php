@@ -3,13 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\MemberCard;
-use App\Models\RechargeChannels;
-use App\Services\UiService;
+use App\Models\RechargeChannel;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PayTrait;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Support\Facades\DB;
 
 class MemberCardController extends BaseCurlController
 {
@@ -262,7 +260,7 @@ class MemberCardController extends BaseCurlController
 
     public function setListOutputItemExtend($item)
     {
-        $rechargeData = RechargeChannels::query()
+        $rechargeData = RechargeChannel::query()
             ->where('status',1)
             ->pluck('remark','id')
         ->toArray();
@@ -289,7 +287,7 @@ class MemberCardController extends BaseCurlController
 
     public function getPayChannelData()
     {
-        $res = RechargeChannels::query()
+        $res = RechargeChannel::query()
             ->where('status',1)
             ->get(['id','name','remark']);
         $data = $this->uiService->allDataArr('请选择支付方式');

@@ -4,7 +4,7 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Models\RechargeChannels;
+use App\Models\RechargeChannel;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Support\Facades\Cache;
 
@@ -15,7 +15,7 @@ class RechargeChannelController extends BaseCurlController
 
     public function setModel()
     {
-        return $this->model = new RechargeChannels();
+        return $this->model = new RechargeChannel();
     }
 
     public function indexCols()
@@ -214,7 +214,7 @@ class RechargeChannelController extends BaseCurlController
     protected function afterSaveSuccessEvent($model, $id = ''): mixed
     {
         //设置缓存
-        $cacheData = RechargeChannels::query()->where('status',1)->get();
+        $cacheData = RechargeChannel::query()->where('status',1)->get();
         Cache::forever('recharge_channel',$cacheData);
         return $model;
     }

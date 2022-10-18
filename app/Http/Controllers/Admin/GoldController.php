@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Gold;
-use App\Models\RechargeChannels;
+use App\Models\RechargeChannel;
 use App\Services\UiService;
 use App\TraitClass\PayTrait;
 use App\TraitClass\PHPRedisTrait;
@@ -180,7 +180,7 @@ class GoldController extends BaseCurlController
     public function setListOutputItemExtend($item)
     {
         $item->status = UiService::switchTpl('status', $item,'');
-        $rechargeData = RechargeChannels::query()
+        $rechargeData = RechargeChannel::query()
             ->where('status',1)
             ->pluck('remark','id')
             ->toArray();
@@ -191,7 +191,7 @@ class GoldController extends BaseCurlController
 
     public function getPayChannelData()
     {
-        $res = RechargeChannels::query()
+        $res = RechargeChannel::query()
             ->where('status',1)
             ->get(['id','name','remark']);
         $data = $this->uiService->allDataArr('请选择支付方式');
