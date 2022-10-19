@@ -73,9 +73,33 @@ class RepairVideo extends Command
                 //->addFormat($midBitrate)
                 //->addFormat($highBitrate)
                 ->save($m3u8_path);
+            $this->syncSlice($item->url,true);
         }
         $bar->finish();
         $this->info('######执行成功######');
         return 0;
+    }
+
+    public function syncSlice($url, $del=false)
+    {
+        $dir_name = pathinfo($url,PATHINFO_FILENAME);
+        $slice_dir = env('SLICE_DIR','/slice');
+        $hls_directory = '/public'.$slice_dir.'/hls/'.$dir_name;
+        //$cover_img_dir = '/public'.$slice_dir.'/'.$this->coverImgDir.'/'.$dir_name;
+        $hls_files = Storage::files($hls_directory);
+        //$cover_img = Storage::files($cover_img_dir);
+
+        foreach ($hls_files as $file){
+            $content = Storage::get($file);
+            Storage::disk('ftp')->put($file,$content);
+        }
+        /*foreach ($cover_img as $img)
+        {
+            $content = Storage::get($img);
+            Storage::disk('ftp')->put($img,$content);
+        }*/
+        if($del!==false){
+            Storage::deleteDirectory($hls_directory);
+        }
     }
 }
