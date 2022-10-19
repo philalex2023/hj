@@ -53,7 +53,7 @@ class RepairVideo extends Command
         $bar->advance();
         foreach ($Items as $item)
         {
-            $m3u8_path = $item->hls;
+            $m3u8_path = $item->hls_url;
             $file_name = pathinfo($item->url,PATHINFO_FILENAME);
             $tmp_path = 'public/slice/hls/'.$file_name.'/';
             $video = \ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::fromDisk("local") //在storage/app的位置
