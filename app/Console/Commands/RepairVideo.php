@@ -53,11 +53,11 @@ class RepairVideo extends Command
         $bar->advance();
         foreach ($Items as $item)
         {
-            $m3u8_path = $item->hls_url;
+            $path = str_replace('/storage','/public',$item->hls_url);
             $file_name = pathinfo($item->url,PATHINFO_FILENAME);
             $tmp_path = 'public/slice/hls/'.$file_name.'/';
             $video = \ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::fromDisk("local") //在storage/app的位置
-            ->open($m3u8_path);
+            ->open($path);
             $format = new \FFMpeg\Format\Video\X264();
             $encryptKey = HLSExporter::generateEncryptionKey();
             Storage::disk('local')->put($tmp_path.'/secret.key',$encryptKey);
