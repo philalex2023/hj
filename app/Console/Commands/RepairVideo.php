@@ -60,7 +60,7 @@ class RepairVideo extends Command
 
 //            $openPath = '';
             $video = \ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::fromDisk("local")
-            ->open('../../../../home/hj/'.$m3u8_path);
+            ->open(Storage::path($m3u8_path));
             $format = new \FFMpeg\Format\Video\X264();
             $encryptKey = HLSExporter::generateEncryptionKey();
             Storage::disk('local')->put($tmp_path.'/secret.key',$encryptKey);//在storage/app的位置
