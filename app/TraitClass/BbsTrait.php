@@ -106,7 +106,16 @@ trait BbsTrait
                 $video[] = $domainSync.$this->transferHlsUrl($itemV);
             }
             $list[$k]['video']  = $video;
-            empty($list[$k]['video_picture']) && $list[$k]['video']=[];
+
+            if(!empty($video)){
+                $isVideoPicture = ($list[$k]['video_picture']=="[]" || $list[$k]['video_picture']==[]);
+                $isVideoPicture && !empty($list[$k]['thumbs']) && $list[$k]['video_picture']=[$list[$k]['thumbs'][0]];
+                /*if($list[$k]['id']==2309){
+                    Log::info('testVideoPicture0',[$isVideoPicture,!empty($list[$k]['thumbs'])]);
+                    Log::info('testVideoPicture1',[$list[$k]['video_picture'],$list[$k]['thumbs']]);
+                }*/
+            }
+            //empty($list[$k]['video_picture']) && $list[$k]['video']=[];
 
             //
             if(isset($re['member_card_type'])){
