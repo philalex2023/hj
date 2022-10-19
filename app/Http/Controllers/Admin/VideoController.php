@@ -7,7 +7,7 @@ use App\Jobs\ProcessSyncMiddleSectionTable;
 use App\Jobs\ProcessSyncMiddleTable;
 use App\Jobs\ProcessSyncMiddleTagTable;
 use App\Jobs\ProcessVideoShortMod;
-use App\Jobs\ProcessVideoSlice;
+use App\Jobs\ProcessRepairVideo;
 use App\Jobs\VideoSlice;
 use App\Models\AdminVideo;
 use App\Models\AdminVideoShort;
