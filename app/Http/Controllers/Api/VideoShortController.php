@@ -141,7 +141,7 @@ class VideoShortController extends Controller
             return response()->json(['state' => -2, 'data' =>['status'=>-2],'msg'=>'记录不存在']);
         }
 
-        $userGold = $user->gold;
+        $userGold = DB::table('users')->where('id',$user->id)->value('gold');
         if($userGold < $short->gold){
             return response()->json(['state' => -1, 'data' =>['status'=>-1],'msg'=>'余额不足请充值']);
         }else{
