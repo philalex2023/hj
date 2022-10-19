@@ -141,14 +141,15 @@ class VideoShortController extends Controller
             return response()->json(['state' => -2, 'data' =>['status'=>-2],'msg'=>'记录不存在']);
         }
 
-        $userGold = DB::table('users')->where('id',$user->id)->value('gold');
-        Log::info('TEST_BUY_VIDEO',[$userGold,$short->gold]);
-        if($userGold < $short->gold){
+        $userGold = $user->gold;
+        $shortGold = $short->gold/100;
+        Log::info('buyShortWithGold',[$userGold,$shortGold,$short->gold]);
+        if($userGold < $shortGold){
             return response()->json(['state' => -1, 'data' =>['status'=>-1],'msg'=>'余额不足请充值']);
         }else{
             DB::table('users')->where('id', '=', $user->id)
-                ->where('gold', '>=', $short->gold)
-                ->update(['gold' => $userGold - $short->gold]);
+                ->where('gold', '>=', $shortGold)
+                ->update(['gold' => $userGold - $shortGold]);
             $videoRedis->sAdd($buyShortKey,$validated['id']);
             $videoRedis->expire($buyShortKey,7*24*3600);
             Cache::forget('cachedUser.'.$user->id);
