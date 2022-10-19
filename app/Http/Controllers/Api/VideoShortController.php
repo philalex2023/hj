@@ -136,7 +136,7 @@ class VideoShortController extends Controller
         if($videoRedis->sIsMember($buyShortKey,$validated['id'])){
             return response()->json(['state' => -3, 'data' =>['status'=>-3],'msg'=>'已购买过该商品']);
         }
-        $short = DB::table('video_short')->where('id',$validated['id'])->first();
+        $short = DB::table('video')->where('id',$validated['id'])->first();
         if(!$short){
             return response()->json(['state' => -2, 'data' =>['status'=>-2],'msg'=>'记录不存在']);
         }
@@ -159,7 +159,7 @@ class VideoShortController extends Controller
             $shortCollectsKey = 'shortCollects_'.$user->id;
             $videoRedis->zAdd($shortCollectsKey,time(),$validated['id']);
             $videoRedis->expire($shortCollectsKey,7*24*3600);
-            DB::table('video_short')->where('id',$validated['id'])->increment('buyers');
+            DB::table('video')->where('id',$validated['id'])->increment('buyers');
         }
         return response()->json(['state' => 0, 'data' =>['status'=>0],'msg'=>'购买成功']);
     }
@@ -226,7 +226,7 @@ class VideoShortController extends Controller
                     $cacheKey = "short_video_$mapNum";
                     $raw = $this->redis()->hGet($cacheKey, $id);
                     if (!$raw) {
-                        $model = DB::table('video_short')->where('id', $id)->first();
+                        $model = DB::table('video')->where('id', $id)->first();
                         $items[] = $this->resetRedisVideoShort($model);
                     }else{
                         $items[] = json_decode($raw, true);
@@ -249,7 +249,7 @@ class VideoShortController extends Controller
 //            $vipValue = $this->getVipValue($user);
             $rights = $this->getUserAllRights($user);
             if($startId>0){
-                $items[key($items)] = (array)DB::table('video_short')->where('id',$startId)->first();
+                $items[key($items)] = (array)DB::table('video')->where('id',$startId)->first();
             }
             foreach ($items as $one) {
                 $one['limit'] = 0;
