@@ -132,7 +132,7 @@ class CommContentController extends Controller
             if (in_array($help, ['focus', 'hot'])) {
                 $res = $this->$help($uid, $locationName, 6, $page);
             } else {
-                $res = $this->other($uid, $locationName, $cid1, $cid2, 16, $page, $help);
+                $res = $this->other($uid, $locationName, $cid1, $cid2, 6, $page, $help);
             }
             if(isset($res['bbs_list']) && !empty($res['bbs_list'])){
                 //Log::info('===CommContent===',[$res['bbs_list']]);
