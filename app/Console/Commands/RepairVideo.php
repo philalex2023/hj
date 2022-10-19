@@ -6,6 +6,8 @@ use App\TraitClass\PHPRedisTrait;
 use AWS\CRT\Log;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use ProtoneMedia\LaravelFFMpeg\Exporters\HLSExporter;
 
 class RepairVideo extends Command
 {
@@ -41,14 +43,33 @@ class RepairVideo extends Command
      */
     public function handle(): int
     {
-        $Items = DB::table('video')->where('type',4)->get(['id','hls_url']);
+        $Items = DB::table('video')
+//            ->where('type',4)
+            ->where('id',30571)
+            ->get(['id','hls_url']);
         $bar = $this->output->createProgressBar(count($Items));
         $bar->start();
+
+        $bar->advance();
         foreach ($Items as $item)
         {
-            $hls = str_replace('.mp4','.m3u8',$item->hls_url);
-            DB::table('video')->where('id',$item->id)->update(['hls_url'=>$hls]);
-            $bar->advance();
+            $m3u8_path = $item->hls;
+            $file_name = pathinfo($item->url,PATHINFO_FILENAME);
+            $tmp_path = 'public/slice/hls/'.$file_name.'/';
+            $video = \ProtoneMedia\LaravelFFMpeg\Support\FFMpeg::fromDisk("local") //在storage/app的位置
+            ->open($m3u8_path);
+            $format = new \FFMpeg\Format\Video\X264();
+            $encryptKey = HLSExporter::generateEncryptionKey();
+            Storage::disk('local')->put($tmp_path.'/secret.key',$encryptKey);
+            $result = $video->exportForHLS()
+                ->withEncryptionKey($encryptKey)
+                ->setSegmentLength(1)//默认值是10
+                ->toDisk("local")
+                ->addFormat($format)
+                //->addFormat($lowBitrate)
+                //->addFormat($midBitrate)
+                //->addFormat($highBitrate)
+                ->save($m3u8_path);
         }
         $bar->finish();
         $this->info('######执行成功######');
