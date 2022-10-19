@@ -245,7 +245,11 @@ class UserController extends Controller
             $ids = [...$videoIds,...$shortVideoIds];
             $videoList = DB::table('video')->select('id','name','gold','cat','tag_kv','sync','title','duration','type','restricted','cover_img','views','updated_at','hls_url','dash_url','comments','likes')
                 ->whereIn('id',$ids)->get()->toArray();
-            foreach ($videoList as &$iv){
+            foreach ($videoList as $k => &$iv){
+                if(!isset($vidArrAll[$iv['id']])){
+                    unset($videoList[$k]);
+                    continue;
+                }
                 $iv = (array)$iv;
                 $iv['usage'] = 1;
                 $iv['score'] = $vidArrAll[$iv['id']];
