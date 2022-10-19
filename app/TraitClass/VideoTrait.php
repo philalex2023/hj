@@ -404,7 +404,8 @@ AV-海角伙伴
             $list = (array)$list;
             $list['limit'] = $list['restricted'];
             $list['gold'] = $list['gold'] / $this->goldUnit;
-            $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(5, 9));
+//            $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(5, 9));
+            $list['views'] = rand(10000,99999);
             $list['preview_hls_url'] = $this->getPreviewPlayUrl($list['hls_url']??'');
             if(isset($list['time_at']) && ($list['time_at']>0)){
                 $list['updated_at'] = date('Y-m-d H:i:s',$list['time_at']);
@@ -429,7 +430,8 @@ AV-海角伙伴
             $list['preview_hls_url'] = $domainSync . $list['preview_hls_url'];
             //是否点赞
             $videoRedis = $this->redis('video');
-            $list['is_love'] = $videoRedis->sIsMember('videoLove_'.$uid,$list['id']) ? 1 : 0;
+//            $list['is_love'] = $videoRedis->sIsMember('videoLove_'.$uid,$list['id']) ? 1 : 0;
+            $list['is_love'] = rand(1000,9999);
             //是否收藏
             $videoCollectsKey = 'videoCollects_'.$uid;
             $list['is_collect'] = $videoRedis->zScore($videoCollectsKey,$list['id']) ? 1 : 0;
