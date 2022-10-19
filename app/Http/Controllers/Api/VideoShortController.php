@@ -414,6 +414,26 @@ class VideoShortController extends Controller
                 //Log::info('==ShortList==',$catVideoList);
                 if(!empty($catVideoList)){
                     $res['list'] = $this->handleVideoItems($catVideoList,true,$user->id);
+                    $rights = $this->getUserAllRights($user);
+                    //判断是否购买或是vip
+                    foreach ($res['list'] as &$one){
+                        $restricted = (int)$one['restricted'];
+                        $one['limit'] = 0;
+                        switch ($restricted){
+                            case 2: //金币
+                                if(!isset($rights[4])){ //如果没有免费观看金币视频的权益
+                                    $buy = $this->isBuyShortVideo($one,$user);
+                                    !$buy && $one['limit'] = 2;
+                                }
+                                break;
+                            case 1: //vip会员
+                                if ($one['restricted'] == 1  && (!isset($rights[1]))) {
+                                    $one['limit'] = 1;
+                                }
+                                break;
+                        }
+
+                    }
                     //广告
                     //$res['list'] = $this->insertAds($res['list'],'short_video',true, $page, $perPage);
                     //Log::info('==CatList==',$res['list']);
