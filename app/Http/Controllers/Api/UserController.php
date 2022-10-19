@@ -240,27 +240,27 @@ class UserController extends Controller
             $videoIds = $vidArr ? array_keys($vidArr) : [];
             $vidArrShort = $videoRedis->zRevRange($shortCollectsKey,0,-1,true);
             $shortVideoIds = $vidArrShort ? array_keys($vidArrShort) : [];
-            $ids = [...$videoIds,...$shortVideoIds];
             $videoList = DB::table('video')->select('id','name','gold','cat','tag_kv','sync','title','duration','type','restricted','cover_img','views','updated_at','hls_url','dash_url','comments','likes')
-                ->whereIn('id',$ids)->get()->toArray();
+                ->whereIn('id',$videoIds)->get()->toArray();
             foreach ($videoList as &$iv){
                 $iv = (array)$iv;
                 $iv['usage'] = 1;
                 $iv['score'] = $vidArr[$iv['id']];
                 $iv['updated_at'] = date('Y-m-d H:i:s',$iv['score']);
             }
-            /*$shortVideoList = DB::table('video_short')
+            $shortVideoList = DB::table('video')
                 ->select(
                     'video_short.id as vs_id','video_short.name as vs_name','video_short.gold as vs_gold','video_short.cat as vs_cat','video_short.sync as vs_sync','video_short.title as vs_title','video_short.duration as vs_duration','video_short.type as vs_type','video_short.restricted as vs_restricted','video_short.cover_img as vs_cover_img','video_short.views as vs_views','video_short.updated_at as vs_updated_at','video_short.hls_url as vs_hls_url','video_short.dash_url as vs_dash_url','video_short.url as url','video_short.comments as vs_comments','video_short.likes as vs_likes',
                 )
+                ->where('dev_type',1)
                 ->whereIn('id',$shortVideoIds)->get()->toArray();
             foreach ($shortVideoList as &$is){
                 $is = (array)$is;
                 $is['usage'] = 2;
                 $is['score'] = $vidArrShort[$is['vs_id']];
                 $is['updated_at'] = date('Y-m-d H:i:s',$is['score']);
-            }*/
-            $result = [...$videoList];
+            }
+            $result = [...$videoList,...$shortVideoList];
             $score = array_column($result,'score');
             array_multisort($score,SORT_DESC,$result);
             $offset = ($page-1)*$perPage;
