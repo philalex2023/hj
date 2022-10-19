@@ -402,6 +402,7 @@ AV-海角伙伴
         $_v = date('Ymd');
         foreach ($lists as &$list){
             $list = (array)$list;
+            $list['limit'] = $list['restricted'];
             $list['gold'] = $list['gold'] / $this->goldUnit;
             $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(5, 9));
             $list['preview_hls_url'] = $this->getPreviewPlayUrl($list['hls_url']??'');
