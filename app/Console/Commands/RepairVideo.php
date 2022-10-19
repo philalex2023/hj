@@ -15,7 +15,7 @@ class RepairVideo extends Command
      *
      * @var string
      */
-    protected $signature = 'repair:video {tableName?}';
+    protected $signature = 'repair_video';
 
     /**
      * The console command description.
@@ -41,14 +41,12 @@ class RepairVideo extends Command
      */
     public function handle(): int
     {
-        $paramTableName = $this->argument('tableName')??'video';
-        $Items = DB::table($paramTableName)->get(['id','hls_url']);
+        $Items = DB::table('video')->where('type',4)->get(['id','hls_url']);
         $bar = $this->output->createProgressBar(count($Items));
-
         $bar->start();
         foreach ($Items as $item)
         {
-            $hls = str_replace('_0_1000','',$item->hls_url);
+            $hls = str_replace('.mp4','.m3u8',$item->hls_url);
             DB::table('video')->where('id',$item->id)->update(['hls_url'=>$hls]);
             $bar->advance();
         }
