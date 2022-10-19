@@ -92,7 +92,7 @@ class VideoController extends Controller
 //                $useGold = $validated['use_gold'] ?? false;
                 $useGold = intval($validated['use_gold'] ?? 1);
                 $one = (array)$this->getVideoById($id);
-                $one['is_love'] = rand(1000,9999);
+                $one['likes'] = rand(1000,9999);
                 if (!empty($one)) {
                     $one = $this->handleVideoItems([$one], true,$user->id,['cid'=>$one['cid'],'device_system'=>$user->device_system])[0];
                     $one['limit'] = 0;
