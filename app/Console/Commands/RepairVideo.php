@@ -56,7 +56,7 @@ class RepairVideo extends Command
         foreach ($Items as $item)
         {
             $job = new ProcessRepairVideo($item);
-            $this->dispatch($job);
+            $this->dispatch($job->onQueue('high'));
         }
         $bar->finish();
         $this->info('######执行成功######');
