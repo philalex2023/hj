@@ -121,7 +121,14 @@ class AuthController extends Controller
         $deviceInfo = !is_string($validated['dev']) ? json_encode($validated['dev']) : $validated['dev'] ;
         $deviceSystem = $this->getDeviceSystem($deviceInfo);
 
-        Log::info('login_deviceInfo',[$deviceInfo,$deviceSystem]);
+        $test_ds = 0;
+        if(strpos($deviceInfo.'', 'androidId')){
+            $test_ds = 2;
+        }else if(strpos($deviceInfo.'', 'ios')){
+            $test_ds = 1;
+        }
+
+        Log::info('login_deviceInfo',[$deviceInfo,$deviceSystem,$test_ds]);
 
         $appInfo = !is_string($validated['env']) ? json_encode($validated['env']) : $validated['env'] ;
         // 暂时放开轻量版
@@ -140,7 +147,7 @@ class AuthController extends Controller
         $loginType = !$hasDid ? 1 : 2;
 
         $login_info = ['device_system'=>$deviceSystem,'clipboard'=>$validated['clipboard']??'','ip'=>$ip];
-        Log::info('login_info',$login_info);
+        //Log::info('login_info',$login_info);
         if($loginType===1){ //注册登录
             $regLock = Cache::lock('reg_lock');
             if(!$regLock->get()){
