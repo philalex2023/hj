@@ -31,7 +31,8 @@ class GeneralPackage extends Command
         $channel_code = $this->argument('channel_code');
         !$channel_code && $this->info('参数错误');
         $src = Storage::path('hjsq.apk');
-        $packageName = 'hjsq-'.$channel_code.'-'.date('ymd');
+//        $packageName = 'hjsq-'.$channel_code.'-'.date('ymd');
+        $packageName = 'hjsq-'.$channel_code;
         $packagePath = 'public/'.$packageName;
         $dst = Storage::path($packagePath);
         $unit = $channel_code;
