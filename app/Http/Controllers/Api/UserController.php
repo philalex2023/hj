@@ -244,7 +244,10 @@ class UserController extends Controller
 
             Log::info('',$vidArrAll);
             $ids = [...$videoIds,...$shortVideoIds];
-            $videoList = DB::table('video')->select('id','name','gold','cat','tag_kv','sync','title','duration','type','restricted','cover_img','views','updated_at','hls_url','dash_url','comments','likes')
+
+            $videoList = DB::table('video')
+                //->select('id','name','gold','cat','tag_kv','sync','title','duration','type','restricted','cover_img','views','updated_at','hls_url','dash_url','comments','likes')
+                ->select($this->videoFields)
                 ->whereIn('id',$ids)->get()->toArray();
             foreach ($videoList as &$iv){
                 $iv = (array)$iv;
@@ -318,9 +321,7 @@ class UserController extends Controller
                 $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
                 //Log::info('test==',$vidArrShort);
                 $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
-                $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get([
-                    'video.id as vs_id','video.name as vs_name','video.gold as vs_gold','video.cat as vs_cat','video.sync as vs_sync','video.title as vs_title','video.duration as vs_duration','video.type as vs_type','video.restricted as vs_restricted','video.cover_img as vs_cover_img','video.views as vs_views','video.updated_at as vs_updated_at','video.hls_url as vs_hls_url','video.dash_url as vs_dash_url','video.url as url','video.comments as vs_comments','video.likes as vs_likes',
-                ])->toArray();
+                $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray();
                 foreach ($videoShort as &$sr){
                     $sr = (array)$sr;
                     $sr['usage'] = 2;
@@ -361,10 +362,7 @@ class UserController extends Controller
                 $view_history_key = 'view_history_'.$user->id;
 
                 $page = 1;
-                /*$page = $params['page'] ?? 1;
-                if(isset($params['pageSize']) && ($params['pageSize']<10)){
-                    $perPage = $params['pageSize'];
-                }*/
+
 
                 $vidArr = $videoRedis->zRevRange($view_history_key,0,-1,true);
                 $videoIds = $vidArr ? array_keys($vidArr) : [];
@@ -383,9 +381,7 @@ class UserController extends Controller
                 $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
                 //Log::info('test==',$vidArrShort);
                 $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
-                $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get([
-                    'video.id as vs_id','video.name as vs_name','video.gold as vs_gold','video.cat as vs_cat','video.sync as vs_sync','video.title as vs_title','video.duration as vs_duration','video.type as vs_type','video.restricted as vs_restricted','video.cover_img as vs_cover_img','video.views as vs_views','video.updated_at as vs_updated_at','video.hls_url as vs_hls_url','video.dash_url as vs_dash_url','video.url as url','video.comments as vs_comments','video.likes as vs_likes',
-                ])->toArray();
+                $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray();
                 foreach ($videoShort as &$sr){
                     $sr = (array)$sr;
                     $sr['usage'] = 2;
@@ -400,7 +396,7 @@ class UserController extends Controller
                     $pageLists = DB::table('video')->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
                 }
                 //路径处理
-                $res['list'] = $this->handleVideoItems($pageLists,true, true);
+                $res['list'] = $this->handleVideoItems($pageLists,true, $user->id);
                 //时长转秒
                 $res['list'] = self::transferSeconds($res['list']);
                 return response()->json([
