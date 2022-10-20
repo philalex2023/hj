@@ -118,9 +118,9 @@ class AuthController extends Controller
             return response()->json(['state' => -1, 'msg' => '非法设备!']);
         }
 
-        $deviceSystem = $this->getDeviceSystem();
-
         $deviceInfo = !is_string($validated['dev']) ? json_encode($validated['dev']) : $validated['dev'] ;
+        $deviceSystem = $this->getDeviceSystem($deviceInfo);
+
         $appInfo = !is_string($validated['env']) ? json_encode($validated['env']) : $validated['env'] ;
         // 暂时放开轻量版
         if(!strpos($deviceInfo.'', 'ios')){

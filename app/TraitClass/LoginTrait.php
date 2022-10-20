@@ -59,23 +59,23 @@ trait LoginTrait
         return $user;
     }
 
-    public function getDeviceSystem(): int
+    public function getDeviceSystem($deviceInfo): int
     {
         $device_system = 0;
-        if(isset($_SERVER['HTTP_USER_AGENT'])){
+        /*if(isset($_SERVER['HTTP_USER_AGENT'])){
             if(strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')||strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')){
                 $device_system = 3;
             }else if(strpos($_SERVER['HTTP_USER_AGENT'], 'Android')){
                 $device_system = 2;
             }
-        }
-        /*if(strpos($deviceInfo.'', 'androidId')){
+        }*/
+        if(strpos($deviceInfo.'', 'androidId')){
             $deviceSystem = 2;
         }else if(strpos($deviceInfo.'', 'ios')){
             $deviceSystem = 1;
         }else{
             $deviceSystem = 0;
-        }*/
+        }
         return $device_system;
     }
 
