@@ -472,13 +472,14 @@ class VideoShortController extends Controller
             $is_love = $params['like'];
             $videoRedis = $this->redis('video');
             $shortLoveKey = 'shortLove_'.$user->id;
+            $videoBuild = DB::table('video')->where('id', $id);
             if ($is_love) {
                 $videoRedis->sAdd($shortLoveKey,$id);
                 $videoRedis->expire($shortLoveKey,7*24*3600);
-                DB::table('video')->where('id', $id)->increment('likes');
+                $videoBuild->increment('likes');
             } else {
                 $videoRedis->sRem($shortLoveKey,$id);
-                DB::table('video')->where('id', $id)->decrement('likes');
+                $videoBuild->value('likes')>0 && $videoBuild->decrement('likes');
             }
             return response()->json([
                 'state' => 0,
@@ -521,13 +522,14 @@ class VideoShortController extends Controller
         $isCollect = $params['collect'] ?? $params['like'];
         $videoRedis = $this->redis('video');
         $shortCollectsKey = 'shortCollects_'.$userInfo->id;
+        $videoBuild = DB::table('video')->where('id', $id);
         if ($isCollect) {
             $videoRedis->zAdd($shortCollectsKey,time(),$id);
             $videoRedis->expire($shortCollectsKey,7*24*3600);
-            DB::table('video')->where('id', $id)->increment('favors');
+            $videoBuild->increment('favors');
         } else {
             $videoRedis->zRem($shortCollectsKey,$id);
-            DB::table('video')->where('id', $id)->decrement('favors');
+            $videoBuild->value('favors')>0 && DB::table('video')->where('id', $id)->decrement('favors');
         }
         return response()->json([
             'state' => 0,

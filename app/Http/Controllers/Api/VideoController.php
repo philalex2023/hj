@@ -216,13 +216,14 @@ class VideoController extends Controller
             try {
                 $videoRedis = $this->redis('video');
                 $videoCollectsKey = 'videoCollects_'.$user->id;
+                $videoBuild = Video::query()->where('id', $id);
                 if ($is_collect) {
                     $videoRedis->zAdd($videoCollectsKey,time(),$id);
                     $videoRedis->expire($videoCollectsKey,10*24*3600);
-                    Video::query()->where('id', $id)->increment('collects');
+                    $videoBuild->increment('collects');
                 } else {
                     $videoRedis->zRem($videoCollectsKey,$id);
-                    Video::query()->where('id', $id)->decrement('collects');
+                    $videoBuild->value('collects') && $videoBuild->decrement('collects');
                 }
 
             } catch (Exception $exception) {
