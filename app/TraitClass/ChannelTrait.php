@@ -254,10 +254,10 @@ trait ChannelTrait
         Cache::forget('cachedChannelById.'.$model->id);
 
         //生成对应的包文件
-        Artisan::call('general_package '.$model->promotion_code);
-        /*Artisan::queue('general_package', [
-            'user' => 1, '--queue' => 'default'
-        ]);*/
+        //Artisan::call('general_package '.$model->promotion_code);
+        Artisan::queue('general_package', [
+            'channel_code' => $model->promotion_code, '--queue' => 'default'
+        ]);
     }
 
     public function editTableHandle($request)

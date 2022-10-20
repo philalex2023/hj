@@ -12,7 +12,7 @@ class GeneralPackage extends Command
      *
      * @var string
      */
-    protected $signature = 'general_package {channel_code?}';
+    protected $signature = 'general_package {channel_code?} {--queue?}';
 
     /**
      * The console command description.
