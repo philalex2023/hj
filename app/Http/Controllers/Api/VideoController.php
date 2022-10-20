@@ -137,13 +137,14 @@ class VideoController extends Controller
             try {
                 $videoRedis = $this->redis('video');
                 $videoLoveKey = 'videoLove_'.$user->id;
+                $videoBuild = Video::query()->where('id', $id);
                 if ($is_love) {
                     $videoRedis->sAdd($videoLoveKey,$id);
                     $videoRedis->expire($videoLoveKey,7*24*3600);
-                    Video::query()->where('id', $id)->increment('likes');
+                    $videoBuild->increment('likes');
                 } else {
                     $videoRedis->sRem($videoLoveKey,$id);
-                    Video::query()->where('id', $id)->decrement('likes');
+                    $videoBuild->value('likes')>0 && $videoBuild->decrement('likes');
                 }
                 return response()->json([
                     'state' => 0,
