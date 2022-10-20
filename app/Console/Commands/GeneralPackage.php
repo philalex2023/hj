@@ -39,9 +39,9 @@ class GeneralPackage extends Command
         if($bool){
             $content = Storage::get($packagePath.'.apk');
             Storage::disk('sftp_package')->put($packageName.'.apk',$content);
-            $this->info('传至远程成功');
+//            $this->info('传至远程成功');
         }
-        $this->info('ok');
+//        $this->info('ok');
         return 0;
     }
 
@@ -53,12 +53,12 @@ class GeneralPackage extends Command
         {
             $packer->writeParam($src, $tmp = tempnam(sys_get_temp_dir(), 'APK'), $unit);
             $result = $packer->maskfile($tmp, $dst);
-            print_r($packer->readParam($tmp));
+            //print_r($packer->readParam($tmp));
             unlink($tmp);
             return $result;
         }
         $packer->writeParam($src, $dst . '.apk', $unit);
-        print_r($packer->readParam($dst . '.apk'));
+        //print_r($packer->readParam($dst . '.apk'));
         return true;
     }
 
