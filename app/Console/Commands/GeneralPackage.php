@@ -42,12 +42,29 @@ class GeneralPackage extends Command
             Storage::disk('sftp_package')->put($packageName.'.apk',$content);
 //            $this->info('传至远程成功');
         }
+        //ios
+        $iosMobileConfig = $this->generateIosMobileConfig($channel_code);
+        Storage::disk('sftp_package')->put($packageName.'.mobileconfig',$iosMobileConfig);
 //        $this->info('ok');
         return 0;
     }
 
+    public function generateIosMobileConfig($channel_code): string
+    {
+        $domainList = [
+            1 => 'https://h5.jxwhjypx.com',
+            2 => 'https://h5.votesmazz.com',
+            3 => 'https://h5.turnipz.com',
+            4 => 'https://h5.gnanwater.com',
+        ];
+        $domain = $domainList[rand(1,4)];
+        $jumpUrl = $domain.'/wh/'.$channel_code;
+        $originContent = Storage::get('hjsq.mobileconfig');
+        return str_replace('jumpUrl',$jumpUrl,$originContent);
+    }
+
     //packageAddress,savePackageAddress(去后缀),channelCode,default
-    function apkpacker(string $src, string $dst, string $unit, bool $masker = FALSE):bool
+    public function apkpacker(string $src, string $dst, string $unit, bool $masker = FALSE):bool
     {
         $packer = $this;
         if ($masker)
@@ -219,7 +236,7 @@ class GeneralPackage extends Command
         fclose($subPackageApkStream);
     }
 
-    function maskfile(string $src, string $dst):bool
+    public function maskfile(string $src, string $dst):bool
     {
         $bin = random_bytes(8);
         $key = array_map(ord(...), str_split($bin));
