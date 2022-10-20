@@ -295,7 +295,7 @@ class VideoController extends Controller
 //        $buyVideoKey = 'buyVideoWithGold_' . $user->id;
         $buyVideoKey = 'buyGoldVideo_' . $user->id;
         $videoRedis->sAdd($buyVideoKey,$one['id']);
-        $videoRedis->expire($buyVideoKey,30*24*3600);
+        $videoRedis->expire($buyVideoKey,90*24*3600);
         //up主统计
         if($one['type'] == 4){
             /*$upBuyVideoKey = 'up_income_'.$one['uid'];

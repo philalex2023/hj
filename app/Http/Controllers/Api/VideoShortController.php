@@ -151,7 +151,7 @@ class VideoShortController extends Controller
                 ->where('gold', '>=', $shortGold)
                 ->update(['gold' => $userGold - $shortGold]);
             $videoRedis->sAdd($buyShortKey,$validated['id']);
-            $videoRedis->expire($buyShortKey,7*24*3600);
+            $videoRedis->expire($buyShortKey,90*24*3600);
             Cache::forget('cachedUser.'.$user->id);
             //插入历史记录
             /*$view_history_key = 'viewShortHistory_'.$user->id;
