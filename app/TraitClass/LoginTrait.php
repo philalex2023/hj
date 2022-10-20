@@ -61,22 +61,13 @@ trait LoginTrait
 
     public function getDeviceSystem($deviceInfo): int
     {
-        $device_system = 0;
-        /*if(isset($_SERVER['HTTP_USER_AGENT'])){
-            if(strpos($_SERVER['HTTP_USER_AGENT'], 'iPhone')||strpos($_SERVER['HTTP_USER_AGENT'], 'iPad')){
-                $device_system = 3;
-            }else if(strpos($_SERVER['HTTP_USER_AGENT'], 'Android')){
-                $device_system = 2;
-            }
-        }*/
+        $test_ds = 0;
         if(strpos($deviceInfo.'', 'androidId')){
-            $deviceSystem = 2;
+            $test_ds = 2;
         }else if(strpos($deviceInfo.'', 'ios')){
-            $deviceSystem = 1;
-        }else{
-            $deviceSystem = 0;
+            $test_ds = 1;
         }
-        return $device_system;
+        return $test_ds;
     }
 
     public function getDidFromDb($did)

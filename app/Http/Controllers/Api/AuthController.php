@@ -121,14 +121,7 @@ class AuthController extends Controller
         $deviceInfo = !is_string($validated['dev']) ? json_encode($validated['dev']) : $validated['dev'] ;
         $deviceSystem = $this->getDeviceSystem($deviceInfo);
 
-        $test_ds = 0;
-        if(strpos($deviceInfo.'', 'androidId')){
-            $test_ds = 2;
-        }else if(strpos($deviceInfo.'', 'ios')){
-            $test_ds = 1;
-        }
-
-        Log::info('login_deviceInfo',[$deviceInfo,$deviceSystem,$test_ds]);
+        Log::info('login_deviceInfo',[$deviceInfo,$deviceSystem]);
 
         $appInfo = !is_string($validated['env']) ? json_encode($validated['env']) : $validated['env'] ;
         // 暂时放开轻量版
