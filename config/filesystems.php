@@ -222,6 +222,27 @@ return [
             ],
         ],
 
+        'sftp_package' => [
+            'driver' => 'sftp',
+            'host' => env('SFTP_HOST_PACKAGE',''),
+            'username' => env('SFTP_USERNAME_PACKAGE',''),
+            'password' => env('SFTP_PASSWORD_PACKAGE',''),
+            'port' => env('SFTP_PORT_PACKAGE',22),
+            'timeout' => 3600,
+            'visibility' => 'public',
+            'directoryPerm' => 0755,
+            'permissions' => [
+                'file' => [
+                    'public' => 0664,
+                    'private' => 0600,
+                ],
+                'dir' => [
+                    'public' => 0755,
+                    'private' => 0700,
+                ],
+            ],
+        ],
+
         //七牛
         'qiniu' => [
             'driver' => 'qiniu',

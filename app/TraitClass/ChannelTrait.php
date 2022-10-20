@@ -2,6 +2,7 @@
 
 namespace App\TraitClass;
 
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -251,6 +252,8 @@ trait ChannelTrait
         }
         $this->initStatisticsByDay($model->id);
         Cache::forget('cachedChannelById.'.$model->id);
+        //生成对应的包文件
+        Artisan::call('general_package '.$model->promotion_code.' --queue=default');
     }
 
     public function editTableHandle($request)
