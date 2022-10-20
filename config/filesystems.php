@@ -125,7 +125,7 @@ return [
             'host' => env('SFTP_HOST_ORIGIN',''),
             'username' => env('SFTP_USERNAME_ORIGIN',''),
             'password' => env('SFTP_PASSWORD_ORIGIN',''),
-            'port' => (int)env('SFTP_PORT_ORIGIN',22),
+            'port' => env('SFTP_PORT_ORIGIN',22),
             'timeout' => 3600,
             'visibility' => 'public',
             'directoryPerm' => 0755,
