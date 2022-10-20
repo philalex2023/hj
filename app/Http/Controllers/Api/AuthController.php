@@ -119,6 +119,7 @@ class AuthController extends Controller
         }
 
         $deviceInfo = !is_string($validated['dev']) ? json_encode($validated['dev']) : $validated['dev'] ;
+        Log::info('login_deviceInfo',[$deviceInfo]);
         $deviceSystem = $this->getDeviceSystem($deviceInfo);
 
         $appInfo = !is_string($validated['env']) ? json_encode($validated['env']) : $validated['env'] ;
