@@ -64,7 +64,7 @@ class ProcessRepairVideo implements ShouldQueue
             ->openUrl('/home/hj/'.$m3u8_path);
         $format = new \FFMpeg\Format\Video\X264();
         $encryptKey = HLSExporter::generateEncryptionKey();
-        Storage::disk('local')->put($tmp_path.'/secret.key',$encryptKey);//在storage/app的位置
+        Storage::put($tmp_path.'/secret.key',$encryptKey);//在storage/app的位置
         $video->exportForHLS()
             ->withEncryptionKey($encryptKey)
             ->setSegmentLength(1)//默认值是10

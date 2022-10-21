@@ -47,7 +47,7 @@ class RepairVideo extends Command
     {
         $Items = DB::table('video')
 //            ->where('type',4)
-            ->where('id',22127)
+            ->where('id','<',30693)
             ->get(['id','url','hls_url']);
         $bar = $this->output->createProgressBar(count($Items));
         $bar->start();
@@ -55,8 +55,13 @@ class RepairVideo extends Command
         $bar->advance();
         foreach ($Items as $item)
         {
-            $job = new ProcessRepairVideo($item);
-            $this->dispatch($job->onQueue('high'));
+            $file_name = pathinfo($item->url,PATHINFO_FILENAME);
+            $tmp_path = 'public/slice/hls/'.$file_name.'/';
+            $keyFile = $tmp_path.'/secret.key';
+            $exists = Storage::exists($keyFile);
+            !$exists && $this->info('not found '.$item->id);
+            /*$job = new ProcessRepairVideo($item);
+            $this->dispatch($job->onQueue('high'));*/
         }
         $bar->finish();
         $this->info('######执行成功######');
