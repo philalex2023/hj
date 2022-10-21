@@ -85,20 +85,19 @@ trait LoginTrait
         $device_system = $loginInfo['device_system'];
         $channel_id = 0;
         $clipboard = $loginInfo['clipboard'] ?? '';
-        $redis = $this->redis('channel');
+        //$redis = $this->redis('channel');
         if(!empty($clipboard)){
             $channel_id = $this->getChannelIdByPromotionCode($clipboard);
             //Log::info('==BindChannelUserClipboard==',[$clipboard,$channel_id]);
-        }else{
+        }
+        /*else{
             $hashKey = 'download:'.$loginInfo['ip'];
             if($redis->exists($hashKey)){
                 $channel_id = $redis->hGet($hashKey,'channel_id');
                 $pid = 0;
-                //$device_system = $hashValue['device_system'];
-                //$this->device_system = $hashValue['device_system'];
             }
 
-        }
+        }*/
         //Log::info('==BindChannelUser==',$updateData);
         return [
             'pid'=>$pid ?? 0,
