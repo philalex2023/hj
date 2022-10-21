@@ -59,7 +59,7 @@ class RepairVideo extends Command
         $ids = '';
         foreach ($Items as $item)
         {
-            $ids .= $item->id;
+            $ids .= $item->id.',';
             $this->info('can delete '.$item->id.' status '.$item->status);
             /*$file_name = pathinfo($item->url,PATHINFO_FILENAME);
             $tmp_path = '/home/hj/public/slice/hls/'.$file_name.'/';
@@ -70,7 +70,7 @@ class RepairVideo extends Command
             $this->dispatch($job->onQueue('high'));*/
         }
         $bar->finish();
-        $this->info('ids: '.$ids.',');
+        $this->info('ids: '.$ids);
         $this->info('######执行成功######');
         return 0;
     }
