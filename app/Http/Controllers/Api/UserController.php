@@ -242,7 +242,7 @@ class UserController extends Controller
             $shortVideoIds = $vidArrShort ? array_keys($vidArrShort) : [];
             $vidArrAll = [...$vidArr,...$vidArrShort];
 
-            Log::info('',$vidArrAll);
+            Log::info('myCollect',$vidArrAll);
             $ids = [...$videoIds,...$shortVideoIds];
 
             $videoList = DB::table('video')
