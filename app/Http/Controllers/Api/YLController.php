@@ -62,6 +62,7 @@ class YLController extends PayBaseController implements Pay
         $secret = $payEnvInfo['secret'];
 
         $payInfo = PayLog::query()->find($params['pay_id']);
+        Log::info('PAY_YL_DEBUG',[$params,$payInfo]);
         if (!$payInfo) {
             throw new Exception("记录不存在");
         }
