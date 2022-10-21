@@ -70,7 +70,7 @@ class RepairVideo extends Command
             $this->dispatch($job->onQueue('high'));*/
         }
         $bar->finish();
-        $this->info('ids: '.$ids);
+        $this->info('ids: '.$ids.',');
         $this->info('######执行成功######');
         return 0;
     }
