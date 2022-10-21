@@ -56,9 +56,9 @@ class RepairVideo extends Command
         foreach ($Items as $item)
         {
             $file_name = pathinfo($item->url,PATHINFO_FILENAME);
-            $tmp_path = 'public/slice/hls/'.$file_name.'/';
-            $keyFile = $tmp_path.'/secret.key';
-            $exists = Storage::exists($keyFile);
+            $tmp_path = '/home/hj/public/slice/hls/'.$file_name.'/';
+            $keyFile = $tmp_path.'secret.key';
+            $exists = file_exists($keyFile);
             !$exists && $this->info('not found '.$item->id.' '.$keyFile);
             /*$job = new ProcessRepairVideo($item);
             $this->dispatch($job->onQueue('high'));*/
