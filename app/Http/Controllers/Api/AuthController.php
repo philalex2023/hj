@@ -138,7 +138,7 @@ class AuthController extends Controller
         $loginType = !$hasDid ? 1 : 2;
 
         $login_info = ['device_system'=>$deviceSystem,'clipboard'=>$validated['clipboard']??'','ip'=>$ip];
-        $deviceSystem!=2 && Log::info('login_info',$login_info);
+        //$deviceSystem!=2 && Log::info('login_info',$login_info);
 
         if($loginType===1){ //注册登录
             $regLock = Cache::lock('reg_lock');
