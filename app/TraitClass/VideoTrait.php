@@ -455,7 +455,7 @@ AV-海角伙伴
     {
         $views = intval($views);
 //        $views *= 20;
-        $views *= 1000;
+        $views *= 200;
         $length = strlen($views);
         if($length > 8){
             $str = substr_replace(floor($views * 0.0000001),'.',-1,0).'亿';
