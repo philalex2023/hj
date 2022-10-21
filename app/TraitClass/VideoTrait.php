@@ -404,8 +404,8 @@ AV-海角伙伴
             $list = (array)$list;
             $list['limit'] = $list['restricted'];
             $list['gold'] = $list['gold'] / $this->goldUnit;
-//            $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(5, 9));
-            $list['views'] = $this->generateRandViews(rand(500, 99999));
+            $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(500, 99999));
+//            $list['views'] = $this->generateRandViews(rand(500, 99999));
             $list['preview_hls_url'] = $this->getPreviewPlayUrl($list['hls_url']??'');
             if(isset($list['time_at']) && ($list['time_at']>0)){
                 $list['updated_at'] = date('Y-m-d H:i:s',$list['time_at']);
@@ -454,7 +454,8 @@ AV-海角伙伴
     public function generateRandViews($views): string
     {
         $views = intval($views);
-        $views *= 20;
+//        $views *= 20;
+        $views *= 10000;
         $length = strlen($views);
         if($length > 8){
             $str = substr_replace(floor($views * 0.0000001),'.',-1,0).'亿';
