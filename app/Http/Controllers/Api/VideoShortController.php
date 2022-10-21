@@ -143,7 +143,7 @@ class VideoShortController extends Controller
 
         $userGold = $user->gold;
         $shortGold = $short->gold/100;
-        Log::info('buyShortWithGold',[$validated['id'],$userGold,$shortGold,$short->gold]);
+        Log::info('buyShortWithGold',[$user->id,$validated['id'],$userGold,$shortGold,$short->gold]);
         if($userGold < $shortGold){
             return response()->json(['state' => -1, 'data' =>['status'=>-1],'msg'=>'余额不足请充值']);
         }else{
