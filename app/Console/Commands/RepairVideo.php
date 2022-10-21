@@ -46,8 +46,8 @@ class RepairVideo extends Command
     public function handle(): int
     {
         $Items = DB::table('video')
-            ->where('type',4)
-//            ->where('id',22127)
+//            ->where('type',4)
+            ->where('id',22127)
             ->get(['id','url','hls_url']);
         $bar = $this->output->createProgressBar(count($Items));
         $bar->start();
