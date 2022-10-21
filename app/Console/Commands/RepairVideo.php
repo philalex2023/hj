@@ -50,7 +50,7 @@ class RepairVideo extends Command
 //            ->where('id','=',29315)
             ->where('id','<',30693)
             ->where('duration_seconds','=',0)
-            ->get(['id','url','hls_url']);
+            ->get(['id','url','status','hls_url']);
         $bar = $this->output->createProgressBar(count($Items));
         $bar->start();
 
