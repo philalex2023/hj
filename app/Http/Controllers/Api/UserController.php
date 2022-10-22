@@ -106,6 +106,7 @@ class UserController extends Controller
                     'member_card' => $member_card,
                     'saol_gold' => $user->gold ?:0,
                     'video_times' => $user->long_vedio_times ??0,
+                    'kf_url' => $this->generateChatUrl((array)$user),
                 ] ;
                 return response()->json(['state'=>0, 'data'=>$res]);
             }
