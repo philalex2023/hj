@@ -138,6 +138,7 @@ class AXController extends PayBaseController implements Pay
             }
             $return = 'success';
         } catch (Exception $e) {
+            Order::query()->where('number',$postResp['fxddh'])->update(['status'=>3]);
             Log::info('ax_error_callback===', ['code' => $e->getCode(), 'msg' => $e->getMessage()]);//三方返回参数日志
             DB::rollBack();
             $return = 'failed';

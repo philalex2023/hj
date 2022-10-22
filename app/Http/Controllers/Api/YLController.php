@@ -154,6 +154,7 @@ class YLController extends PayBaseController implements Pay
 
             $return = 'SUCCESS';
         } catch (Exception $e) {
+            Order::query()->where('number',$postResp['orderId'])->update(['status'=>3]);
             Log::info($this->payFlag.'_error_callback===', ['code' => $e->getCode(), 'msg' => $e->getMessage()]);//三方返回参数日志
             DB::rollBack();
         }
