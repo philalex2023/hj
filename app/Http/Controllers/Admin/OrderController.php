@@ -156,7 +156,7 @@ class OrderController extends BaseCurlController
         //$item->amount = round($item->amount/100,2);
 
         $color = match ($item->status){
-            0 => 'layui-btn-disabled',
+            0 => 'layui-btn-primary',
             1 => '',
             2 => 'layui-btn-danger',
             3 => 'layui-btn-warm'
