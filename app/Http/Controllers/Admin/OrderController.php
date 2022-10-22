@@ -152,7 +152,11 @@ class OrderController extends BaseCurlController
         ];
         $item->type = $types[$item->type];
         //$item->amount = round($item->amount/100,2);
-        $item->status = UiService::switchTpl('status', $item,'','完成|未付');
+//        $item->status = UiService::switchTpl('status', $item,'','完成|未付');
+        $status = $this->getOrderStatus();
+        $item->status = match ($item->status){
+            $item->status => $status[$item->status]['name'],
+        };
         $channel_name = $item->channel_id>0 ? DB::table('channels')->where('id',$item->channel_id)->value('name') : '官方';
         $item->channel_id = $channel_name . '('.$item->channel_id.')';
         $item->device_system = $this->deviceSystem[intval($item->device_system)]['name'];
@@ -232,6 +236,9 @@ class OrderController extends BaseCurlController
                         'name'=>'未付',
                     ],1=>[
                         'id'=>1,
+                        'name'=>'完成',
+                    ],2=>[
+                        'id'=>2,
                         'name'=>'完成',
                     ],
                 ]

@@ -30,6 +30,28 @@ trait PayTrait
 {
     use ChannelTrait,CacheTableTrait;
 
+    public function getOrderStatus(): array
+    {
+        return [
+            ''=>[
+                'id'=>'',
+                'name'=>'全部'
+            ],
+            0=>[
+                'id'=>0,
+                'name'=>'未付'
+            ],
+            1=>[
+                'id'=>1,
+                'name'=>'成功'
+            ],
+            2=>[
+                'id'=>2,
+                'name'=>'未拉起'
+            ],
+        ];
+    }
+
     public static function getPayTypeCode()
     {
         $appConfig = config_cache('app');

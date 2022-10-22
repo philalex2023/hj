@@ -114,6 +114,7 @@ class YLController extends PayBaseController implements Pay
             $url = $resJson['data']['html'];
             $return = $this->format(0, ['url' => $url], 'ok');
         } else {
+            Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
             $return = $this->format(-1, $resJson, $resJson['message']??'');
         }
         return response()->json($return);
