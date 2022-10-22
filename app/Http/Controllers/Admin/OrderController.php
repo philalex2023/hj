@@ -229,6 +229,7 @@ class OrderController extends BaseCurlController
                 'name' => '状态',
                 'default' => '',
                 'data' => $this->status,
+            ],
             [
                 'field' => 'device_system',
                 'type' => 'select',
