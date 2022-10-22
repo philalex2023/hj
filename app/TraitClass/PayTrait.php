@@ -95,7 +95,7 @@ trait PayTrait
     public static function getPayNumber($uid): string
     {
 //        return 'JB'.time().rand(10000,99999);
-        return 'JB'.time().$uid;
+        return 'JB'.date('His').$uid;
     }
 
     /**
