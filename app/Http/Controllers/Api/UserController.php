@@ -110,7 +110,7 @@ class UserController extends Controller
                         'account' => $user->account,
                         'nickname' => $user->nickname,
                         'id' => $user->id
-                    ]),
+                    ])['kf_url'],
                 ] ;
                 return response()->json(['state'=>0, 'data'=>$res]);
             }
