@@ -102,6 +102,7 @@ class AXController extends PayBaseController implements Pay
                 $this->pullPayEvent($orderInfo);
                 $return = $this->format(0, ['url' => $resJson['payurl']], '取出成功');
             } else {
+                Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
                 $return = $this->format(-1, [], $resJson['error']);
             }
         } catch (Exception | InvalidArgumentException $e) {
