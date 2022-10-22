@@ -80,7 +80,6 @@ class OrderController extends BaseCurlController
                 'width' => 150,
                 'title' => '订单金额',
                 'align' => 'center',
-                'edit' => 1
             ],
             [
                 'field' => 'type',
