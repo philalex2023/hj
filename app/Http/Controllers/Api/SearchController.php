@@ -235,7 +235,10 @@ class SearchController extends Controller
                 $offset = ($page-1)*$perPage;
 
                 $ids = explode(',',DB::table('topic')->where('id',$tid)->value('contain_vids'));
-                //Log::info('SearchCat',[$ids]);
+                Log::info('SearchCat',[$ids]);
+                if(!$ids){
+                    return response()->json(['state'=>-1, 'data'=>[]]);
+                }
                 $idParams = [];
                 $length = count($ids);
                 foreach ($ids as $key => $id) {
