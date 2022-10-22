@@ -43,6 +43,7 @@ class BackupResFromOrigin extends Command
     {
         $Items = DB::table('video')
             ->where('type',1)
+            ->orderByDesc('created_at')
             //->where('id','>=',11665)
             //->where('sync',1)
             //->take(1)
