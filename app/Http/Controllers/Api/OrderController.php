@@ -105,7 +105,7 @@ class OrderController extends PayBaseController
             }];
         }*/
         try {
-            $number = self::getPayNumber();
+            $number = self::getPayNumber($user->id);
             $payMethod = $params['pay_method']??1;
             $payNumber = '';
             if ($params['pay_method'] == 0) {
@@ -242,13 +242,14 @@ class OrderController extends PayBaseController
             if ($payLog) {
                 $payId = $payLog['id'];
             } else {
+                $user = $request->user();
                 $now = date('Y-m-d H:i:s', time());
                 $payNew = PayLog::query()->create([
                     'order_id' => $order['id'],
                     'request_info' => json_encode($params),
                     'goods_info' => $order['type_id'],
-                    'number' => self::getPayNumber(),
-                    'uid' => $request->user()->id,
+                    'number' => self::getPayNumber($user->id),
+                    'uid' => $user->id,
                     'status' => 0,
                     'created_at' => $now,
                     'updated_at' => $now,

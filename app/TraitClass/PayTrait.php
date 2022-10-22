@@ -92,9 +92,10 @@ trait PayTrait
      * 生成订单号
      * @return string
      */
-    public static function getPayNumber(): string
+    public static function getPayNumber($uid): string
     {
-        return 'JB'.time().rand(10000,99999);
+//        return 'JB'.time().rand(10000,99999);
+        return 'JB'.time().$uid;
     }
 
     /**
