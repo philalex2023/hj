@@ -249,6 +249,13 @@ class UserController extends Controller
             $vidArrAll = $vidArr + $vidArrShort;
 
             Log::info('myCollect',$vidArrAll);
+            if(empty($vidArrAll)){
+                return response()->json([
+                    'state'=>0,
+                    'data'=>[]
+                ]);
+            }
+
             $ids = [...$videoIds,...$shortVideoIds];
 
             $videoList = DB::table('video')
