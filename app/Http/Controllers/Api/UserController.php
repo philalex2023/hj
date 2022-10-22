@@ -245,7 +245,8 @@ class UserController extends Controller
             $videoIds = $vidArr ? array_keys($vidArr) : [];
             $vidArrShort = $videoRedis->zRevRange($shortCollectsKey,0,-1,true);
             $shortVideoIds = $vidArrShort ? array_keys($vidArrShort) : [];
-            $vidArrAll = [...$vidArr,...$vidArrShort];
+//            $vidArrAll = [...$vidArr,...$vidArrShort];
+            $vidArrAll = $vidArr + $vidArrShort;
 
             Log::info('myCollect',$vidArrAll);
             $ids = [...$videoIds,...$shortVideoIds];
