@@ -114,7 +114,7 @@ class OrderController extends PayBaseController
             }
             $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : false;
             $createData = [
-                'remark' => json_encode($goodsInfo),
+                'remark' => json_encode(['id'=>$goodsInfo['id']??0,'name'=>$goodsInfo['name']??'']),
                 'number' => $number,
                 'type' => $params['type'],
                 'type_id' => $params['goods_id'],
