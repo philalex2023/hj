@@ -98,7 +98,7 @@ class VideoController extends Controller
                     $one['limit'] = 0;
                     $this->processViewVideo($user, $one);
                     //观看限制
-                    if (($viewLongVideoTimes<=0 && $one['restricted'] > 0) || ($viewLongVideoTimes>0 && $one['restricted']==1)) {
+                    if (($viewLongVideoTimes<=0 && $one['restricted'] > 0) || ($viewLongVideoTimes>0 && $one['restricted']==2)) {
                         //是否有观看次数
                         $one['restricted'] = (int)$one['restricted'];
                         $one = $this->vipOrGold($one, $user);
