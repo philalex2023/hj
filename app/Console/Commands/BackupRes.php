@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessBackupRes;
-use App\Jobs\ProcessBackupResFromOrigin;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\DB;

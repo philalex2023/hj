@@ -2,7 +2,7 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ProcessBackupResFromOrigin;
+use App\Jobs\ProcessBackupResFromMM;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\DB;
@@ -42,7 +42,7 @@ class BackupResFromOrigin extends Command
     public function handle()
     {
         $Items = DB::table('video')
-            ->where('id','<=',30497)
+            ->where('type',1)
             //->where('id','>=',11665)
             //->where('sync',1)
             //->take(1)
@@ -52,7 +52,7 @@ class BackupResFromOrigin extends Command
         foreach ($Items as $item)
         {
             $this->info('#id:'.$item->id.'##url:'.$item->url);
-            $job = new ProcessBackupResFromOrigin($item);
+            $job = new ProcessBackupResFromMM($item);
             $this->dispatch($job->onQueue('default'));
             $bar->advance();
         }
