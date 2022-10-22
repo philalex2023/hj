@@ -155,7 +155,11 @@ class OrderController extends BaseCurlController
         $item->type = $types[$item->type];
         //$item->amount = round($item->amount/100,2);
 
-        $color = $item->status==1 ? '' : 'layui-btn-primary layui-border-black';
+        $color = match ($item->status){
+            0 => 'layui-btn-disabled',
+            1 => '',
+            2 => 'layui-btn-danger'
+        };
         $item->status = '<button type="button" class="layui-btn layui-btn-xs '.$color.'">'.$this->status[$item->status]['name'].'</button>';
         /*$item->status = match ($item->status){
             $item->status => $this->status[$item->status]['name'],
