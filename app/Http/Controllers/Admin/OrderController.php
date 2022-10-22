@@ -154,10 +154,12 @@ class OrderController extends BaseCurlController
         ];
         $item->type = $types[$item->type];
         //$item->amount = round($item->amount/100,2);
-//        $item->status = UiService::switchTpl('status', $item,'','完成|未付');
-        $item->status = match ($item->status){
+
+        $color = $item->status==1 ? '' : 'layui-btn-primary layui-border-black';
+        $item->status = '<button type="button" class="layui-btn layui-btn-xs '.$color.'">'.$this->status[$item->status]['name'].'</button>';
+        /*$item->status = match ($item->status){
             $item->status => $this->status[$item->status]['name'],
-        };
+        };*/
         $channel_name = $item->channel_id>0 ? DB::table('channels')->where('id',$item->channel_id)->value('name') : '官方';
         $item->channel_id = $channel_name . '('.$item->channel_id.')';
         $item->device_system = $this->deviceSystem[intval($item->device_system)]['name'];
