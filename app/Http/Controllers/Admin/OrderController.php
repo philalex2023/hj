@@ -15,6 +15,7 @@ class OrderController extends BaseCurlController
     use PayTrait;
     //设置页面的名称
     public $pageName = '订单';
+    public array $status = [];
     public array $deviceSystem = [
         0=>[
             'id'=>'',
@@ -37,6 +38,7 @@ class OrderController extends BaseCurlController
     //1.设置模型
     public function setModel(): Order
     {
+        $this->status = $this->getOrderStatus();
         return $this->model = new Order();
     }
 
@@ -153,9 +155,8 @@ class OrderController extends BaseCurlController
         $item->type = $types[$item->type];
         //$item->amount = round($item->amount/100,2);
 //        $item->status = UiService::switchTpl('status', $item,'','完成|未付');
-        $status = $this->getOrderStatus();
         $item->status = match ($item->status){
-            $item->status => $status[$item->status]['name'],
+            $item->status => $this->status[$item->status]['name'],
         };
         $channel_name = $item->channel_id>0 ? DB::table('channels')->where('id',$item->channel_id)->value('name') : '官方';
         $item->channel_id = $channel_name . '('.$item->channel_id.')';
@@ -227,22 +228,7 @@ class OrderController extends BaseCurlController
                 'type' => 'select',
                 'name' => '状态',
                 'default' => '',
-                'data' => [
-                    ''=>[
-                        'id'=>'',
-                        'name'=>'全部',
-                    ],0=>[
-                        'id'=>0,
-                        'name'=>'未付',
-                    ],1=>[
-                        'id'=>1,
-                        'name'=>'完成',
-                    ],2=>[
-                        'id'=>2,
-                        'name'=>'完成',
-                    ],
-                ]
-            ],
+                'data' => $this->status,
             [
                 'field' => 'device_system',
                 'type' => 'select',
