@@ -63,7 +63,7 @@ class VideoController extends Controller
                 $this->saveStatisticByDay('active_view_users',$user->channel_id,$user->device_system);
             }
             //
-            DB::table('users')->where('id',$user->id)->where('long_vedio_times','>',0)->decrement('long_vedio_times'); //当日观看次数减一
+            $video['restricted']!=2 && DB::table('users')->where('id',$user->id)->where('long_vedio_times','>',0)->decrement('long_vedio_times'); //当日观看次数减一
         }
     }
 
