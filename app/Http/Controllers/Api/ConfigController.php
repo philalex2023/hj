@@ -71,13 +71,16 @@ class ConfigController extends Controller
         $response = $es->search($searchParams);
         //Log::info('searchParam_home_list',[json_encode($searchParams)]);
         $videoList = [];
+        $total = 0;
         if(isset($response['hits']) && isset($response['hits']['hits'])){
+            $total = $response['hits']['total']['value'];
             foreach ($response['hits']['hits'] as $item) {
                 $videoList[] = $item['_source'];
             }
         }
         return response()->json([
             'state'=>0,
+            'total'=>$total,
             'data'=>$videoList
         ]);
     }
