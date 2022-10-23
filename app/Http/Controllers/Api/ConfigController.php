@@ -50,13 +50,13 @@ class ConfigController extends Controller
                 'size' => $size,
                 'from' => $offset,
                 '_source' => $source,
-                'query' => [
+                /*'query' => [
                     'bool'=>[
                         'must' => [
                             ['term' => ['type'=>4]],
                         ]
                     ]
-                ],
+                ],*/
             ],
         ];
 
