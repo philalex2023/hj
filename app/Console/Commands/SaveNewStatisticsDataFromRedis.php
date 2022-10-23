@@ -45,31 +45,31 @@ class SaveNewStatisticsDataFromRedis extends Command
         $at_time = strtotime(date('Y-m-d'));
 
         $data = [
-            ['active_user'=>(int)$hashData['active_user']],
-            ['online_user'=>(int)$hashData['online_user']],
-            ['keep_1'=>(int)$hashData['active_user']],
-            ['inc_user'=>(int)$hashData['day_inc_user']],
-            ['inc_android_user'=>(int)$hashData['day_inc_android_user']],
-            ['inc_ios_user'=>(int)$hashData['day_inc_ios_user']],
-            ['gold_recharge'=>(int)$hashData['day_gold_recharge']*100],
-            ['vip_recharge'=>(int)$hashData['day_vip_recharge']*100],
-            ['new_user_recharge'=>(int)$hashData['day_new_user_recharge']*100],
-            ['old_user_recharge'=>(int)$hashData['day_old_user_recharge']*100],
-            ['total_recharge'=>(int)$hashData['day_total_recharge']*100],
-            ['inc_recharge_user'=>(int)$hashData['day_inc_recharge_user']],
-            ['inc_arpu'=>(int)$hashData['day_inc_arpu']],
-            ['success_order'=>(int)$hashData['day_success_order']],
-            ['total_order'=>(int)$hashData['day_total_order']],
-            ['lp_access'=>(int)$hashData['day_lp_access']],
-            ['android_recharge'=>(int)$hashData['day_android_recharge']*100],
-            ['ios_recharge'=>(int)$hashData['day_ios_recharge']*100],
-            ['inc_channel_user'=>(int)$hashData['day_inc_channel_user']],
-            ['inc_auto_user'=>(int)$hashData['day_inc_auto_user']],
-            ['channel_deduction_increase_user'=>(int)$hashData['day_channel_deduction_increase_user']],
-            ['at_time'=>$at_time],
+            'active_user'=>(int)$hashData['active_user'],
+            'online_user'=>(int)$hashData['online_user'],
+            'keep_1'=>(int)$hashData['active_user'],
+            'inc_user'=>(int)$hashData['day_inc_user'],
+            'inc_android_user'=>(int)$hashData['day_inc_android_user'],
+            'inc_ios_user'=>(int)$hashData['day_inc_ios_user'],
+            'gold_recharge'=>(int)$hashData['day_gold_recharge']*100,
+            'vip_recharge'=>(int)$hashData['day_vip_recharge']*100,
+            'new_user_recharge'=>(int)$hashData['day_new_user_recharge']*100,
+            'old_user_recharge'=>(int)$hashData['day_old_user_recharge']*100,
+            'total_recharge'=>(int)$hashData['day_total_recharge']*100,
+            'inc_recharge_user'=>(int)$hashData['day_inc_recharge_user'],
+            'inc_arpu'=>(int)$hashData['day_inc_arpu'],
+            'success_order'=>(int)$hashData['day_success_order'],
+            'total_order'=>(int)$hashData['day_total_order'],
+            'lp_access'=>(int)$hashData['day_lp_access'],
+            'android_recharge'=>(int)$hashData['day_android_recharge']*100,
+            'ios_recharge'=>(int)$hashData['day_ios_recharge']*100,
+            'inc_channel_user'=>(int)$hashData['day_inc_channel_user'],
+            'inc_auto_user'=>(int)$hashData['day_inc_auto_user'],
+            'channel_deduction_increase_user'=>(int)$hashData['day_channel_deduction_increase_user'],
+            'at_time'=>$at_time,
         ];
 
-        dump($data);
+        //dump($data);
         $exists = DB::table('hj_statistics_day')->where('at_time',$at_time)->exists();
         if(!$exists){
             DB::table('hj_statistics_day')->where('at_time',$at_time)->insert($data);
