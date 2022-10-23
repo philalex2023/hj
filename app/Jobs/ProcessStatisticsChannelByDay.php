@@ -127,15 +127,15 @@ class ProcessStatisticsChannelByDay implements ShouldQueue
             $redis->expire('vip_recharge_'.$dayData,3600*24*7);
         } else { //金币
             $redis->zAdd('gold_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-            $redis->expire('vip_recharge_'.$dayData,3600*24*7);
+            $redis->expire('gold_recharge_'.$dayData,3600*24*7);
         }
 
         if($this->new_old_user==1){
             $redis->zAdd('old_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-            $redis->expire('vip_recharge_'.$dayData,3600*24*7);
+            $redis->expire('old_user_recharge_'.$dayData,3600*24*7);
         }else{
             $redis->zAdd('new_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-            $redis->expire('vip_recharge_'.$dayData,3600*24*7);
+            $redis->expire('new_user_recharge_'.$dayData,3600*24*7);
         }
 
 
