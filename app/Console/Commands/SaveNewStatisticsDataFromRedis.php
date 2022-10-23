@@ -41,8 +41,10 @@ class SaveNewStatisticsDataFromRedis extends Command
      */
     public function handle(): int
     {
-        $hashData = $this->getDayStatisticHashData(1);
-        $at_time = strtotime(date('Y-m-d'));
+        $d = 1;
+        $hashData = $this->getDayStatisticHashData($d);
+        $t = strtotime('-'.$d.' day');
+        $at_time = strtotime(date('Y-m-d 00:00:00',$t));
 
         $data = [
             'active_user'=>(int)$hashData['active_user'],
