@@ -69,12 +69,12 @@ class SaveNewStatisticsDataFromRedis extends Command
             ['at_time'=>$at_time],
         ];
 
-        //dump($data);
+        dump($data);
         $exists = DB::table('hj_statistics_day')->where('at_time',$at_time)->exists();
         if(!$exists){
-            DB::table('hj_statistics_day')->where('at_time',$at_time)->insert([$data]);
+            DB::table('hj_statistics_day')->where('at_time',$at_time)->insert($data);
         }else{
-            DB::table('hj_statistics_day')->where('at_time',$at_time)->update([$data]);
+            DB::table('hj_statistics_day')->where('at_time',$at_time)->update($data);
         }
         $this->info('######执行成功######');
         return 0;
