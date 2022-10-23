@@ -81,6 +81,7 @@ class ConfigController extends Controller
         return response()->json([
             'state'=>0,
             'total'=>$total,
+            'length'=>count($videoList),
             'data'=>$videoList
         ]);
     }
