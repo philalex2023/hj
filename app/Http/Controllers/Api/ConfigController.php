@@ -48,7 +48,7 @@ class ConfigController extends Controller
             ]);
         }
 //        $offset = ($page-1)*$size;
-        $source = ['id','is_top','name','gold','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','updated_at'];
+        $source = ['id','name','gold','tag_kv','hls_url','duration','duration_seconds','type','restricted','cover_img'];
         $searchParams = [
             'index' => 'video_index',
             'body' => [
