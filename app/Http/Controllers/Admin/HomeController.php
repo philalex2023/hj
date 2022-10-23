@@ -19,8 +19,6 @@ class HomeController extends BaseController
     }
 
     public function home(){
-
-
         return $this->display(['data'=> $this->getDayStatisticHashData()]);
     }
 

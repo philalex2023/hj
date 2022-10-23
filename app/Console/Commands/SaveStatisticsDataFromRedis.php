@@ -3,7 +3,6 @@
 namespace App\Console\Commands;
 
 use App\TraitClass\PHPRedisTrait;
-use AWS\CRT\Log;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 
