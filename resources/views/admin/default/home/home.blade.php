@@ -101,6 +101,18 @@
                                 <div class="layui-card-body">{{ $data['hour_ios_recharge'] }} / {{ $data['day_ios_recharge'] }}</div>
                             </div>
                         </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-card">
+                                <div class="layui-card-header"> 渠道新增(小时/日)</div>
+                                <div class="layui-card-body">{{ $data['hour_inc_channel_user'] }} / {{ $data['day_inc_channel_user'] }}</div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-card">
+                                <div class="layui-card-header"> 自来量新增(小时/日)</div>
+                                <div class="layui-card-body">{{ $data['hour_inc_auto_user'] }} / {{ $data['day_inc_auto_user'] }}</div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

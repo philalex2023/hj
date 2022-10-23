@@ -129,6 +129,14 @@ class ProcessLogin implements ShouldQueue
 
         }
 
+        if($this->loginLogData['channel_id'] > 0){ //渠道量
+            $redis->sAdd('new_increase_channel_'.$dayData,$uid);
+            $redis->expire('new_increase_channel_'.$dayData,3600*24*7);
+        }else{ //自来量
+            $redis->sAdd('new_increase_auto_'.$dayData,$uid);
+            $redis->expire('new_increase_auto_'.$dayData,3600*24*7);
+        }
+
     }
 
 }
