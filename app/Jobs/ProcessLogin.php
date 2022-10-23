@@ -89,7 +89,8 @@ class ProcessLogin implements ShouldQueue
             if(isset($keepUser[$keyDate])){
                 $redis->hIncrBy($statistic_day_key,'keep_'.$i,1);
                 //首页统计
-                $i==1 && $redis->incr('total_keep_1_'.$dayData) && $redis->expire('total_keep_1_'.$dayData,86400);
+                //$i==1 && $redis->incr('total_keep_1_'.$dayData) && $redis->expire('total_keep_1_'.$dayData,86400);
+                $i==1 && $redis->zAdd('hj_keep_1_'.$dayData,time(),$uid) && $redis->expire('hj_keep_1_'.$dayData,3600*24*7);
             }
         }
 
@@ -110,21 +111,24 @@ class ProcessLogin implements ShouldQueue
         DB::table('users')->where('id',$uid)->increment('login_numbers',1,$updateData);
         LoginLog::query()->create($this->loginLogData);
         //首页统计
-        $redis->sAdd('active_user_'.$dayData,$uid);
-        $redis->expire('active_user_'.$dayData,3600*24*7);
         $nowTime = time();
+        /*$redis->sAdd('active_user_'.$dayData,$uid);
+        $redis->expire('active_user_'.$dayData,3600*24*7);*/
+        $redis->zAdd('at_user_'.$dayData,$nowTime,$uid);
+        $redis->expire('at_user_'.$dayData,3600*24*7);
+
         if($this->loginLogData['type']==1){//新用户
             $redis->zAdd('new_increase_'.$dayData,$nowTime,$uid);
             $redis->expire('new_increase_'.$dayData,3600*24*7);
 
             if($this->device_system==1 || $this->device_system==3){
-                $redis->sAdd('new_increase_ios_'.$dayData,$uid);
-                $redis->expire('new_increase_ios_'.$dayData,3600*24*7);
+                $redis->zAdd('new_inc_ios_'.$dayData,$nowTime,$uid);
+                $redis->expire('new_inc_ios_'.$dayData,3600*24*7);
             }
 
             if($this->device_system==2){
-                $redis->sAdd('new_increase_android_'.$dayData,$uid);
-                $redis->expire('new_increase_android_'.$dayData,3600*24*7);
+                $redis->zAdd('new_inc_android_'.$dayData,$nowTime,$uid);
+                $redis->expire('new_inc_android_'.$dayData,3600*24*7);
             }
 
         }

@@ -151,8 +151,8 @@ class ProcessStatisticsChannelByDay implements ShouldQueue
                 break;
         }
 
+        $redis->zAdd('day_inc_rec_user_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+        $redis->expire('day_inc_rec_user_'.$dayData,3600*24*7);
 
-        $redis->sAdd('day_inc_recharge_user_'.$dayData,$this->orderInfo->uid);
-        $redis->expire('day_inc_recharge_user_'.$dayData,3600*24*7);
     }
 }

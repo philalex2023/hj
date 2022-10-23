@@ -270,8 +270,12 @@ class VideoShortController extends Controller
                 $sync = $sync>0 ? $sync : 2;
                 $resourceDomain = self::getDomain($sync);
                 //统计在线
-                $videoRedis->sAdd('onlineUser_'.date('Ymd'),$user->id);
-                $videoRedis->expire('onlineUser',3600*24);
+                /*$videoRedis->sAdd('onlineUser_'.date('Ymd'),$user->id);
+                $videoRedis->expire('onlineUser',3600*24);*/
+                $dayData = date('Ymd');
+                $videoRedis->zAdd('online_user_'.$dayData,time(),$user->id);
+                $videoRedis->expire('online_user_'.$dayData,3600*24*7);
+
                 //是否收藏
                 $one['is_collect'] = $videoRedis->zScore('shortCollects_'.$user->id, $one['id']) ? 1 : 0;
                 $one['url'] = $resourceDomain  .$one['url'];

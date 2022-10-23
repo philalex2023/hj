@@ -318,8 +318,11 @@ class CommContentController extends Controller
             $result['user_id'] = $communityBbsList['user_id'] ?? 0;
             //统计在线
             $videoRedis = $this->redis('video');
-            $videoRedis->sAdd('onlineUser_'.date('Ymd'),$uid);
-            $videoRedis->expire('onlineUser',3600*24);
+            /*$videoRedis->sAdd('onlineUser_'.date('Ymd'),$uid);
+            $videoRedis->expire('onlineUser',3600*24);*/
+            $dayData = date('Ymd');
+            $videoRedis->zAdd('online_user_'.$dayData,time(),$uid);
+            $videoRedis->expire('online_user_'.$dayData,3600*24*7);
             // 增加点击数
             CommBbs::query()->where('community_bbs.id', $id)->increment('views');
             //Log::info('==userLocationName1==',[$user]);

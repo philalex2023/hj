@@ -21,21 +21,24 @@ trait DayStatisticTrait
             $t = strtotime('-'.$d.' day');
             $starTime = strtotime(date('Y-m-d 00:00:00',$t));
             $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
-            dump('end_time:'.$dayEndTime);
         }
 
         $hourAgo = strtotime('-1 hour');
 
-        $hashData['active_user'] = $redis->sCard('active_user_'.$dayData);
-        $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);
+//        $hashData['active_user'] = $redis->sCard('at_user_'.$dayData);
+//        $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);
+        $hashData['active_user'] = $redis->zCount('at_user_'.$dayData,$starTime,$dayEndTime);
+        $hashData['online_user'] = $redis->zCount('online_user_'.$dayData,$starTime,$dayEndTime);
 
-        $hashData['keep_1'] = $redis->get('total_keep_1_'.$dayData);
+//        $hashData['keep_1'] = $redis->get('hj_keep_1_'.$dayData);
+        $hashData['keep_1'] = $redis->zCount('hj_keep_1_'.$dayData,$starTime,$dayEndTime);
 
         $hashData['hour_inc_user'] = $redis->zCount('new_increase_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_inc_user'] = $redis->zCount('new_increase_'.$dayData,$starTime,$dayEndTime);
 
-        $hashData['day_inc_android_user'] = $redis->sCard('new_increase_android_'.$dayData);
-        $hashData['day_inc_ios_user'] = $redis->sCard('new_increase_ios_'.$dayData);
+        $hashData['day_inc_android_user'] = $redis->zCount('new_inc_android_'.$dayData,$starTime,$dayEndTime);
+        $hashData['day_inc_ios_user'] = $redis->zCount('new_inc_ios_'.$dayData,$starTime,$dayEndTime);
+
 
         $hashData['hour_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$hourAgo,$nowTime));
         $hashData['day_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$starTime,$dayEndTime));
@@ -51,7 +54,8 @@ trait DayStatisticTrait
 
         $hashData['day_total_recharge'] = round($hashData['day_new_user_recharge'] + $hashData['day_old_user_recharge'],2);
 
-        $hashData['day_inc_recharge_user'] = $redis->sCard('day_inc_recharge_user_'.$dayData);
+//        $hashData['day_inc_recharge_user'] = $redis->sCard('day_inc_rec_user_'.$dayData);
+        $hashData['day_inc_recharge_user'] = $redis->zCount('day_inc_rec_user_'.$dayData,$starTime,$dayEndTime);
         $hashData['day_inc_arpu'] = $hashData['day_inc_user']==0 ? 0 : round($hashData['day_total_recharge']/$hashData['day_inc_user'],2);
 
         $hashData['hour_success_order'] = $redis->zCount('vip_recharge_'.$dayData,$hourAgo,$nowTime) + $redis->zCount('gold_recharge_'.$dayData,$hourAgo,$nowTime);
@@ -66,7 +70,8 @@ trait DayStatisticTrait
             $hour_lp_access = end($hourLpAccessArr)-$hourLpAccessArr[0];
         }
         $hashData['hour_lp_access'] = $hour_lp_access;
-        $hashData['day_lp_access'] = $redis->get('lp_ac_inc_'.$dayData);
+//        $hashData['day_lp_access'] = $redis->get('lp_ac_'.$dayData);
+        $hashData['day_lp_access'] = $redis->zCount('lp_ac_'.$dayData,$starTime,$dayEndTime);
 
         $hashData['hour_android_recharge'] = $this->sumRangeValue($redis->zRangeByScore('android_recharge_'.$dayData,$hourAgo,$nowTime));
         $hashData['day_android_recharge'] = $this->sumRangeValue($redis->zRangeByScore('android_recharge_'.$dayData,$starTime,$dayEndTime));
@@ -80,7 +85,8 @@ trait DayStatisticTrait
         $hashData['hour_inc_auto_user'] = $redis->zCount('new_inc_auto_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_inc_auto_user'] = $redis->zCount('new_inc_auto_'.$dayData,$starTime,$dayEndTime);
 
-        $hashData['day_channel_deduction_increase_user'] = $redis->get('channel_deduction_increase_user_'.$dayData);
+//        $hashData['day_channel_deduction_increase_user'] = $redis->get('ch_deduction_increase_user_'.$dayData);
+        $hashData['day_channel_deduction_increase_user'] = $redis->zCount('ch_deduction_increase_user_'.$dayData,$starTime,$dayEndTime);
 
         $day_up_master_income = DB::table('up_income_day')
             ->where('at_time','>=',$starTime)
