@@ -145,6 +145,7 @@ class YKGameController extends PayBaseController implements Pay
             }
             $return = 'success';
         } catch (Exception $e) {
+            Order::query()->where('number',$postResp['orderNo'])->update(['status'=>3]);
             Log::info($this->payFlag .'_error_callback===', ['code' => $e->getCode(), 'msg' => $e->getMessage()]);//三方返回参数日志
             DB::rollBack();
             $return = 'failure';

@@ -113,6 +113,12 @@
                                 <div class="layui-card-body">{{ $data['hour_inc_auto_user'] }} / {{ $data['day_inc_auto_user'] }}</div>
                             </div>
                         </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-card">
+                                <div class="layui-card-header"> 渠道扣量后新增</div>
+                                <div class="layui-card-body">{{ $data['day_channel_deduction_increase_user'] }}</div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

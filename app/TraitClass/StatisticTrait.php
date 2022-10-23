@@ -107,6 +107,10 @@ trait StatisticTrait
                     }
                     if($stepValue>0){
                         $redis->hIncrBy($channel_day_statistics_key,'install',$stepValue);
+                        //首页-扣量后新增
+                        $dayData = date('Ymd');
+                        $redis->incr('channel_deduction_increase_user_'.$dayData);
+                        $redis->expire('channel_deduction_increase_user_'.$dayData,3600*24*7);
                     }
                     $redis->hIncrBy($channel_day_statistics_key,'install_real',1);
                 }else{
