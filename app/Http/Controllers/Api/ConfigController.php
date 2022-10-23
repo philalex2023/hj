@@ -42,7 +42,7 @@ class ConfigController extends Controller
         $size = 100;
         $page = $request->get('page',1);
         $offset = ($page-1)*$size;
-        $source = ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','updated_at'];
+        $source = ['id','is_top','name','gold','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','updated_at'];
         $searchParams = [
             'index' => 'video_index',
             'body' => [
@@ -50,13 +50,13 @@ class ConfigController extends Controller
                 'size' => $size,
                 'from' => $offset,
                 '_source' => $source,
-                /*'query' => [
+                'query' => [
                     'bool'=>[
                         'must' => [
                             ['term' => ['type'=>4]],
                         ]
                     ]
-                ],*/
+                ],
             ],
         ];
 
