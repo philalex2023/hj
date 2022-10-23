@@ -9,13 +9,20 @@ trait DayStatisticTrait
 {
     use PHPRedisTrait;
 
-    public function getDayStatisticHashData(): array
+    public function getDayStatisticHashData($d=0): array
     {
         $redis = $this->redis();
         $dayData = date('Ymd');
         $nowTime = time();
-        $dayEndTime = strtotime(date('Y-m-d 23:59:59'));
+
         $starTime = strtotime(date('Y-m-d'));
+        $dayEndTime = strtotime(date('Y-m-d 23:59:59'));
+        if($d>0){
+            $t = strtotime('-'.$d.' day');
+            $starTime = strtotime(date('Y-m-d 00:00:00',$t));
+            $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
+        }
+
         $hourAgo = strtotime('-1 hour');
 
         $hashData['active_user'] = $redis->sCard('active_user_'.$dayData);

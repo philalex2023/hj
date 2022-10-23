@@ -41,7 +41,7 @@ class SaveNewStatisticsDataFromRedis extends Command
      */
     public function handle(): int
     {
-        $hashData = $this->getDayStatisticHashData();
+        $hashData = $this->getDayStatisticHashData(1);
         $at_time = strtotime(date('Y-m-d'));
 
         $data = [
@@ -69,14 +69,14 @@ class SaveNewStatisticsDataFromRedis extends Command
             ['at_time'=>$at_time],
         ];
 
-        dump($data);
-        /*$exists = DB::table('hj_statistics_day')->where('at_time',$at_time)->exists();
+        //dump($data);
+        $exists = DB::table('hj_statistics_day')->where('at_time',$at_time)->exists();
         if(!$exists){
             DB::table('hj_statistics_day')->where('at_time',$at_time)->insert([$data]);
         }else{
             DB::table('hj_statistics_day')->where('at_time',$at_time)->update([$data]);
         }
-        $this->info('######执行成功######');*/
+        $this->info('######执行成功######');
         return 0;
     }
 }
