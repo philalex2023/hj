@@ -40,20 +40,27 @@ class ConfigController extends Controller
             ]);
         }*/
         $size = 100;
-        $page = $request->get('page',1);
-        $offset = ($page-1)*$size;
+        $id = $request->get('id');
+        if(!$id){
+            return response()->json([
+                'state'=>401,
+                'data'=>[]
+            ]);
+        }
+//        $offset = ($page-1)*$size;
         $source = ['id','is_top','name','gold','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','updated_at'];
         $searchParams = [
             'index' => 'video_index',
             'body' => [
                 'track_total_hits' => true,
                 'size' => $size,
-                'from' => $offset,
+//                'from' => $offset,
                 '_source' => $source,
                 'query' => [
                     'bool'=>[
                         'must' => [
                             ['term' => ['type'=>4]],
+                            ['range' => ['gt'=>$id]],
                         ]
                     ]
                 ],
