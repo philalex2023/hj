@@ -21,7 +21,6 @@ Route::group([
 ],function (){
     Route::get('config', 'ConfigController@ack');   //配置
     Route::post('login', 'AuthController@login');
-    Route::get('pullOriginVideo', 'ConfigController@pullOriginVideo');
 });
 
 $payNames = [
@@ -51,6 +50,7 @@ Route::group([
         Route::post('aes_en', 'TestController@aes_en');
         Route::post('aes_de', 'TestController@aes_de');
     }
+    Route::get('pullOriginVideo', 'ConfigController@pullOriginVideo');
     foreach ($payNames as $n){
         Route::post('callback'.$n, $n.'Controller@callback');  //大白鲨支付回调
     }
