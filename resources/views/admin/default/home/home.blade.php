@@ -83,6 +83,12 @@
                                 <div class="layui-card-body">{{ $data['day_total_recharge'] }}</div>
                             </div>
                         </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-card">
+                                <div class="layui-card-header"> 落地页访问量(单小时和总的)</div>
+                                <div class="layui-card-body">{{ $data['hour_lp_access'] }} / {{ $data['day_lp_access'] }}</div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

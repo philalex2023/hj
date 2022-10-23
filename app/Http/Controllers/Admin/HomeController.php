@@ -59,6 +59,14 @@ class HomeController extends BaseController
         $hashData['hour_total_order'] = $redis->zCount('day_pull_order_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_total_order'] = $redis->zCount('day_pull_order_'.$dayData,$starTime,$dayEndTime);
 
+        $hourLpAccessArr = $redis->zRangeByScore('lp_ac_'.$dayData,$hourAgo,$nowTime);
+        $hour_lp_access = 0;
+        if(!empty($hourLpAccessArr)){
+            $hour_lp_access = end($hourLpAccessArr)-$hourLpAccessArr[0];
+        }
+        $hashData['hour_lp_access'] = $hour_lp_access;
+        $hashData['day_lp_access'] = $redis->get('lp_ac_inc_'.$dayData);
+
         return $this->display(['data'=> $hashData]);
     }
 
