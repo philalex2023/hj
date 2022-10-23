@@ -77,7 +77,7 @@ class HomeController extends BaseController
         $hashData['day_inc_channel_user'] = $redis->zCount('new_inc_channel_'.$dayData,$starTime,$dayEndTime);
 
         $hashData['hour_inc_auto_user'] = $redis->zCount('new_inc_auto_'.$dayData,$hourAgo,$nowTime);
-        $hashData['day_inc_auto_user'] = $redis->zCount('new_incr_auto_'.$dayData,$starTime,$dayEndTime);
+        $hashData['day_inc_auto_user'] = $redis->zCount('new_inc_auto_'.$dayData,$starTime,$dayEndTime);
 
         return $this->display(['data'=> $hashData]);
     }
