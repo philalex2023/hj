@@ -112,8 +112,8 @@ class ProcessLogin implements ShouldQueue
         //首页统计
         $redis->sAdd('active_user_'.$dayData,$uid);
         $redis->expire('active_user_'.$dayData,3600*24*7);
+        $nowTime = time();
         if($this->loginLogData['type']==1){//新用户
-            $nowTime = time();
             $redis->zAdd('new_increase_'.$dayData,$nowTime,$uid);
             $redis->expire('new_increase_'.$dayData,3600*24*7);
 
@@ -130,11 +130,11 @@ class ProcessLogin implements ShouldQueue
         }
 
         if($this->loginLogData['channel_id'] > 0){ //渠道量
-            $redis->sAdd('new_increase_channel_'.$dayData,$uid);
-            $redis->expire('new_increase_channel_'.$dayData,3600*24*7);
+            $redis->zAdd('new_inc_channel_'.$dayData,$nowTime,$uid);
+            $redis->expire('new_inc_channel_'.$dayData,3600*24*7);
         }else{ //自来量
-            $redis->sAdd('new_increase_auto_'.$dayData,$uid);
-            $redis->expire('new_increase_auto_'.$dayData,3600*24*7);
+            $redis->zAdd('new_inc_auto_'.$dayData,$nowTime,$uid);
+            $redis->expire('new_inc_auto_'.$dayData,3600*24*7);
         }
 
     }
