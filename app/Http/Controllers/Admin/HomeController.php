@@ -67,6 +67,12 @@ class HomeController extends BaseController
         $hashData['hour_lp_access'] = $hour_lp_access;
         $hashData['day_lp_access'] = $redis->get('lp_ac_inc_'.$dayData);
 
+        $hashData['hour_android_recharge'] = $this->sumRangeValue($redis->zRangeByScore('android_recharge_'.$dayData,$hourAgo,$nowTime));
+        $hashData['day_android_recharge'] = $this->sumRangeValue($redis->zRangeByScore('android_recharge_'.$dayData,$starTime,$dayEndTime));
+
+        $hashData['hour_ios_recharge'] = $this->sumRangeValue($redis->zRangeByScore('ios_recharge_'.$dayData,$hourAgo,$nowTime));
+        $hashData['day_ios_recharge'] = $this->sumRangeValue($redis->zRangeByScore('ios_recharge_'.$dayData,$starTime,$dayEndTime));
+
         return $this->display(['data'=> $hashData]);
     }
 

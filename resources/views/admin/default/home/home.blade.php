@@ -89,6 +89,18 @@
                                 <div class="layui-card-body">{{ $data['hour_lp_access'] }} / {{ $data['day_lp_access'] }}</div>
                             </div>
                         </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-card">
+                                <div class="layui-card-header"> 安卓充值(小时/日)</div>
+                                <div class="layui-card-body">{{ $data['hour_android_recharge'] }} / {{ $data['day_android_recharge'] }}</div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-card">
+                                <div class="layui-card-header"> ios充值(小时/日)</div>
+                                <div class="layui-card-body">{{ $data['hour_ios_recharge'] }} / {{ $data['day_ios_recharge'] }}</div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>
