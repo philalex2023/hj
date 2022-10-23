@@ -119,6 +119,12 @@
                                 <div class="layui-card-body">{{ $data['day_channel_deduction_increase_user'] }}</div>
                             </div>
                         </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-card">
+                                <div class="layui-card-header"> up主分润(日)</div>
+                                <div class="layui-card-body">{{ $data['day_up_master_income'] }}</div>
+                            </div>
+                        </div>
 
                     </div>
                 </div>

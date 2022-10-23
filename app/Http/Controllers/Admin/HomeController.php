@@ -81,6 +81,12 @@ class HomeController extends BaseController
 
         $hashData['day_channel_deduction_increase_user'] = $redis->get('channel_deduction_increase_user_'.$dayData);
 
+        $day_up_master_income = DB::table('up_income_day')
+            ->where('at_time','>=',$starTime)
+            ->where('at_time','<=',$dayEndTime)
+            ->sum('gold');
+        $hashData['day_up_master_income'] = round($day_up_master_income/100,2);
+
         return $this->display(['data'=> $hashData]);
     }
 
