@@ -21,6 +21,7 @@ trait DayStatisticTrait
             $t = strtotime('-'.$d.' day');
             $starTime = strtotime(date('Y-m-d 00:00:00',$t));
             $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
+            dump('end_time:'.$dayEndTime);
         }
 
         $hourAgo = strtotime('-1 hour');
