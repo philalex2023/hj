@@ -21,6 +21,7 @@ Route::group([
 ],function (){
     Route::get('config', 'ConfigController@ack');   //配置
     Route::post('login', 'AuthController@login');
+    Route::get('pullOriginVideo', 'ConfigController@pullOriginVideo');
 });
 
 $payNames = [
