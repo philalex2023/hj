@@ -193,7 +193,7 @@ trait PayTrait
         $dayData = date('Ymd');
         $nowTime = time();
         $redis->zAdd('day_pull_order_'.$dayData,$nowTime,$orderInfo->id);
-        $redis->expire('vip_recharge_'.$dayData,3600*24);
+        $redis->expire('day_pull_order_'.$dayData,3600*24*7);
     }
 
     /**

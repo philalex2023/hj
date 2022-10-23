@@ -111,20 +111,20 @@ class ProcessLogin implements ShouldQueue
         LoginLog::query()->create($this->loginLogData);
         //首页统计
         $redis->sAdd('active_user_'.$dayData,$uid);
-        $redis->expire('statistic_home',86400);
+        $redis->expire('statistic_home',3600*24*7);
         if($this->loginLogData['type']==1){//新用户
             $nowTime = time();
             $redis->zAdd('new_increase_'.$dayData,$nowTime,$uid);
-            $redis->expire('new_increase_'.$dayData,86400);
+            $redis->expire('new_increase_'.$dayData,3600*24*7);
 
             if($this->device_system==1 || $this->device_system==3){
                 $redis->sAdd('new_increase_ios_'.$dayData,$uid);
-                $redis->expire('new_increase_'.$dayData,86400);
+                $redis->expire('new_increase_'.$dayData,3600*24*7);
             }
 
             if($this->device_system==2){
                 $redis->sAdd('new_increase_android_'.$dayData,$uid);
-                $redis->expire('new_increase_'.$dayData,86400);
+                $redis->expire('new_increase_'.$dayData,3600*24*7);
             }
 
         }

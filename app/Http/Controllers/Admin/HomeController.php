@@ -21,6 +21,7 @@ class HomeController extends BaseController
         $redis = $this->redis();
         $dayData = date('Ymd');
         $nowTime = time();
+        $dayEndTime = strtotime(date('Y-m-d 23:59:59'));
         $starTime = strtotime(date('Y-m-d'));
         $hourAgo = strtotime('-1 hour');
 
@@ -30,22 +31,22 @@ class HomeController extends BaseController
         $hashData['keep_1'] = $redis->get('total_keep_1_'.$dayData);
 
         $hashData['hour_inc_user'] = $redis->zCount('new_increase_'.$dayData,$hourAgo,$nowTime);
-        $hashData['day_inc_user'] = $redis->zCount('new_increase_'.$dayData,$starTime,$nowTime);
+        $hashData['day_inc_user'] = $redis->zCount('new_increase_'.$dayData,$starTime,$dayEndTime);
 
         $hashData['day_inc_android_user'] = $redis->sCard('new_increase_android_'.$dayData);
         $hashData['day_inc_ios_user'] = $redis->sCard('new_increase_ios_'.$dayData);
 
         $hashData['hour_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$hourAgo,$nowTime));
-        $hashData['day_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$starTime,$nowTime));
+        $hashData['day_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$starTime,$dayEndTime));
 
         $hashData['hour_vip_recharge'] = $this->sumRangeValue($redis->zRangeByScore('vip_recharge_'.$dayData,$hourAgo,$nowTime));
-        $hashData['day_vip_recharge'] = $this->sumRangeValue($redis->zRangeByScore('vip_recharge_'.$dayData,$starTime,$nowTime));
+        $hashData['day_vip_recharge'] = $this->sumRangeValue($redis->zRangeByScore('vip_recharge_'.$dayData,$starTime,$dayEndTime));
 
         $hashData['hour_new_user_recharge'] = $this->sumRangeValue($redis->zRangeByScore('new_user_recharge_'.$dayData,$hourAgo,$nowTime));
-        $hashData['day_new_user_recharge'] = $this->sumRangeValue($redis->zRangeByScore('new_user_recharge_'.$dayData,$starTime,$nowTime));
+        $hashData['day_new_user_recharge'] = $this->sumRangeValue($redis->zRangeByScore('new_user_recharge_'.$dayData,$starTime,$dayEndTime));
 
         $hashData['hour_old_user_recharge'] = $this->sumRangeValue($redis->zRangeByScore('old_user_recharge_'.$dayData,$hourAgo,$nowTime));
-        $hashData['day_old_user_recharge'] = $this->sumRangeValue($redis->zRangeByScore('old_user_recharge_'.$dayData,$starTime,$nowTime));
+        $hashData['day_old_user_recharge'] = $this->sumRangeValue($redis->zRangeByScore('old_user_recharge_'.$dayData,$starTime,$dayEndTime));
 
         $hashData['day_total_recharge'] = round($hashData['day_new_user_recharge'] + $hashData['day_old_user_recharge'],2);
 
@@ -53,10 +54,10 @@ class HomeController extends BaseController
         $hashData['day_inc_arpu'] = $hashData['day_inc_user']==0 ? 0 : round($hashData['day_total_recharge']/$hashData['day_inc_user'],2);
 
         $hashData['hour_success_order'] = $redis->zCount('vip_recharge_'.$dayData,$hourAgo,$nowTime) + $redis->zCount('gold_recharge_'.$dayData,$hourAgo,$nowTime);
-        $hashData['day_success_order'] = $redis->zCount('vip_recharge_'.$dayData,$starTime,$nowTime) + $redis->zCount('gold_recharge_'.$dayData,$starTime,$nowTime);
+        $hashData['day_success_order'] = $redis->zCount('vip_recharge_'.$dayData,$starTime,$nowTime) + $redis->zCount('gold_recharge_'.$dayData,$starTime,$dayEndTime);
 
         $hashData['hour_total_order'] = $redis->zCount('day_pull_order_'.$dayData,$hourAgo,$nowTime);
-        $hashData['day_total_order'] = $redis->zCount('day_pull_order_'.$dayData,$starTime,$nowTime);
+        $hashData['day_total_order'] = $redis->zCount('day_pull_order_'.$dayData,$starTime,$dayEndTime);
 
         return $this->display(['data'=> $hashData]);
     }
