@@ -25,10 +25,11 @@ trait DayStatisticTrait
 
         $hourAgo = strtotime('-1 hour');
 
+        $videoRedis = $this->redis('video');
 //        $hashData['active_user'] = $redis->sCard('at_user_'.$dayData);
 //        $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);
         $hashData['active_user'] = $redis->zCount('at_user_'.$dayData,$starTime,$dayEndTime);
-        $hashData['online_user'] = $redis->zCount('online_user_'.$dayData,$starTime,$dayEndTime);
+        $hashData['online_user'] = $videoRedis->zCount('online_user_'.$dayData,$starTime,$dayEndTime);
 
 //        $hashData['keep_1'] = $redis->get('hj_keep_1_'.$dayData);
         $hashData['keep_1'] = $redis->zCount('hj_keep_1_'.$dayData,$starTime,$dayEndTime);
