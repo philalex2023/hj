@@ -115,25 +115,23 @@ class HomeController extends Controller
 
                 }*/
 
-                /*$lock = Cache::lock('homeLists_lock');
+                $topicJson = $redis->get('topic_cid_'.$cid);
+                if(!$topicJson){
+                    $lock = Cache::lock('homeLists_lock');
                     if(!$lock->get()){
                         Log::info('index_list',[$sectionKey]);
                         return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
-                    }*/
-
-                /**/
-
-                $topicJson = $redis->get('topic_cid_'.$cid);
-                if(!$topicJson){
+                    }
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
+                    $lock->release();
                 }else{
                     $topicsArr = json_decode($topicJson,true);
                     $offset = ($page-1)*$perPage;
                     $topics = array_slice($topicsArr,$offset,$perPage);
                     $res['hasMorePages'] = count($topics) > $perPage*$page;
-                    Log::info('homelistFast',['ok',$cid]);
+                    //Log::info('homelistFast',['ok',$cid]);
                 }
 
 //
@@ -208,7 +206,7 @@ class HomeController extends Controller
                 /*$redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
                 $redis->expire($sectionKey,600);*/
                 $redis->del('homeLists_fresh');
-                //$lock->release();
+
 
                 if(isset($res['list'])){
                     $domain = env('RESOURCE_DOMAIN2');
