@@ -7,6 +7,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\TraitClass\ApiParamsTrait;
+use App\TraitClass\EsTrait;
 use App\TraitClass\IpTrait;
 use App\TraitClass\LoginTrait;
 use App\TraitClass\MemberCardTrait;
@@ -26,7 +27,7 @@ use \App\TraitClass\PHPRedisTrait;
 
 class UserController extends Controller
 {
-    use MemberCardTrait,SmsTrait,LoginTrait,VideoTrait,PHPRedisTrait,IpTrait,ApiParamsTrait;
+    use MemberCardTrait,SmsTrait,LoginTrait,VideoTrait,PHPRedisTrait,IpTrait,ApiParamsTrait,EsTrait;
 
     public function set(Request $request): JsonResponse
     {
@@ -258,10 +259,9 @@ class UserController extends Controller
 
             $ids = [...$videoIds,...$shortVideoIds];
 
-            $videoList = DB::table('video')
-                //->select('id','name','gold','cat','tag_kv','sync','title','duration','type','restricted','cover_img','views','updated_at','hls_url','dash_url','comments','likes')
-                ->select($this->videoFields)
-                ->whereIn('id',$ids)->get()->toArray();
+//            $videoList = DB::table('video')->select($this->videoFields)->whereIn('id',$ids)->get()->toArray();
+            $videoList = $this->getVideoByIdsForEs($ids,$this->videoFields);
+
             foreach ($videoList as &$iv){
                 $iv = (array)$iv;
                 $iv['usage'] = 1;
@@ -321,14 +321,16 @@ class UserController extends Controller
                 $videoIds = $vidArr ? array_keys($vidArr) : [];
 
                 $offset = ($page-1)*$perPage;
-                $video = DB::table('video')->whereIn('id',$videoIds)->get($this->videoFields)->toArray();
+//                $video = DB::table('video')->whereIn('id',$videoIds)->get($this->videoFields)->toArray();
+                $video = $this->getVideoByIdsForEs($videoIds,$this->videoFields);
 
                 foreach ($video as &$r){
-                    $r = (array)$r;
+//                    $r = (array)$r;
                     $r['usage'] = 1;
                     $r['score'] = $vidArr[$r['id']];
                     $r['updated_at'] = date('Y-m-d H:i:s',$r['score']);
                 }
+
                 //短视频
                 $view_history_key_short = 'viewShortHistory_'.$user->id;
                 $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
