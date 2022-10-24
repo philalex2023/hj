@@ -12,7 +12,6 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Jobs\ProcessVideoViewTimes;
 use App\Models\Config;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
