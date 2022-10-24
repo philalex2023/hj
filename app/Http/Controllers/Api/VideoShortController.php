@@ -273,8 +273,8 @@ class VideoShortController extends Controller
                 /*$videoRedis->sAdd('onlineUser_'.date('Ymd'),$user->id);
                 $videoRedis->expire('onlineUser',3600*24);*/
                 $dayData = date('Ymd');
-                $videoRedis->zAdd('online_user_'.$dayData,time(),$user->id);
-                $videoRedis->expire('online_user_'.$dayData,3600*24*7);
+                $redis->zAdd('online_user_'.$dayData,time(),$user->id);
+                $redis->expire('online_user_'.$dayData,3600*24*7);
 
                 //是否收藏
                 $one['is_collect'] = $videoRedis->zScore('shortCollects_'.$user->id, $one['id']) ? 1 : 0;

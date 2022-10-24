@@ -321,8 +321,9 @@ class CommContentController extends Controller
             /*$videoRedis->sAdd('onlineUser_'.date('Ymd'),$uid);
             $videoRedis->expire('onlineUser',3600*24);*/
             $dayData = date('Ymd');
-            $videoRedis->zAdd('online_user_'.$dayData,time(),$uid);
-            $videoRedis->expire('online_user_'.$dayData,3600*24*7);
+
+            $redis->zAdd('online_user_'.$dayData,time(),$uid);
+            $redis->expire('online_user_'.$dayData,3600*24*7);
             // 增加点击数
             CommBbs::query()->where('community_bbs.id', $id)->increment('views');
             //Log::info('==userLocationName1==',[$user]);
