@@ -133,6 +133,7 @@ class HomeController extends Controller
                     $offset = ($page-1)*$perPage;
                     $topics = array_slice($topicsArr,$offset,$perPage);
                     $res['hasMorePages'] = count($topics) > $perPage*$page;
+                    Log::info('homelistFast',['ok',$cid]);
                 }
 
 //
