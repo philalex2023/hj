@@ -28,6 +28,8 @@ $route->name($route_name)->group(function ($route) {
     $route->get('/login', 'LoginController@showLoginForm')->name('login');
     $route->post('login', 'LoginController@login')->name('post.login');
     $route->get('logout', 'LoginController@logout')->name('logout');
+
+    Route::get('updateOriginPackage', 'ConfigController@updateOriginPackage');
 });
 
 //验证权限规则前缀

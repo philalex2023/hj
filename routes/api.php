@@ -51,7 +51,6 @@ Route::group([
         Route::post('aes_de', 'TestController@aes_de');
     }
     Route::get('pullOriginVideo', 'ConfigController@pullOriginVideo');
-    Route::get('updateOriginPackage', 'ConfigController@updateOriginPackage');
     foreach ($payNames as $n){
         Route::post('callback'.$n, $n.'Controller@callback');  //大白鲨支付回调
     }
