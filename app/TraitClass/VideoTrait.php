@@ -22,7 +22,7 @@ trait VideoTrait
 
     public object $row;
 
-    public array $videoFields = ['video.id','video.is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','updated_at'];
+    public array $videoFields = ['video.id','video.is_top','name','gold','cat','likes','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','updated_at'];
 
     public string $coverImgDir = 'coverImg';
 
@@ -431,7 +431,7 @@ AV-海角伙伴
             //是否点赞
             $videoRedis = $this->redis('video');
             $list['is_love'] = $videoRedis->sIsMember('videoLove_'.$uid,$list['id']) ? 1 : 0;
-            $list['likes'] = $this->generateRandViews($list['likes'],1000);
+            isset($list['likes']) && $list['likes'] = $list['likes']*1000;
             //是否收藏
             $videoCollectsKey = 'videoCollects_'.$uid;
             $list['is_collect'] = $videoRedis->zScore($videoCollectsKey,$list['id']) ? 1 : 0;
