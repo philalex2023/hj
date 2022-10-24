@@ -109,9 +109,9 @@ trait StatisticTrait
                         $redis->hIncrBy($channel_day_statistics_key,'install',$stepValue);
                         //首页-扣量后新增
                         $dayData = date('Ymd');
-                        $inc = $redis->incr('ch_deduction_increase_user_'.$dayData);
-                        $redis->zAdd('ch_deduction_increase_user_'.$dayData,time(),$inc);
-                        $redis->expire('ch_deduction_increase_user_'.$dayData,3600*24*7);
+                        $inc = $redis->incr('ch_deduction_inc_val_'.$dayData);
+                        $redis->zAdd('ch_deduction_inc_user_'.$dayData,time(),$inc);
+                        $redis->expire('ch_deduction_inc_user_'.$dayData,3600*24*7);
                     }
                     $redis->hIncrBy($channel_day_statistics_key,'install_real',1);
                 }else{

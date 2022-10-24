@@ -39,7 +39,6 @@ trait DayStatisticTrait
         $hashData['day_inc_android_user'] = $redis->zCount('new_inc_android_'.$dayData,$starTime,$dayEndTime);
         $hashData['day_inc_ios_user'] = $redis->zCount('new_inc_ios_'.$dayData,$starTime,$dayEndTime);
 
-
         $hashData['hour_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$hourAgo,$nowTime));
         $hashData['day_gold_recharge'] = $this->sumRangeValue($redis->zRangeByScore('gold_recharge_'.$dayData,$starTime,$dayEndTime));
 
@@ -86,7 +85,7 @@ trait DayStatisticTrait
         $hashData['day_inc_auto_user'] = $redis->zCount('new_inc_auto_'.$dayData,$starTime,$dayEndTime);
 
 //        $hashData['day_channel_deduction_increase_user'] = $redis->get('ch_deduction_increase_user_'.$dayData);
-        $hashData['day_channel_deduction_increase_user'] = $redis->zCount('ch_deduction_increase_user_'.$dayData,$starTime,$dayEndTime);
+        $hashData['day_channel_deduction_increase_user'] = $redis->zCount('ch_deduction_inc_user_'.$dayData,$starTime,$dayEndTime);
 
         $day_up_master_income = DB::table('up_income_day')
             ->where('at_time','>=',$starTime)
