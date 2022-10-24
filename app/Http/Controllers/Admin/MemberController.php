@@ -2,15 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Controller;
-use App\Jobs\ProcessMember;
 use App\Models\MemberCard;
 use App\Models\User;
 use App\Services\UiService;
 use App\TraitClass\ChannelTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PayTrait;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -459,8 +456,7 @@ class MemberController extends BaseCurlController
     public function afterSaveSuccessEvent($model, $id)
     {
         Cache::forget('cachedUser.'.$id);
-        $job = new ProcessMember();
-        $this->dispatch($job->onQueue('default'));
+        Cache::forever('officialUsers', User::query()->where('is_office',1)->select('id','nickname as name')->get());
         return $model;
     }
 
