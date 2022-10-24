@@ -17,12 +17,24 @@ use App\Models\Config;
 use App\Models\User;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 
 class ConfigController extends BaseCurlController
 {
     //去掉公共模板
     public $commonBladePath = '';
     public $pageName = '基本配置';
+
+    public function updateOriginPackage(Request $request): int
+    {
+        $promotion_code = $request->get('promotion_code');
+        if(!$promotion_code){
+            return 403;
+        }
+        //生成对应的包文件
+        Artisan::call('general_package '.$promotion_code);
+        return 0;
+    }
 
     public function indexShareData()
     {
