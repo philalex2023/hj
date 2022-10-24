@@ -320,12 +320,10 @@ class UserController extends Controller
                 $vidArr = $videoRedis->zRevRange($view_history_key,0,-1,true);
                 $videoIds = $vidArr ? array_keys($vidArr) : [];
 
-                $offset = ($page-1)*$perPage;
-//                $video = DB::table('video')->whereIn('id',$videoIds)->get($this->videoFields)->toArray();
+
                 $video = $this->getVideoByIdsForEs($videoIds,$this->videoFields);
 
                 foreach ($video as &$r){
-//                    $r = (array)$r;
                     $r['usage'] = 1;
                     $r['score'] = $vidArr[$r['id']];
                     $r['updated_at'] = date('Y-m-d H:i:s',$r['score']);
@@ -336,16 +334,17 @@ class UserController extends Controller
                 $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
                 //Log::info('test==',$vidArrShort);
                 $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
-                $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray();
+                $videoShort = $this->getVideoByIdsForEs($videoShortIds,$this->videoFields);
                 foreach ($videoShort as &$sr){
-                    $sr = (array)$sr;
                     $sr['usage'] = 2;
                     $sr['score'] = $vidArrShort[$sr['vs_id']];
                     $sr['updated_at'] = date('Y-m-d H:i:s',$sr['score']);
                 }
+
                 $result = [...$video,...$videoShort];
                 $score = array_column($result,'score');
                 array_multisort($score,SORT_DESC,$result);
+                $offset = ($page-1)*$perPage;
                 $pageLists = array_slice($result,$offset,$perPage);
                 $hasMorePages = count($result) > $perPage*$page;
                 //路径处理
