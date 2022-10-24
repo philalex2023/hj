@@ -430,8 +430,8 @@ AV-海角伙伴
             $list['preview_hls_url'] = $domainSync . $list['preview_hls_url'];
             //是否点赞
             $videoRedis = $this->redis('video');
-//            $list['is_love'] = $videoRedis->sIsMember('videoLove_'.$uid,$list['id']) ? 1 : 0;
-            $list['is_love'] = rand(1000,9999);
+            $list['is_love'] = $videoRedis->sIsMember('videoLove_'.$uid,$list['id']) ? 1 : 0;
+            $list['likes'] = $this->generateRandViews($list['likes'],1000);
             //是否收藏
             $videoCollectsKey = 'videoCollects_'.$uid;
             $list['is_collect'] = $videoRedis->zScore($videoCollectsKey,$list['id']) ? 1 : 0;
@@ -451,11 +451,11 @@ AV-海角伙伴
         return $lists;
     }
 
-    public function generateRandViews($views): string
+    public function generateRandViews($views,$n=10000): string
     {
         $views = intval($views);
 //        $views *= 20;
-        $views *= 10000;
+        $views *= $n;
         $length = strlen($views);
         if($length > 8){
             $str = substr_replace(floor($views * 0.0000001),'.',-1,0).'亿';
