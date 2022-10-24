@@ -121,10 +121,21 @@ class HomeController extends Controller
                         return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
                     }*/
 
-                $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
-                $res['hasMorePages'] = $paginator->hasMorePages();
+                /**/
 
-                $topics = $paginator->items();
+                $topicJson = $redis->get('topic_cid_'.$cid);
+                if(!$topicJson){
+                    $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
+                    $res['hasMorePages'] = $paginator->hasMorePages();
+                    $topics = $paginator->items();
+                }else{
+                    $topicsArr = json_decode($topicJson,true);
+                    $offset = ($page-1)*$perPage;
+                    $topics = array_slice($topicsArr,$offset,$perPage);
+                    $res['hasMorePages'] = count($topics) > $perPage*$page;
+                }
+
+//
                 //Log::info('index_list_topics',[$topics]);
                 foreach ($topics as &$topic){
                     $topic = (array)$topic;
