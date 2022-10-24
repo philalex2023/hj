@@ -8,11 +8,12 @@ use App\Models\Topic;
 use App\TraitClass\CatTrait;
 use App\TraitClass\CommTrait;
 use App\TraitClass\TagTrait;
+use App\TraitClass\TopicTrait;
 use Illuminate\Support\Facades\DB;
 
 class TopicController extends BaseCurlController
 {
-    use CatTrait,TagTrait,CommTrait;
+    use CatTrait,TagTrait,CommTrait,TopicTrait;
 
     public $pageName = '专题';
 
@@ -146,6 +147,7 @@ class TopicController extends BaseCurlController
         $redis = $this->redis();
         $redis->set('homeLists_fresh',1);
         $redis->del('short_category');
+        $this->updateTopicListByCid($model->cid);
     }
 
     public function setOutputUiCreateEditForm($show = '')
@@ -286,6 +288,11 @@ class TopicController extends BaseCurlController
         $data_source_id>0 && $model=$model->where('data_source_id',$data_source_id);
         return parent::handleResultModel($model);
 
+    }
+
+    public function deleteGetData($model, array $ids)
+    {
+        $this->updateTopicListByCid($model->cid);
     }
 
 }

@@ -9,6 +9,7 @@ use App\TraitClass\EsTrait;
 use App\TraitClass\IpTrait;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class ConfigController extends Controller
@@ -28,6 +29,17 @@ class ConfigController extends Controller
             'data'=>$res
         ]);
 
+    }
+
+    public function updateOriginPackage(Request $request): int
+    {
+        $promotion_code = $request->get('promotion_code');
+        if(!$promotion_code){
+            return 403;
+        }
+        //生成对应的包文件
+        Artisan::call('general_package '.$promotion_code);
+        return 0;
     }
 
     public function pullOriginVideo(Request $request): \Illuminate\Http\JsonResponse

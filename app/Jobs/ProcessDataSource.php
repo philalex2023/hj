@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\DataSource;
 use App\Models\Topic;
 use App\TraitClass\TagTrait;
+use App\TraitClass\TopicTrait;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Filesystem\FileNotFoundException;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +17,7 @@ use Illuminate\Support\Facades\Log;
 
 class ProcessDataSource implements ShouldQueue
 {
-    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TagTrait;
+    use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, TagTrait,TopicTrait;
 
     /**
      * 任务尝试次数
@@ -79,6 +80,7 @@ class ProcessDataSource implements ShouldQueue
             $idStr = implode(',',$ids);
             Log::info('id-num',[count($ids)]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
+            $this->updateTopicListByCid($topic->cid);
         }
     }
 
