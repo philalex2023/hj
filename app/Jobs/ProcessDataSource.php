@@ -52,7 +52,7 @@ class ProcessDataSource implements ShouldQueue
     public function handle(): void
     {
         $model = $this->row;
-        $topics = Topic::query()->where('data_source_id',$model->id)->get(['id','tag']);
+        $topics = Topic::query()->where('data_source_id',$model->id)->get(['id','tag','cid']);
         foreach ($topics as $topic) {
             $tag  = !$topic->tag ? [] : json_decode($topic->tag,true);
             $tag = !$tag ? [] : $tag;
