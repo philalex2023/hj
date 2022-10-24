@@ -431,7 +431,7 @@ AV-海角伙伴
             //是否点赞
             $videoRedis = $this->redis('video');
             $list['is_love'] = $videoRedis->sIsMember('videoLove_'.$uid,$list['id']) ? 1 : 0;
-            isset($list['likes']) && $list['likes'] = $list['likes']*1000;
+            isset($list['likes']) && $list['likes'] = $list['likes']*10;
             //是否收藏
             $videoCollectsKey = 'videoCollects_'.$uid;
             $list['is_collect'] = $videoRedis->zScore($videoCollectsKey,$list['id']) ? 1 : 0;
