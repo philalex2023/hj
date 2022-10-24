@@ -259,11 +259,9 @@ class UserController extends Controller
 
             $ids = [...$videoIds,...$shortVideoIds];
 
-//            $videoList = DB::table('video')->select($this->videoFields)->whereIn('id',$ids)->get()->toArray();
             $videoList = $this->getVideoByIdsForEs($ids,$this->videoFields);
 
             foreach ($videoList as &$iv){
-                $iv = (array)$iv;
                 $iv['usage'] = 1;
                 $iv['score'] = $vidArrAll[$iv['id']] ?? 0;
                 $iv['updated_at'] = date('Y-m-d H:i:s',$iv['score']);
@@ -377,12 +375,10 @@ class UserController extends Controller
 
                 $page = 1;
 
-
                 $vidArr = $videoRedis->zRevRange($view_history_key,0,-1,true);
                 $videoIds = $vidArr ? array_keys($vidArr) : [];
 
-                $offset = ($page-1)*$perPage;
-                $video = DB::table('video')->whereIn('id',$videoIds)->get($this->videoFields)->toArray();
+                $video = $this->getVideoByIdsForEs($videoIds,$this->videoFields);
 
                 foreach ($video as &$r){
                     $r = (array)$r;
@@ -395,9 +391,8 @@ class UserController extends Controller
                 $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
                 //Log::info('test==',$vidArrShort);
                 $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
-                $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray();
+                $videoShort = !empty($videoShortIds) ? DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray() : [];
                 foreach ($videoShort as &$sr){
-                    $sr = (array)$sr;
                     $sr['usage'] = 2;
                     $sr['score'] = $vidArrShort[$sr['vs_id']];
                     $sr['updated_at'] = date('Y-m-d H:i:s',$sr['score']);
@@ -405,9 +400,11 @@ class UserController extends Controller
                 $result = [...$video,...$videoShort];
                 $score = array_column($result,'score');
                 array_multisort($score,SORT_DESC,$result);
+                $offset = ($page-1)*$perPage;
                 $pageLists = array_slice($result,$offset,$perPage);
                 if(!isset($result[0])){
-                    $pageLists = DB::table('video')->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
+                    $pageLists = $this->getVideoByRandomForEs(6,$this->videoFields);
+//                    $pageLists = DB::table('video')->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
                 }
                 //路径处理
                 $res['list'] = $this->handleVideoItems($pageLists,true, $user->id);
