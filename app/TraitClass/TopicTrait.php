@@ -20,7 +20,7 @@ trait TopicTrait
             ->where('cid',$cid)
             ->where('status',1)
             ->orderBy('sort')
-            ->get(['id','name','show_type','contain_vids']);
+            ->get(['id','cid','name','show_type','contain_vids']);
         $redis = $this->redis();
         $redis->set('topic_cid_'.$cid,json_encode($getItems,JSON_UNESCAPED_UNICODE));
         //
