@@ -39,10 +39,10 @@ trait TopicTrait
 
         $containVidStr = '';
         if(!$redisJson){
-            Log::info('testIsFromDb',['is']);
+            Log::info('TopicFromDb',['is']);
             $containVidStr = DB::table('topic')->where('id',$id)->value('contain_vids');
         }else{
-            Log::info('testIsFromRedis',['is']);
+            //Log::info('testIsFromRedis',['is']);
             $arr = json_decode($redisJson,true);
             foreach ($arr as $item){
                 $item['id']==$id && $containVidStr = $item['contain_vids'];
