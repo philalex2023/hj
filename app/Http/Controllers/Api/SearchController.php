@@ -14,6 +14,7 @@ use App\TraitClass\AdTrait;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\DataSourceTrait;
 use App\TraitClass\PHPRedisTrait;
+use App\TraitClass\TopicTrait;
 use App\TraitClass\VideoTrait;
 use Elasticsearch\ClientBuilder;
 use Illuminate\Http\JsonResponse;
@@ -25,7 +26,7 @@ use Illuminate\Support\Facades\Validator;
 
 class SearchController extends Controller
 {
-    use VideoTrait,PHPRedisTrait,AdTrait,ApiParamsTrait,DataSourceTrait;
+    use VideoTrait,PHPRedisTrait,AdTrait,ApiParamsTrait,DataSourceTrait,TopicTrait;
 
     /**
      * 搜索功能
@@ -234,7 +235,8 @@ class SearchController extends Controller
                 $perPage = 16;
                 $offset = ($page-1)*$perPage;
 
-                $containVidStr = DB::table('topic')->where('id',$tid)->value('contain_vids');
+//                $containVidStr = DB::table('topic')->where('id',$tid)->value('contain_vids');
+                $containVidStr = $this->getTopicVideoIdsById($tid);
                 if(!$containVidStr){
                     return response()->json(['state'=>0, 'data'=>[]]);
                 }
