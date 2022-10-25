@@ -23,6 +23,29 @@ trait TopicTrait
             ->get(['id','name','show_type','contain_vids']);
         $redis = $this->redis();
         $redis->set('topic_cid_'.$cid,json_encode($getItems,JSON_UNESCAPED_UNICODE));
+        //
+        foreach ($getItems as $item){
+            $redis->hSet('topic_id_'.$item->id,'cid',$item->cid);
+        }
+    }
+
+    public function getTopicVideoIdsById($id)
+    {
+        $redis = $this->redis();
+        $cid = $redis->hGet('topic_id_'.$id,'cid');
+
+        $redisJson = $redis->get('topic_cid_'.$cid);
+
+        $containVidStr = '';
+        if(!$redisJson){
+            $containVidStr = DB::table('topic')->where('id',$id)->value('contain_vids');
+        }else{
+            $arr = json_decode($redisJson,true);
+            foreach ($arr as $item){
+                $item['id']==$id && $containVidStr = $item['contain_vids'];
+            }
+        }
+        return $containVidStr;
     }
 
 }

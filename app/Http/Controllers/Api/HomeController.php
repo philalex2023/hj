@@ -106,11 +106,11 @@ class HomeController extends Controller
                 $page = $validated['page'];
 
                 $redis = $this->redis();
-                $sectionKey = 'homeLists_'.$cid.'-'.$page;
+                //$sectionKey = 'homeLists_'.$cid.'-'.$page;
 
                 //二级分类列表
-                $res = $redis->get($sectionKey);
-                $res = json_decode($res,true);
+                /*$res = $redis->get($sectionKey);
+                $res = json_decode($res,true);*/
                 /*if(!$res || $redis->get('homeLists_fresh')){
 
                 }*/
@@ -119,7 +119,7 @@ class HomeController extends Controller
                 if(!$topicJson){
                     $lock = Cache::lock('homeLists_lock');
                     if(!$lock->get()){
-                        Log::info('index_list',[$sectionKey]);
+                        Log::info('index_list',['topic_cid_'.$cid]);
                         return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
                     }
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
