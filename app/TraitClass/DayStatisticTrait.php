@@ -19,16 +19,17 @@ trait DayStatisticTrait
         $dayEndTime = strtotime(date('Y-m-d 23:59:59'));
         if($d>0){
             $t = strtotime('-'.$d.' day');
+            $dayData = date('Ymd',$t);
             $starTime = strtotime(date('Y-m-d 00:00:00',$t));
             $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
         }
-        dump($starTime,$dayEndTime);
 
         $hourAgo = strtotime('-1 hour');
 
 //        $hashData['active_user'] = $redis->sCard('at_user_'.$dayData);
 //        $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);
         $hashData['active_user'] = $redis->zCount('at_user_'.$dayData,$starTime,$dayEndTime);
+
         $hashData['online_user'] = $redis->zCount('online_user_'.$dayData,$starTime,$dayEndTime);
 
 //        $hashData['keep_1'] = $redis->get('hj_keep_1_'.$dayData);
@@ -94,7 +95,6 @@ trait DayStatisticTrait
             ->sum('gold');
         $hashData['day_up_master_income'] = round($day_up_master_income/100,2);
 
-        dump($hashData);
         return $hashData;
     }
 
