@@ -59,7 +59,7 @@ class SaveNewStatisticsDataFromRedis extends Command
             'old_user_recharge'=>(int)$hashData['day_old_user_recharge']*100,
             'total_recharge'=>(int)$hashData['day_total_recharge']*100,
             'inc_recharge_user'=>(int)$hashData['day_inc_recharge_user'],
-            'inc_arpu'=>(int)$hashData['day_inc_arpu']*100,
+            'inc_arpu'=>$hashData['day_inc_arpu']*100,
             'success_order'=>(int)$hashData['day_success_order'],
             'total_order'=>(int)$hashData['day_total_order'],
             'lp_access'=>(int)$hashData['day_lp_access'],
