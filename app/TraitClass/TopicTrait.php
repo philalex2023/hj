@@ -25,14 +25,14 @@ trait TopicTrait
         $redis->set('topic_cid_'.$cid,json_encode($getItems,JSON_UNESCAPED_UNICODE));
         //
         foreach ($getItems as $item){
-            $redis->hSet('topic_id_'.$item->id,'cid',$item->cid);
+            $redis->hSet('topic_id_cid',$item->id,$item->cid);
         }
     }
 
     public function getTopicVideoIdsById($id)
     {
         $redis = $this->redis();
-        $cid = $redis->hGet('topic_id_'.$id,'cid');
+        $cid = $redis->hGet('topic_id_cid',$id);
 
         $redisJson = $redis->get('topic_cid_'.$cid);
 
