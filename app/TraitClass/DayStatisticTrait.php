@@ -94,6 +94,7 @@ trait DayStatisticTrait
             ->sum('gold');
         $hashData['day_up_master_income'] = round($day_up_master_income/100,2);
 
+        dump($hashData);
         return $hashData;
     }
 
