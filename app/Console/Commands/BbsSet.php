@@ -51,6 +51,7 @@ class BbsSet extends Command
     {
         $url = $this->argument('url');
         $urlCon = Storage::disk('sftp1')->get($url);
+        $this->info('con:'.$urlCon);
         $dirname = pathinfo($url,PATHINFO_DIRNAME);
         $filename = pathinfo($url,PATHINFO_FILENAME);
         $newUrl = $dirname.'/'.$filename.'.htm';
