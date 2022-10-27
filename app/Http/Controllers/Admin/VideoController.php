@@ -1,19 +1,10 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
-use App\Jobs\ProcessPreviewVideo;
-use App\Jobs\ProcessResetRedisVideo;
+
 use App\Jobs\ProcessSyncMiddleSectionTable;
-use App\Jobs\ProcessSyncMiddleTable;
-use App\Jobs\ProcessSyncMiddleTagTable;
-use App\Jobs\ProcessVideoShortMod;
-use App\Jobs\ProcessRepairVideo;
-use App\Jobs\VideoSlice;
 use App\Models\AdminVideo;
-use App\Models\AdminVideoShort;
-use App\Models\Category;
 use App\Models\DataSource;
-use App\Models\Tag;
 use App\Models\Topic;
 use App\Models\Video;
 use App\Services\UiService;
@@ -463,13 +454,6 @@ class VideoController extends BaseCurlController
      */
     protected function afterSaveSuccessEvent($model, $id = '')
     {
-        /*if( isset($_REQUEST['callback_upload']) && ($_REQUEST['callback_upload']==1)){
-            $job = new ProcessVideoSlice($model);
-            $this->dispatch($job->onQueue('high'));
-        }*/
-        /*$resetJob = new ProcessResetRedisVideo($model->cat,$model->tag,$model);
-        $this->dispatch($resetJob->onQueue('high'));*/
-
         Cache::forget('cachedVideoById.'.$model->id);
         $this->redis()->set('freshTag_'.$model->type,1);
         return $model;

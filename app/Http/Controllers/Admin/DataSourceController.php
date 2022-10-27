@@ -178,7 +178,6 @@ class DataSourceController extends BaseCurlController
                 'field' => 'created_at',
                 'minWidth' => 80,
                 'title' => '上架时间',
-                'edit' => 1,
                 'sort' => 1,
                 'align' => 'center',
             ],
