@@ -23,7 +23,7 @@ class BbsSet extends Command
      *
      * @var string
      */
-    protected $signature = 'bbs_set_avatar';
+    protected $signature = 'bbs_enc_thumbs {url?}';
 
     /**
      * The console command description.
@@ -49,7 +49,13 @@ class BbsSet extends Command
      */
     public function handle(): int
     {
-        DB::table('community_bbs')->where('id','>=',310)->chunkById(100,function ($bbs){
+        $url = $this->argument('url');
+        $urlCon = Storage::get($url);
+        $newUrl = str_replace(['.jpg','.png'],'.htm',$url);
+        $this->info('save path:'.$newUrl);
+        $bool = Storage::disk('sftp1')->put($newUrl,$urlCon);
+        $bool && $this->info('加密成功');
+        /*DB::table('community_bbs')->where('id','>=',310)->chunkById(100,function ($bbs){
             foreach ($bbs as $item) {
                 $updateData = [
                     'author_avatar' => rand(1,43),
@@ -59,7 +65,7 @@ class BbsSet extends Command
                 DB::table('community_bbs')->where('id',$item->id)->update($updateData);
             }
             $this->info('finished update records 100!');
-        });
+        });*/
 
         return 0;
     }

@@ -72,7 +72,7 @@ class RepairVideo extends Command
         }
         $bar->finish();
 
-        DB::table('video')->whereIn('id',$ids)->delete();
+        //DB::table('video')->whereIn('id',$ids)->delete();
 
         $this->info('######执行成功######');
         return 0;
