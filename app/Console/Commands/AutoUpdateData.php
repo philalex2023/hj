@@ -7,6 +7,7 @@ use App\Models\DataSource;
 use App\TraitClass\DataSourceTrait;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 
 class AutoUpdateData extends Command
@@ -43,6 +44,9 @@ class AutoUpdateData extends Command
      */
     public function handle(): int
     {
+        //
+        Artisan::call('scout:import "App\Models\Video"');
+        //
         $dataSource = DB::table('data_source')->get();
 
         $bar = $this->output->createProgressBar(count($dataSource));
