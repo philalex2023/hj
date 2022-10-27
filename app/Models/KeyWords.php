@@ -12,9 +12,9 @@ class KeyWords extends BaseModel
 
     protected $table = 'key_words';
 
-    public function searchableAs()
+    /*public function searchableAs()
     {
         return 'key_words_index';
-    }
+    }*/
 
 }
