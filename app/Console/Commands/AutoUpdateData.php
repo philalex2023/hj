@@ -45,7 +45,7 @@ class AutoUpdateData extends Command
     public function handle(): int
     {
         //
-        $model = app_path('Models/Video');
+        $model = 'App\Models\Video';
         Artisan::call('scout:import "'.$model.'"');
         //
         $dataSource = DB::table('data_source')->get();
