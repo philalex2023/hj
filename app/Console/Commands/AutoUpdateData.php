@@ -9,7 +9,6 @@ use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
-use App\Models\Video;
 
 class AutoUpdateData extends Command
 {
@@ -46,7 +45,7 @@ class AutoUpdateData extends Command
     public function handle(): int
     {
         //
-        $model = Video::class;
+        $model = app_path('Models/Video');
         Artisan::call('scout:import '.$model);
         //
         $dataSource = DB::table('data_source')->get();
