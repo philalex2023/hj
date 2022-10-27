@@ -161,6 +161,12 @@ class DataSourceController extends BaseCurlController
 //                'hide' => true
             ],
             [
+                'field' => 'restricted',
+                'minWidth' => 80,
+                'title' => '观看限制',
+                'align' => 'center',
+            ],
+            [
                 'field' => 'sort',
                 'minWidth' => 80,
                 'title' => '排序',
