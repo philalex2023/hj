@@ -130,10 +130,8 @@ class HomeController extends Controller
                     $topicsArr = json_decode($topicJson,true);
                     $offset = ($page-1)*$perPage;
                     $topics = array_slice($topicsArr,$offset,$perPage);
-                    $res['hasMorePages'] = count($topics) > $perPage*$page;
-                    //Log::info('homelistFast',['ok',$cid]);
+                    $res['hasMorePages'] = count($topicsArr) > $perPage*$page;
                 }
-
 //
                 //Log::info('index_list_topics',[$topics]);
                 foreach ($topics as &$topic){
