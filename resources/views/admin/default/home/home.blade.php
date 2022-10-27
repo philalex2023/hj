@@ -79,7 +79,7 @@
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
-                                <div class="layui-card-header">总充值</div>
+                                <div class="layui-card-header">总充值(小时/日)</div>
                                 <div class="layui-card-body">{{ $data['day_total_recharge'] }}</div>
                             </div>
                         </div>

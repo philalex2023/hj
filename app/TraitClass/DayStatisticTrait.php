@@ -53,6 +53,7 @@ trait DayStatisticTrait
         $hashData['hour_old_user_recharge'] = $this->sumRangeValue($redis->zRangeByScore('old_user_recharge_'.$dayData,$hourAgo,$nowTime));
         $hashData['day_old_user_recharge'] = $this->sumRangeValue($redis->zRangeByScore('old_user_recharge_'.$dayData,$starTime,$dayEndTime));
 
+        $hashData['hour_total_recharge'] = round($hashData['hour_new_user_recharge'] + $hashData['hour_old_user_recharge'],2);
         $hashData['day_total_recharge'] = round($hashData['day_new_user_recharge'] + $hashData['day_old_user_recharge'],2);
 
 //        $hashData['day_inc_recharge_user'] = $redis->sCard('day_inc_rec_user_'.$dayData);
