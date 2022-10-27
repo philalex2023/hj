@@ -50,7 +50,7 @@ class BbsSet extends Command
     public function handle(): int
     {
         $url = $this->argument('url');
-        $urlCon = Storage::get($url);
+        $urlCon = Storage::disk('sftp1')->get($url);
         $newUrl = str_replace(['.jpg','.png'],'.htm',$url);
         $this->info('save path:'.$newUrl);
         $bool = Storage::disk('sftp1')->put($newUrl,$urlCon);
