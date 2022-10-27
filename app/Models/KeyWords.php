@@ -4,11 +4,11 @@
 namespace App\Models;
 
 
-use Laravel\Scout\Searchable;
+//use Laravel\Scout\Searchable;
 
 class KeyWords extends BaseModel
 {
-    use Searchable;
+//    use Searchable;
 
     protected $table = 'key_words';
 
