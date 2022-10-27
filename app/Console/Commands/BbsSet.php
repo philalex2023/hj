@@ -50,13 +50,13 @@ class BbsSet extends Command
     public function handle(): int
     {
         $url = $this->argument('url');
-        $urlCon = Storage::disk('sftp1')->get($url);
-        $this->info('con:'.$urlCon);
+        $urlCon = Storage::disk('sftp')->get($url);
+        //$this->info('con:'.$urlCon);
         $dirname = pathinfo($url,PATHINFO_DIRNAME);
         $filename = pathinfo($url,PATHINFO_FILENAME);
         $newUrl = $dirname.'/'.$filename.'.htm';
         $this->info('save path:'.$newUrl);
-        $bool = Storage::disk('sftp1')->put($newUrl,$urlCon);
+        $bool = Storage::disk('sftp')->put($newUrl,$urlCon);
         $bool && $this->info('加密成功');
         /*DB::table('community_bbs')->where('id','>=',310)->chunkById(100,function ($bbs){
             foreach ($bbs as $item) {
