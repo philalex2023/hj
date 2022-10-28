@@ -42,41 +42,18 @@ class XFController extends PayBaseController implements Pay
     public function pay(Request $request): JsonResponse
     {
 
-        // TODO: Implement pay() method.
-        $params = self::parse($request->params ?? '');
-        Validator::make($params, [
-            'pay_id' => 'required|string',
-            'type' => [
-                'required',
-                'string',
-                Rule::in(['1', '2']),
-            ],
-        ])->validate();
-        $payEnv = self::getPayEnv();
-        $payEnvInfo = $payEnv[$this->payFlag];
-        $secret = $payEnvInfo['secret'];
-
-        $payInfo = PayLog::query()->find($params['pay_id']);
-        if (!$payInfo) {
-            throw new Exception("记录不存在");
-        }
-
-        $orderInfo = Order::query()->find($payInfo['order_id']);
-        if (!$orderInfo) {
-            throw new Exception("订单不存在");
-        }
-
-        $channelNo = $params['type'];
-        if (in_array($params['type'], ['1', '2'])) {
-            $channelNo = $this->getOwnMethod($orderInfo->type, $orderInfo->type_id, $params['type']);
-        }
-
-        $mercId = $payEnvInfo['merchant_id'];
-        $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnvInfo['notify_url'];
+        $prePayData = $this->prepay($request,$this->payFlag);
+        $orderInfo = $prePayData['order_info'];
+        $notifyUrl = $prePayData['notifyUrl'];
+        $mercId = $prePayData['merchId'];
+        $channelNo = $prePayData['channelNo'];
+        $secret = $prePayData['secret'];
+//        $ip = $prePayData['ip'];
+        $payUrl = $prePayData['pay_url'];
         $input = [
             'p1_merchantno' => $mercId,               //商户号
             'p2_amount' => round($orderInfo->amount ?? 0,2),              //订单金额,单位元保留两位小数
-            'p3_orderno' => strval($payInfo->number),           //订单号，值允许英文数字
+            'p3_orderno' => strval($orderInfo->number),           //订单号，值允许英文数字
             'p4_paytype' => $channelNo,            //支付通道编码
             'p5_reqtime' => date('YmdHis'),//支付发起时间
             'p6_goodsname' => $orderInfo->id,              //商品名称
@@ -91,7 +68,7 @@ class XFController extends PayBaseController implements Pay
         $curl = (new Client([
             //  'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
             'verify' => false,
-        ]))->post($payEnvInfo['pay_url'], ['form_params' => $input]);
+        ]))->post($payUrl, ['form_params' => $input]);
 
         $response = $curl->getBody();
         $resJson = json_decode($response, true);
