@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Models\PayLog;
 use App\Services\Pay;
 use App\TraitClass\ApiParamsTrait;
-use App\TraitClass\YKTrait;
 use App\TraitClass\PayTrait;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -33,7 +32,6 @@ class YKGameController extends PayBaseController implements Pay
     use PayTrait;
     use ApiParamsTrait;
     use IpTrait;
-    use YKTrait;
 
     public string $payFlag = 'YKGame';
 

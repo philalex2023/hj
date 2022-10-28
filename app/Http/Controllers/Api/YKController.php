@@ -7,7 +7,6 @@ use App\Models\Order;
 use App\Models\PayLog;
 use App\Services\Pay;
 use App\TraitClass\ApiParamsTrait;
-use App\TraitClass\YKTrait;
 use App\TraitClass\PayTrait;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -33,7 +32,6 @@ class YKController extends PayBaseController implements Pay
     use PayTrait;
     use ApiParamsTrait;
     use IpTrait;
-    use YKTrait;
 
     public string $payFlag = 'YK';
     /**
@@ -125,6 +123,35 @@ class YKController extends PayBaseController implements Pay
             $return = 'failure';
         }
         return response($return);
+    }
+
+    /**
+     * 签名算法
+     * @param $data
+     * @param $md5Key
+     * @return string
+     */
+    function sign($data, $md5Key): string
+    {
+        //签名数据转换为大写
+        $sig_data = strtolower(md5($md5Key . $data['orderNo'] . $data['appId'] . $data['amount'] . $data['notifyCallback']));
+        return $sig_data;
+    }
+
+    /**
+     * 验签
+     * @param $data
+     * @param $md5Key
+     * @param $pubKey
+     * @return bool
+     */
+    function verify($data, $md5Key, $pubKey): bool
+    {
+        $sig_data = strtolower(md5($md5Key . $data['orderNo'] . $data['appId'] . $data['amount']));
+        if ($sig_data == $pubKey) {
+            return true;
+        }
+        return false;
     }
 
     public function method(Request $request): mixed

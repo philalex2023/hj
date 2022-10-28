@@ -7,8 +7,6 @@ use App\Models\Order;
 use App\Models\PayLog;
 use App\Services\Pay;
 use App\TraitClass\ApiParamsTrait;
-use App\TraitClass\XDTrait;
-use App\TraitClass\YKTrait;
 use App\TraitClass\PayTrait;
 use Exception;
 use GuzzleHttp\Exception\GuzzleException;
@@ -34,7 +32,6 @@ class XDController extends PayBaseController implements Pay
     use PayTrait;
     use ApiParamsTrait;
     use IpTrait;
-    use XDTrait;
 
     /**
      * 信达支付动作
@@ -153,5 +150,33 @@ class XDController extends PayBaseController implements Pay
     {
         // TODO: Implement method() method.
         return '';
+    }
+
+    /**
+     * 签名算法
+     * @param $data
+     * @param $md5Key
+     * @return string
+     */
+    function sign($data, $md5Key): string
+    {
+        //签名数据转换为大写
+        return md5($data['fxid'] . $data['fxddh'] . $data['fxfee'] . $data['fxnotifyurl'] . $md5Key);
+    }
+
+    /**
+     * 验签
+     * @param $data
+     * @param $md5Key
+     * @param $pubKey
+     * @return bool
+     */
+    function verify($data, $md5Key, $pubKey): bool
+    {
+        $sig_data = md5($data['fxstatus'] . $data['fxid'] . $data['fxddh'] . $data['fxfee'] . $md5Key);
+        if ($sig_data == $pubKey) {
+            return true;
+        }
+        return false;
     }
 }

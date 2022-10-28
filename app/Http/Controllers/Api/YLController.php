@@ -156,8 +156,8 @@ class YLController extends PayBaseController implements Pay
         }*/
         //Log::debug('==callbackIp==',[$this->getRealIp()]);
         $md5str = $data['orderId'].$data['amount'].$data['merchId'];
-        Log::debug('==signAble==',[$md5str . $md5Key]);
-        Log::debug('==signAbleRes==',[md5($md5str . $md5Key)]);
+//        Log::debug('==signAble==',[$md5str . $md5Key]);
+//        Log::debug('==signAbleRes==',[md5($md5str . $md5Key)]);
         return md5($md5str . $md5Key);
     }
     /**
