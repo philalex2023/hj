@@ -264,6 +264,12 @@ trait PayTrait
             'status' => 1,
             'updated_at' => $nowData,
         ]);
+        $method = match ($orderInfo->type) {
+            1 => 'buyVip',
+            2 => 'buyGold',
+            3 => 'buyVideo',
+        };
+        $biz = $this->$method($orderInfo->type_id??0,$orderInfo->uid);
 
         $userInfo = CacheUser::user($orderInfo->uid);
         $userType = strtotime($nowData)-strtotime($userInfo->created_at)>=24*3600 ? 1 : 0;
