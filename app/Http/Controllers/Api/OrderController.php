@@ -112,7 +112,7 @@ class OrderController extends PayBaseController
                 $payMethod = $this->getOwnCode($params['type'],$params['goods_id'],$params['method_id']);
                 $payNumber = $this->getOwnMethod($params['type'],$params['goods_id'],$params['method_id']);
             }
-            $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : false;
+            $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : null;
             $createData = [
                 'remark' => json_encode(['id'=>$goodsInfo['id']??0,'name'=>$goodsInfo['name']??'']),
                 'number' => $number,
@@ -131,6 +131,10 @@ class OrderController extends PayBaseController
                 'pay_method' => $payMethod, //
                 'device_system' => $user->device_system, //
                 'channel_name' => !$channelInfo ? '官方' : $channelInfo->name, //
+
+                'channel_principal' => $channelInfo->principal??'', //
+                'reg_at' => $user->created_at??'', //
+                'user_type' => time()-strtotime($user->created_at)>=24*3600 ? 1 : 0
             ];
             Log::info('order_create_Data===',[$createData]);//参数日志
 
