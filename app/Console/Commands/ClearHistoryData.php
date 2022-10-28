@@ -38,10 +38,10 @@ class ClearHistoryData extends Command
      */
     public function handle(): int
     {
-        $paramDay = $this->argument('day') ?? 3;
+//        $paramDay = $this->argument('day') ?? 3;
         //登录日志
-        $delLoginLogTime = strtotime('-'.$paramDay.' day');
-        DB::table('login_log')->whereDate('created_at', '<',date('Y-m-d H:i:s',$delLoginLogTime))->delete();
+//        $delLoginLogTime = strtotime('-'.$paramDay.' day');
+//        DB::table('login_log')->whereDate('created_at', '<',date('Y-m-d H:i:s',$delLoginLogTime))->delete();
         DB::table('users')
             ->where('is_office',0)
             ->where('gold',0)

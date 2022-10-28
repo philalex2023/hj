@@ -63,8 +63,8 @@ class ProcessLogin implements ShouldQueue
 
         $uid = $this->loginLogData['uid'];
         // 冗余最后一次登录地理信息
-        $area = Ip::find($this->loginLogData['ip']);
-        $areaJson = json_encode($area,JSON_UNESCAPED_UNICODE);
+//        $area = Ip::find($this->loginLogData['ip']);
+//        $areaJson = json_encode($area,JSON_UNESCAPED_UNICODE);
 
         if($this->loginLogData['type']==1){
             $this->saveStatisticByDay('install',$this->loginLogData['channel_id'],$this->device_system);
@@ -95,21 +95,21 @@ class ProcessLogin implements ShouldQueue
         }
 
         //记录登录日志
-        $this->loginLogData['area'] = $areaJson;
+        /*$this->loginLogData['area'] = $areaJson;
         if(isset($this->loginLogData['clipboard'])){
             unset($this->loginLogData['clipboard']);
-        }
+        }*/
 
-        $updateData['location_name'] = $areaJson;
-        if(!$this->code){
+//        $updateData['location_name'] = $areaJson;
+        /*if(!$this->code){
             $invitationCode = Str::random(2).$uid.Str::random(2);
             $updateData['promotion_code'] = $invitationCode;
             //$updateData['account'] = $this->loginLogData['account'] . '-' .$uid;
             //$updateData['password'] = $this->loginLogData['account'];
-        }
+        }*/
         //增加登录次数
-        DB::table('users')->where('id',$uid)->increment('login_numbers',1,$updateData);
-        LoginLog::query()->create($this->loginLogData);
+//        DB::table('users')->where('id',$uid)->increment('login_numbers',1,$updateData);
+//        LoginLog::query()->create($this->loginLogData);
         //首页统计
         $nowTime = time();
         /*$redis->sAdd('active_user_'.$dayData,$uid);
@@ -138,6 +138,9 @@ class ProcessLogin implements ShouldQueue
                 $redis->zAdd('new_inc_auto_'.$dayData,$nowTime,$uid);
                 $redis->expire('new_inc_auto_'.$dayData,3600*24*7);
             }
+        }else{
+            //增加登录次数
+            DB::table('users')->where('id',$uid)->increment('login_numbers');
         }
 
 

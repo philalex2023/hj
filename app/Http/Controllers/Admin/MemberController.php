@@ -170,13 +170,13 @@ class MemberController extends BaseCurlController
                 'align' => 'center',
                 'hide' => true
             ],
-            [
+            /*[
                 'field' => 'location_name',
                 'minWidth' => 150,
                 'title' => '最近登录位置',
                 'align' => 'center',
                 'hide' => true
-            ],
+            ],*/
             [
                 'field' => 'status',
                 'minWidth' => 100,

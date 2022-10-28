@@ -82,6 +82,8 @@ class AuthController extends Controller
         $getAccountV = $accountRedis->get('account_v');
         $accountV = !$getAccountV ? 1 : $getAccountV;
         $user->account = 'AD-'.$accountV;
+        $user->promotion_code = Str::random(2).$accountV.Str::random(2);
+        $user->login_numbers = 1;
         $user->nickname = $randNickName;
 
         $bindInfo = $this->bindChannel($login_info);
