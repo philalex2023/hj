@@ -264,43 +264,11 @@ trait PayTrait
             'status' => 1,
             'updated_at' => $nowData,
         ]);
-        $method = match ($orderInfo->type) {
-            1 => 'buyVip',
-            2 => 'buyGold',
-            3 => 'buyVideo',
-        };
-        $biz = $this->$method($orderInfo->type_id??0,$orderInfo->uid);
-        $channelInfo = $this->getChannelInfoById($orderInfo->channel_id);
-        $userInfo = CacheUser::user($orderInfo->uid);
 
-        $chargeData = [
-            'type' => $orderInfo->type??1,
-            'uid' => $orderInfo->uid,
-            'status' => 1,
-            'amount' => $orderInfo->amount,
-            'device_system' => $orderInfo->device_system??1,
-            'channel_id' => $orderInfo->channel_id,
-            'channel_pid' => $orderInfo->channel_pid ?? 0,
-            'order_id' => $orderInfo->id,
-            'pay_method' => $orderInfo->pay_method??1,
-            'channel_code' => $orderInfo->pay_channel_code??'',
-            'channel_principal' => $channelInfo->principal??'',
-            'channel_name' => $channelInfo->name??'', //
-            'forward' => $orderInfo->forward??'', //
-            'number' => $orderInfo->number??'', //
-            'reg_at' => $userInfo->created_at??'', //
-            'type_id' => $orderInfo->type_id??'', //
-            'remark' => $orderInfo->remark??'', //
-            'user_type' => strtotime($nowData)-strtotime($userInfo->created_at)>=24*3600 ? 1 : 0,
-            'created_at' => $nowData,
-            'updated_at' => $nowData,
-        ];
-        if ($expiredAt = $biz['expired_at']??false) {
-            $chargeData['expired_at'] = $expiredAt;
-        }
-        DB::connection('master_mysql')->table('recharge')->updateOrInsert(['order_id'=>$orderInfo->id],$chargeData);
+        $userInfo = CacheUser::user($orderInfo->uid);
+        $userType = strtotime($nowData)-strtotime($userInfo->created_at)>=24*3600 ? 1 : 0;
         //########渠道CPS日统计########
-        ProcessStatisticsChannelByDay::dispatchAfterResponse($orderInfo,$chargeData['user_type']);
+        ProcessStatisticsChannelByDay::dispatchAfterResponse($orderInfo,$userType);
         //#############################
 
     }
