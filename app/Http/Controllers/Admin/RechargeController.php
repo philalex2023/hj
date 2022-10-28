@@ -4,6 +4,7 @@
 namespace App\Http\Controllers\Admin;
 
 
+use App\Models\Order;
 use App\Models\Recharge;
 use App\Services\UiService;
 use App\TraitClass\ChannelTrait;
@@ -92,9 +93,9 @@ class RechargeController extends BaseCurlIndexController
         ],
     ];
 
-    public function setModel()
+    public function setModel(): Order
     {
-        return $this->model = new Recharge();
+        return $this->model = new Order();
     }
 
     public function indexCols(): array
@@ -181,7 +182,7 @@ class RechargeController extends BaseCurlIndexController
                 'align' => 'center'
             ],
             [
-                'field' => 'channel_code',
+                'field' => 'pay_channel_code',
                 'minWidth' => 80,
                 'title' => '通道码',
                 'align' => 'center',
@@ -332,6 +333,7 @@ class RechargeController extends BaseCurlIndexController
 
     public function handleResultModel($model)
     {
+        $model = $model->where('status',1);
 
         $type = $this->rq->input('type',null);
         $forward = $this->rq->input('forward',null);
@@ -413,7 +415,8 @@ class RechargeController extends BaseCurlIndexController
         }
         $queryChannelCode = $this->rq->input('query_channel_code',0);
         if($queryChannelCode>0){
-            $build = $build->where('channel_code',$queryChannelCode);
+//            $build = $build->where('channel_code',$queryChannelCode);
+            $build = $build->where('pay_channel_code',$queryChannelCode);
         }
 
         $totalAmount = $build->sum('amount');
