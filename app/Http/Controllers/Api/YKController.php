@@ -35,6 +35,7 @@ class YKController extends PayBaseController implements Pay
     use IpTrait;
     use YKTrait;
 
+    public string $payFlag = 'YK';
     /**
      * YK支付动作
      * @param Request $request
@@ -45,44 +46,20 @@ class YKController extends PayBaseController implements Pay
     public function pay(Request $request): JsonResponse
     {
 
-        // TODO: Implement pay() method.
-        $params = self::parse($request->params ?? '');
-        Validator::make($params, [
-            'pay_id' => 'required|string',
-            'type' => [
-                'required',
-                'string',
-                Rule::in(['zfbwap', 'wxwap','1','2']),
-            ],
-        ])->validate();
-        Log::info('yk_pay_params===', [$params]);//参数日志
+        $prePayData = $this->prepay($request,$this->payFlag);
+        $orderInfo = $prePayData['order_info'];
+        $notifyUrl = $prePayData['notifyUrl'];
+        $mercId = $prePayData['merchId'];
+        $channelNo = $prePayData['channelNo'];
+        $secret = $prePayData['secret'];
+//        $ip = $prePayData['ip'];
+        $payUrl = $prePayData['pay_url'];
         // 强制转换
         try {
-            $payEnv = self::getPayEnv();
-            $secret = $payEnv['YK']['secret'];
 
-            $payInfo = PayLog::query()->find($params['pay_id']);
-            if (!$payInfo) {
-                throw new Exception("记录不存在");
-            }
-
-            $orderInfo = Order::query()->find($payInfo['order_id']);
-            if (!$orderInfo) {
-                throw new Exception("订单不存在");
-            }
-
-            $oldMix = false;
-            $channelNo = $params['type'];
-            if (in_array($params['type'],['1','2'])) {
-                $oldMix = true;
-                $channelNo = $this->getOwnMethod($orderInfo->type,$orderInfo->type_id,$params['type']);
-            }
-
-            $mercId = $payEnv['YK']['merchant_id'];
-            $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnv['YK']['notify_url'];
             $input = [
                 'appId' => $mercId,               //商户号
-                'orderNo' => strval($payInfo->number),           //订单号，值允许英文数字
+                'orderNo' => strval($orderInfo->number),           //订单号，值允许英文数字
                 'channelNo' => $channelNo,            //支付通道编码
                 'amount' => strval($orderInfo->amount ?? 0) . '.00',              //订单金额,单位元保留两位小数
                 'notifyCallback' => $notifyUrl,   //异步返回地址
@@ -91,23 +68,19 @@ class YKController extends PayBaseController implements Pay
             //生成签名 请求参数按照Ascii编码排序
             //私钥签名
             $input['sign'] = $this->sign($input, $secret);
-            Log::info('yk_third_params===', [$input]);//三方参数日志
+            Log::info($this->payFlag.'_third_params===', [$input]);//三方参数日志
             $curl = (new Client([
                 'headers' => ['Content-Type' => 'application/json'],
                 'verify' => false,
-            ]))->post($payEnv['YK']['pay_url'], [
+            ]))->post($payUrl, [
                 'body' => json_encode($input)
             ]);
             $response = $curl->getBody();
             // Log::info('yk_third_response===', [$response]);//三方响应日志
             $resJson = json_decode($response, true);
             if ($resJson['code'] == 1) {
-                if ($oldMix) {
-                    $this->pullPayEvent($orderInfo);
-                    $return = $this->format(0, ['url'=>$resJson['payUrl']], '取出成功');
-                } else {
-                    $return = $this->format(0, $resJson, '取出成功');
-                }
+                $this->pullPayEvent($orderInfo);
+                $return = $this->format(0, ['url'=>$resJson['payUrl']], '取出成功');
             } else {
                 $return = $this->format($resJson['code'], [], $response);
             }

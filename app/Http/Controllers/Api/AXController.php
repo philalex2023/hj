@@ -32,6 +32,8 @@ class AXController extends PayBaseController implements Pay
     use ApiParamsTrait;
     use IpTrait;
 
+    public string $payFlag = 'AX';
+
     /**
      * 艾希支付动作
      * @param Request $request
@@ -42,49 +44,26 @@ class AXController extends PayBaseController implements Pay
     public function pay(Request $request): JsonResponse
     {
 
-        // TODO: Implement pay() method.
-        $params = self::parse($request->params ?? '');
-        Validator::make($params, [
-            'pay_id' => 'required|string',
-            'type' => [
-                'required',
-                'string',
-                Rule::in(['1', '2']),
-            ],
-        ])->validate();
-        Log::info('ax_pay_params===', [$params]);//参数日志
+        $prePayData = $this->prepay($request,$this->payFlag);
+        $orderInfo = $prePayData['order_info'];
+        $notifyUrl = $prePayData['notifyUrl'];
+        $mercId = $prePayData['merchId'];
+        $channelNo = $prePayData['channelNo'];
+        $secret = $prePayData['secret'];
+        $ip = $prePayData['ip'];
+        $payUrl = $prePayData['pay_url'];
         // 强制转换
         try {
-            $payEnv = self::getPayEnv();
-            $secret = $payEnv['AX']['secret'];
-
-            $payInfo = PayLog::query()->find($params['pay_id']);
-            if (!$payInfo) {
-                throw new Exception("记录不存在");
-            }
-
-            $orderInfo = Order::query()->find($payInfo['order_id']);
-            if (!$orderInfo) {
-                throw new Exception("订单不存在");
-            }
-
-            $channelNo = $params['type'];
-            if (in_array($params['type'], ['1', '2'])) {
-                $channelNo = $this->getOwnMethod($orderInfo->type, $orderInfo->type_id, $params['type']);
-            }
-
-            $mercId = $payEnv['AX']['merchant_id'];
-            $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnv['AX']['notify_url'];
             $input = [
                 'fxid' => $mercId,               //商户号
-                'fxddh' => strval($payInfo->number),           //订单号，值允许英文数字
+                'fxddh' => strval($orderInfo->number),           //订单号，值允许英文数字
                 'fxdesc' => $orderInfo->id,           //商品名称
                 'fxfee' => intval($orderInfo->amount ?? 0),              //订单金额,单位元保留两位小数
                 'fxnotifyurl' => $notifyUrl,              //异步返回地址
                 'fxbackurl' => 'https://dl.yinlian66.com',     //同步返回地址
                 'fxpay' => $channelNo,     //支付通道编码
                 'fxnotifystyle' => 2,     //异步数据类型
-                'fxip' => $this->getRealIp(),
+                'fxip' => $ip,
             ];
             //生成签名 请求参数按照Ascii编码排序
             //私钥签名
@@ -93,7 +72,7 @@ class AXController extends PayBaseController implements Pay
             $curl = (new Client([
               //  'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
                 'verify' => false,
-            ]))->post($payEnv['AX']['pay_url'], ['form_params' => $input]);
+            ]))->post($payUrl, ['form_params' => $input]);
 
             $response = $curl->getBody();
             $resJson = json_decode($response, true);

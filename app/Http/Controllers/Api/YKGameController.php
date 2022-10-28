@@ -47,45 +47,17 @@ class YKGameController extends PayBaseController implements Pay
     public function pay(Request $request): JsonResponse
     {
 
-        // TODO: Implement pay() method.
-        $params = self::parse($request->params ?? '');
-        Validator::make($params, [
-            'pay_id' => 'required|string',
-            'type' => [
-                'required',
-                'string',
-                Rule::in(['zfbwap', 'wxwap','1','2']),
-            ],
-        ])->validate();
-        Log::info($this->payFlag.'_pay_params===', [$params]);//参数日志
-        // 强制转换
-        $payEnv = self::getPayEnv();
-        $payEnvInfo = $payEnv[$this->payFlag];
-        $secret = $payEnvInfo['secret'];
-
-        $payInfo = PayLog::query()->find($params['pay_id']);
-        if (!$payInfo) {
-            throw new Exception("记录不存在");
-        }
-
-        $orderInfo = Order::query()->find($payInfo['order_id']);
-        if (!$orderInfo) {
-            throw new Exception("订单不存在");
-        }
-
-        $oldMix = false;
-        $channelNo = $params['type'];
-        if (in_array($params['type'],['1','2'])) {
-            $oldMix = true;
-            $channelNo = $this->getOwnMethod($orderInfo->type,$orderInfo->type_id,$params['type']);
-        }
-
-
-        $mercId = $payEnvInfo['merchant_id'];
-        $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnvInfo['notify_url'];
+        $prePayData = $this->prepay($request,$this->payFlag);
+        $orderInfo = $prePayData['order_info'];
+        $notifyUrl = $prePayData['notifyUrl'];
+        $mercId = $prePayData['merchId'];
+        $channelNo = $prePayData['channelNo'];
+        $secret = $prePayData['secret'];
+//        $ip = $prePayData['ip'];
+        $payUrl = $prePayData['pay_url'];
         $input = [
             'appId' => $mercId,               //商户号
-            'orderNo' => strval($payInfo->number),           //订单号，值允许英文数字
+            'orderNo' => strval($orderInfo->number),           //订单号，值允许英文数字
             'channelNo' => $channelNo,            //支付通道编码
             'amount' => strval($orderInfo->amount ?? 0) . '.00',              //订单金额,单位元保留两位小数
             'notifyCallback' => $notifyUrl,   //异步返回地址
@@ -98,19 +70,15 @@ class YKGameController extends PayBaseController implements Pay
         $curl = (new Client([
             'headers' => ['Content-Type' => 'application/json'],
             'verify' => false,
-        ]))->post($payEnvInfo['pay_url'], [
+        ]))->post($payUrl, [
             'body' => json_encode($input)
         ]);
         $response = $curl->getBody();
          Log::info('YKGame_third_response===', [$response]);//三方响应日志
         $resJson = json_decode($response, true);
         if ($resJson['code'] == 1) {
-            if ($oldMix) {
-                $this->pullPayEvent($orderInfo);
-                $return = $this->format(0, ['url'=>$resJson['payUrl']], '取出成功');
-            } else {
-                $return = $this->format(0, $resJson, '取出成功');
-            }
+            $this->pullPayEvent($orderInfo);
+            $return = $this->format(0, ['url'=>$resJson['payUrl']], '取出成功');
         } else {
             $return = $this->format($resJson['code'], [], $response);
         }

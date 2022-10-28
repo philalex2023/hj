@@ -134,28 +134,10 @@ class OrderController extends PayBaseController
             ];
             Log::info('order_create_Data===',[$createData]);//参数日志
 
-            DB::beginTransaction();
             // 创建订单
             $order = Order::query()->create($createData);
-
-            // 准备支付记录
-            $pay = PayLog::query()->create([
-                'order_id' => $order->id,
-                'number' => $number,
-                'request_info' => json_encode($params),
-                'goods_info' => $params['goods_id'],
-                'uid' => $user->id,
-                'status' => 0,
-                'device_system' => $user->device_system,
-                'created_at' => $now,
-                'pay_method' => $payMethod,
-                'channel_code' => $payNumber,
-                'channel_name' => !$channelInfo ? '官方' : $channelInfo->name, //
-                'channel_id' => !$channelInfo ? 0 : $channelInfo->id, //
-                'updated_at' => $now,
-            ]);
-            DB::commit();
-            $return = $this->format(0, ['pay_id' => $pay->id,'order_id'=>$order->id], '取出成功');
+//            $return = $this->format(0, ['pay_id' => $pay->id,'order_id'=>$order->id], '取出成功');
+            $return = $this->format(0, ['pay_id' => $order->id,'order_id'=>$order->id], '取出成功');
         } catch (Exception $e) {
             DB::rollBack();
             $return = $this->format($e->getCode(), [], $e->getMessage());
