@@ -44,41 +44,19 @@ class XDController extends PayBaseController implements Pay
     {
 
         // TODO: Implement pay() method.
-        $params = self::parse($request->params ?? '');
-        Validator::make($params, [
-            'pay_id' => 'required|string',
-            'type' => [
-                'required',
-                'string',
-                Rule::in(['1', '2']),
-            ],
-        ])->validate();
-        Log::info('xd_pay_params===', [$params]);//参数日志
+        $prePayData = $this->prepay($request,'XD');
+        $orderInfo = $prePayData['order_info'];
+        $notifyUrl = $prePayData['notifyUrl'];
+        $mercId = $prePayData['merchId'];
+        $channelNo = $prePayData['channelNo'];
+        $secret = $prePayData['secret'];
+//        $ip = $prePayData['ip'];
+        $payUrl = $prePayData['pay_url'];
         // 强制转换
         try {
-            $payEnv = self::getPayEnv();
-            $secret = $payEnv['XD']['secret'];
-
-            $payInfo = PayLog::query()->find($params['pay_id']);
-            if (!$payInfo) {
-                throw new Exception("记录不存在");
-            }
-
-            $orderInfo = Order::query()->find($payInfo['order_id']);
-            if (!$orderInfo) {
-                throw new Exception("订单不存在");
-            }
-
-            $channelNo = $params['type'];
-            if (in_array($params['type'], ['1', '2'])) {
-                $channelNo = $this->getOwnMethod($orderInfo->type, $orderInfo->type_id, $params['type']);
-            }
-
-            $mercId = $payEnv['XD']['merchant_id'];
-            $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnv['XD']['notify_url'];
             $input = [
                 'fxid' => $mercId,               //商户号
-                'fxddh' => strval($payInfo->number),           //订单号，值允许英文数字
+                'fxddh' => strval($orderInfo->number),           //订单号，值允许英文数字
                 'fxdesc' => 'saol订单',           //订单号，值允许英文数字
                 'fxfee' => intval($orderInfo->amount ?? 0),              //订单金额,单位元保留两位小数
                 'fxattch' => '',              //订单金额,单位元保留两位小数
@@ -94,7 +72,7 @@ class XDController extends PayBaseController implements Pay
             $curl = (new Client([
                 'headers' => ['Content-Type' => 'application/json'],
                 'verify' => false,
-            ]))->post($payEnv['XD']['pay_url'], [
+            ]))->post($payUrl, [
                 'body' => json_encode($input)
             ]);
             $response = $curl->getBody();

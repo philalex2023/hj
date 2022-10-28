@@ -45,11 +45,8 @@ class DBSController extends PayBaseController implements Pay
         Log::info('dbs_pay_params===',[$params]);//参数日志
         try {
             $payEnv = SELF::getPayEnv();
-            $payInfo = PayLog::query()->find($params['pay_id']);
-            if (!$payInfo) {
-                throw new Exception("记录不存在");
-            }
-            $orderInfo = Order::query()->find($payInfo['order_id']);
+
+            $orderInfo = Order::query()->find($params['pay_id']);
             if (!$orderInfo) {
                 throw new Exception("订单不存在");
             }
@@ -63,13 +60,13 @@ class DBSController extends PayBaseController implements Pay
             $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnv['DBS']['notify_url'];
             $input = [
                 'mercId' => $mercId,
-                'tradeNo' => strval($payInfo->number),
+                'tradeNo' => strval($orderInfo->number),
                 'type' => $rechargeChannel,
                 'money' => strval($orderInfo->amount),
                 'notifyUrl' => $notifyUrl,
                 'time' => strval(time().'000'),
                 // 'mode' => 'sdk',
-                'sign' => $this->sign($mercId, $orderInfo->amount,$notifyUrl,$payInfo->number,$rechargeChannel,$payEnv['DBS']['secret']),
+                'sign' => $this->sign($mercId, $orderInfo->amount,$notifyUrl,$orderInfo->number,$rechargeChannel,$payEnv['DBS']['secret']),
                 // 'payload' => //选填。⽬前仅⽀持过滤赔付渠道, 传 1 ,则过滤赔付渠道
                 'info' => [
                     'playerId'=>strval($request->user()->id),

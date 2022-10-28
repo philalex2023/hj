@@ -46,43 +46,19 @@ class HSController extends PayBaseController implements Pay
     public function pay(Request $request): JsonResponse
     {
 
-        // TODO: Implement pay() method.
-        $params = self::parse($request->params ?? '');
-        Validator::make($params, [
-            'pay_id' => 'required|string',
-            'type' => [
-                'required',
-                'string',
-                Rule::in(['1', '2']),
-            ],
-        ])->validate();
-        //Log::info('df_pay_params===', [$params]);//参数日志
-        $payEnv = self::getPayEnv();
-        $payEnvInfo = $payEnv[$this->payFlag];
-        $secret = $payEnvInfo['secret'];
-
-        $payInfo = PayLog::query()->find($params['pay_id']);
-        if (!$payInfo) {
-            throw new Exception("记录不存在");
-        }
-
-        $orderInfo = Order::query()->find($payInfo['order_id']);
-        if (!$orderInfo) {
-            throw new Exception("订单不存在");
-        }
-
-        $channelNo = $params['type'];
-        if (in_array($params['type'], ['1', '2'])) {
-            $channelNo = $this->getOwnMethod($orderInfo->type, $orderInfo->type_id, $params['type']);
-        }
-
-        $mercId = $payEnvInfo['merchant_id'];
-        $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnvInfo['notify_url'];
+        $prePayData = $this->prepay($request,$this->payFlag);
+        $orderInfo = $prePayData['order_info'];
+        $notifyUrl = $prePayData['notifyUrl'];
+        $mercId = $prePayData['merchId'];
+        $channelNo = $prePayData['channelNo'];
+        $secret = $prePayData['secret'];
+        $ip = $prePayData['ip'];
+        $payUrl = $prePayData['pay_url'];
         $input = [
             'mch_id' => $mercId,               //商户号
             'pass_code' => $channelNo,            //通道类型
             'subject' => $orderInfo->id,              //订单标题
-            'out_trade_no' => strval($payInfo->number),           //订单号，值允许英文数字
+            'out_trade_no' => strval($orderInfo->number),           //订单号，值允许英文数字
             'amount' => intval($orderInfo->amount ?? 0),              //订单金额,单位元保留两位小数
             'client_ip' => $this->getRealIp(),            //客户IP地址
             'notify_url' => $notifyUrl,              //后台异步通知 (回调) 地址
@@ -92,11 +68,10 @@ class HSController extends PayBaseController implements Pay
         //MD5 签名: HEX 大写, 32 字节。
         $input['sign'] = $this->sign($input, $secret);
         Log::info($this->payFlag.'_third_params===', [$input]);//三方参数日志
-        Log::info($this->payFlag.'_pay_url===', [$payEnvInfo['pay_url']]);//三方参数日志
 
         $curl = (new Client([
             'verify' => false,
-        ]))->post($payEnvInfo['pay_url'], ['json' => $input]);
+        ]))->post($payUrl, ['json' => $input]);
 
         $response = $curl->getBody();
         Log::info($this->payFlag.'_third_response===', [$response]);//三方响应日志
