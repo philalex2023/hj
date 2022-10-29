@@ -93,8 +93,11 @@ class RechargeController extends BaseCurlIndexController
         ],
     ];
 
+    private array $status = [];
+
     public function setModel(): Order
     {
+        $this->status = $this->getOrderStatus();
         return $this->model = new Order();
     }
 
@@ -173,6 +176,7 @@ class RechargeController extends BaseCurlIndexController
                 'field' => 'status',
                 'minWidth' => 100,
                 'title' => '状态',
+                'hide' => true,
                 'align' => 'center'
             ],
             [
@@ -224,7 +228,13 @@ class RechargeController extends BaseCurlIndexController
             $remark = @json_decode($item->remark,true);
             $item->type = $remark['name'] ?? '';
         }
-        $item->status = UiService::switchTpl('status', $item,'','完成|未付');
+        $color = match ($item->status){
+            0 => 'layui-btn-primary',
+            1 => '',
+            2 => 'layui-btn-danger',
+            3 => 'layui-btn-warm'
+        };
+        $item->status = '<button type="button" class="layui-btn layui-btn-xs '.$color.'">'.$this->status[$item->status]['name'].'</button>';
         $item->forward = match ($item->forward) {
             'video' => '长视频',
             'short' => '短视频',
