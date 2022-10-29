@@ -12,6 +12,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
@@ -78,10 +79,11 @@ class ProcessDataSource implements ShouldQueue
             $ids = array_unique($mergerArr);
             //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             $idStr = implode(',',$ids);
-            Log::info('id-num',[count($ids)]);
+            Log::info('update data num',[count($ids)]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
             $this->updateTopicListByCid($topic->cid);
         }
+        Artisan::call('scout:import',["App\Models\Video"]);
     }
 
     public function getDataSourceSortArr($sort_vid)
