@@ -60,8 +60,8 @@ class AutoUpdateData extends Command
             //$this->info('######key:'.$key.'######');
             $bar->advance();
         }
-        $this->call('scout:import',["App\Models\Video"]);
         $bar->finish();
+        $this->call('scout:import',["App\Models\Video"]);
         $this->info('######执行完成######');
         return 0;
     }
