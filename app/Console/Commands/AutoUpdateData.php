@@ -57,7 +57,7 @@ class AutoUpdateData extends Command
         }
         $bar->finish();
         $this->call('scout:import',["App\Models\Video"]);
-        $this->info('######执行完成######');
+        $this->info(date('Y-m-d H:i:s').'=>######执行完成######');
         return 0;
     }
 
