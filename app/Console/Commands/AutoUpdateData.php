@@ -90,9 +90,9 @@ class AutoUpdateData extends Command
             $ids = array_unique($mergerArr);
             //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             $idStr = implode(',',$ids);
-            Log::info('update data num',[count($ids)]);
+//            Log::info('update data num',[count($ids)]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
-            Log::info('update topic id',[$topic->id]);
+//            Log::info('update topic id',[$topic->id]);
             $this->updateTopicListByCid($topic->cid);
         }
     }
