@@ -80,7 +80,7 @@ class ProcessDataSource implements ShouldQueue
             //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             $idStr = implode(',',$ids);
             Log::info('update data num',[count($ids)]);
-            Artisan::call('scout:import',["App\Models\Video"]);
+            Artisan::call('scout:import',["App\Models\Video"]);//专题更新保证有最新的索引否则ES会报404异常
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
             $this->updateTopicListByCid($topic->cid);
         }
