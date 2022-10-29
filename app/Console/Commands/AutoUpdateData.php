@@ -8,7 +8,6 @@ use App\TraitClass\DataSourceTrait;
 use App\TraitClass\TopicTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
 
 class AutoUpdateData extends Command
 {
@@ -62,6 +61,7 @@ class AutoUpdateData extends Command
         return 0;
     }
 
+    //注意：一定要禁用日志，若需要使用$this->info的方式
     public function updateTopicData($model)
     {
         $topics = Topic::query()->where('data_source_id',$model->id)->get(['id','tag','cid']);
