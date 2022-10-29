@@ -110,7 +110,7 @@ class StatisticsController extends BaseCurlController
                 }
                 break;
             case 'recharge':
-                $queryBuild = DB::table('recharge')->select(DB::raw('DATE_FORMAT(recharge.created_at,"%Y-%m-%d") days'),DB::raw('SUM(amount) as money'));
+                $queryBuild = DB::table('orders')->select(DB::raw('DATE_FORMAT(orders.created_at,"%Y-%m-%d") days'),DB::raw('SUM(amount) as money'));
                 if($channelId!==null){
                     $queryBuild = $queryBuild
                         ->where('channel_id',$channelId);
@@ -119,7 +119,7 @@ class StatisticsController extends BaseCurlController
                     $queryBuild = $queryBuild->where('device_system',$deviceSystem);
                 }
                 // if($timeRange != 0){
-                    $queryBuild = $queryBuild->whereBetween('recharge.created_at',[$startDate,$endDate]);
+                    $queryBuild = $queryBuild->whereBetween('orders.created_at',[$startDate,$endDate]);
                 // }
                 $items = $queryBuild->groupBy('days')->orderByDesc('days')->limit(15)->get();
                 $items = array_reverse($items->toArray());
