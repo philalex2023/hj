@@ -44,8 +44,6 @@ class AutoUpdateData extends Command
     public function handle(): int
     {
         //
-
-        //
         $dataSource = DB::table('data_source')->get();
 
         $bar = $this->output->createProgressBar(count($dataSource));
@@ -56,7 +54,7 @@ class AutoUpdateData extends Command
             $dataSourceModel = DataSource::query()->findOrFail($model->id);
             $dataSourceModel->fill((array)$model)->save();
             $job = new ProcessDataSource($dataSourceModel);
-            $this->dispatch($job->onQueue('default'));
+            $this->dispatchSync($job->onQueue('default'));
             //$this->info('######key:'.$key.'######');
             $bar->advance();
         }
