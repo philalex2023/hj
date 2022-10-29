@@ -2,16 +2,17 @@
 
 namespace App\Console\Commands;
 
-use App\Jobs\ProcessDataSource;
 use App\Models\DataSource;
+use App\Models\Topic;
 use App\TraitClass\DataSourceTrait;
+use App\TraitClass\TopicTrait;
 use Illuminate\Console\Command;
-use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class AutoUpdateData extends Command
 {
-    use DataSourceTrait,DispatchesJobs;
+    use DataSourceTrait,TopicTrait;
     /**
      * The name and signature of the console command.
      *
@@ -52,15 +53,54 @@ class AutoUpdateData extends Command
             //
             $this->getDataSourceIdsForVideo($model);
             $dataSourceModel = DataSource::query()->findOrFail($model->id);
-            $dataSourceModel->fill((array)$model)->save();
-            $job = new ProcessDataSource($dataSourceModel);
-            $this->dispatchSync($job->onQueue('default'));
-            //$this->info('######key:'.$key.'######');
+            $this->updateTopicData($dataSourceModel);
             $bar->advance();
         }
         $bar->finish();
         $this->call('scout:import',["App\Models\Video"]);
         $this->info('######执行完成######');
         return 0;
+    }
+
+    public function updateTopicData($model)
+    {
+        $topics = Topic::query()->where('data_source_id',$model->id)->get(['id','tag','cid']);
+        foreach ($topics as $topic) {
+            $tag  = !$topic->tag ? [] : json_decode($topic->tag,true);
+            $tag = !$tag ? [] : $tag;
+            $tagVideoIds = [];
+            if(!empty($tagVideoIds)){
+                $tagVideoIds = $this->getVideoIdsByTag($tag);
+                //Log::info('_tagVideoIds',[$tagVideoIds]);
+            }
+            $sourceIds = !$model->contain_vids ? [] : explode(',',$model->contain_vids);
+            $sIds = array_unique($sourceIds);
+            //Log::info('_sourceIds',[$sIds]);
+            $firstIds = [];
+            if($model->show_num > 0){
+                $firstIds = $this->getDataSourceSortArr($model->sort_vids);
+                krsort($firstIds);
+                //Log::info('firstIds',[$firstIds]);
+                //更新数据源
+                $updateIdStr = implode(',',array_unique([...$firstIds,...$sourceIds]));
+                //Log::info('idStr-1',[$updateIdStr]);
+                DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr]);
+            }
+            $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
+            $ids = array_unique($mergerArr);
+            //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
+            $idStr = implode(',',$ids);
+            Log::info('update data num',[count($ids)]);
+            Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
+            Log::info('update topic id',[$topic->id]);
+            $this->updateTopicListByCid($topic->cid);
+        }
+    }
+
+    public function getDataSourceSortArr($sort_vid)
+    {
+        $originSort = !$sort_vid ? [] : json_decode($sort_vid, true);
+        !$originSort && $originSort=[];
+        return $originSort;
     }
 }

@@ -290,12 +290,6 @@ class DataSourceController extends BaseCurlController
         ]);
     }
 
-    /*protected function afterSaveSuccessEvent($model, $id = '')
-    {
-        $job = new ProcessDataSource($model);
-        $this->dispatch($job->onQueue('default'));
-        return $model;
-    }*/
     //表单验证
    /* public function checkRule($id = '')
     {
@@ -318,9 +312,9 @@ class DataSourceController extends BaseCurlController
 
     public function updatePost(Request $request, $id)
     {
-        $model = DataSource::query()->where('id',$id)->first();
+        /*$model = DataSource::query()->where('id',$id)->first();
         $job = new ProcessDataSource($model);
-        $this->dispatch($job->onQueue('default'));
+        $this->dispatch($job->onQueue('default'));*/
         return $this->returnSuccessApi();
     }
 
