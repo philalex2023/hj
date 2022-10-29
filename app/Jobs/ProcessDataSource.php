@@ -82,6 +82,7 @@ class ProcessDataSource implements ShouldQueue
             Log::info('update data num',[count($ids)]);
             Artisan::call('scout:import',["App\Models\Video"]);//专题更新保证有最新的索引否则ES会报404异常
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
+            Log::info('update topic id',[$topic->id]);
             $this->updateTopicListByCid($topic->cid);
         }
 
