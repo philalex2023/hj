@@ -80,10 +80,11 @@ class ProcessDataSource implements ShouldQueue
             //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             $idStr = implode(',',$ids);
             Log::info('update data num',[count($ids)]);
+            Artisan::call('scout:import',["App\Models\Video"]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
             $this->updateTopicListByCid($topic->cid);
         }
-        Artisan::call('scout:import',["App\Models\Video"]);
+
     }
 
     public function getDataSourceSortArr($sort_vid)
