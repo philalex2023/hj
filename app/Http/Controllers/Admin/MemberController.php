@@ -403,11 +403,11 @@ class MemberController extends BaseCurlController
                 'default' => 0,
                 'data' => $this->uiService->trueFalseData()
             ],
-            [
+            /*[
                 'field' => 'location_name',
                 'type' => 'text',
                 'name' => '用户地址',
-            ],
+            ],*/
             [
                 'field' => 'password',
                 'type' => 'text',
