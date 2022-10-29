@@ -45,7 +45,6 @@ class AutoUpdateData extends Command
     {
         //
 
-        $this->call('scout:import',["App\Models\Video"]);
         //
         $dataSource = DB::table('data_source')->get();
 
@@ -61,6 +60,7 @@ class AutoUpdateData extends Command
             //$this->info('######key:'.$key.'######');
             $bar->advance();
         }
+        $this->call('scout:import',["App\Models\Video"]);
         $bar->finish();
         $this->info('######执行完成######');
         return 0;
