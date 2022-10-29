@@ -49,7 +49,7 @@ class SaveNewStatisticsDataFromRedis extends Command
         $data = [
             'active_user'=>(int)$hashData['active_user'],
             'online_user'=>(int)$hashData['online_user'],
-            'keep_1'=>(int)$hashData['active_user'],
+            'keep_1'=>(int)$hashData['keep_1'],
             'inc_user'=>(int)$hashData['day_inc_user'],
             'inc_android_user'=>(int)$hashData['day_inc_android_user'],
             'inc_ios_user'=>(int)$hashData['day_inc_ios_user'],
