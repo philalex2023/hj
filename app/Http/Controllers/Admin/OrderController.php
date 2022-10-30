@@ -158,8 +158,7 @@ class OrderController extends BaseCurlController
             0 => 'layui-btn-primary',
             1 => '',
             2 => 'layui-btn-danger',
-            3 => 'layui-btn-warm',
-            -1 => ' ',
+            3 => 'layui-btn-warm'
         };
         $item->status = '<button type="button" class="layui-btn layui-btn-xs '.$color.'">'.$this->status[$item->status]['name'].'</button>';
         /*$item->status = match ($item->status){
