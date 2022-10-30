@@ -489,10 +489,9 @@ class VideoController extends BaseCurlController
             $model->cover_img = str_replace(self::getDomain($model->sync),'',$model->cover_img??'');
             if(!$model->cover_img){
                 $model->cover_img = self::get_slice_url($model->url,'cover');
-            }
-            /*else{
+            } else {
                 $this->syncUpload($model->cover_img,$model->sync);
-            }*/
+            }
         }
 
         $tagsArr = [];

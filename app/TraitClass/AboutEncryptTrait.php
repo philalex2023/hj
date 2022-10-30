@@ -60,14 +60,14 @@ trait AboutEncryptTrait
             if(!$content){
                 $content = $this->getContentByUrl(VideoTrait::getDomain(env('SFTP_SYNC',1)).$img);
             }
-            Log::info('==ImgFile==',[$img]);
+//            Log::info('==ImgFile==',[$img]);
             $put = $sync==1 ? Storage::disk('sftp1')->put($img,$content) : Storage::disk('sftp')->put($img,$content);
             //加密
             if($put){
                 $fileInfo = pathinfo($img);
                 $encryptFile = str_replace('/storage','/public',$fileInfo['dirname']).'/'.$fileInfo['filename'].'.htm';
                 $r = $sync==1 ? Storage::disk('sftp1')->put($encryptFile,$content) : Storage::disk('sftp')->put($encryptFile,$content);
-                Log::info('==encryptImg==',[$encryptFile,$r]);
+//                Log::info('==encryptImg==',[$encryptFile,$r]);
             }
         }
     }
