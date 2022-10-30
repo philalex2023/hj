@@ -465,7 +465,7 @@ class VideoController extends BaseCurlController
         $model->cat = json_encode($cats);
         $tags = $this->rq->input('tags',[]);
         $model->tag = json_encode($tags);
-        $model->author = admin('nickname');
+//        $model->author = admin('nickname');
         $model->gold = $this->rq->input('gold',0);
         $model->gold *= $this->goldUnit;
         //$model->sync = env('SFTP_SYNC',1);
