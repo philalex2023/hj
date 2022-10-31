@@ -96,7 +96,7 @@ class PayController extends Controller
         ])->validated();
         $prePayData = $this->getPayParams($validated);
         $payName = $prePayData['payName'];
-        $this->$payName($prePayData);
+        return $this->$payName($prePayData);
     }
 
     public function YK($prePayData){
@@ -173,7 +173,7 @@ class PayController extends Controller
         ]))->post($payUrl, ['form_params' => $input]);
 
         $response = $curl->getBody();
-        Log::info($payName.'_third_response===', [$response]);//三方响应日志
+        Log::info($payName.'_third_response', [$response]);//三方响应日志
 
         //返回H5页面方式
         /*$key = 'pay_'.$request->user()->id;
@@ -228,7 +228,7 @@ class PayController extends Controller
 
             $response = $curl->getBody();
             $resJson = json_decode($response, true);
-            Log::info('ax_third_response===', [$resJson]);//三方响应日志
+            Log::info('ax_third_response', [$resJson]);//三方响应日志
             if ($resJson['status'] == 1) {
                 $this->pullPayEvent($orderInfo);
                 $return = $this->format(0, ['url' => $resJson['payurl']], '取出成功');
