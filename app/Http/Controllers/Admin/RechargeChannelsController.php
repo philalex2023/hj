@@ -34,7 +34,8 @@ class RechargeChannelsController extends BaseCurlController
         foreach ($channels as $channel){
             $selector[$channel->id] = [
                 'id' => $channel->id,
-                'name' => $channel->name.'['.$channel->remark.']',
+//                'name' => $channel->name.'['.$channel->remark.']',
+                'name' => $channel->remark,
             ];
         }
         return $selector;
