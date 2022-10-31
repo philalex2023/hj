@@ -100,7 +100,7 @@ class RechargeChannelsController extends BaseCurlController
             [
                 'field' => 'order_price',
                 'minWidth' => 100,
-                'title' => '其它地址',
+                'title' => '订单金额',
                 'align' => 'center'
             ],
             [
