@@ -27,9 +27,23 @@ class RechargeChannelsController extends BaseCurlController
         6=>['id'=>6,'name'=>'500'],
     ];
 
+    public function getPayChannels(): array
+    {
+        $channels = RechargeChannel::query()->get(['id','name','remark']);
+        $selector = [''=>['id'=>'','name'=>'选择充值渠道']];
+        foreach ($channels as $channel){
+            $selector[$channel->id] = [
+                'id' => $channel->id,
+                'name' => $channel->name.'['.$channel->remark.']',
+            ];
+        }
+        return $selector;
+    }
+
     public function setModel(): RechargeChannels
     {
-        $this->payChannel = [''=>['id'=>'','name'=>'选择充值渠道']]+array_column(RechargeChannel::query()->get(['id','name'])->all(),null,'id');
+//        $this->payChannel = [''=>['id'=>'','name'=>'选择充值渠道']]+array_column(RechargeChannel::query()->get(['id','name'])->all(),null,'id');
+        $this->payChannel = $this->getPayChannels();
         return $this->model = new RechargeChannels();
     }
 
