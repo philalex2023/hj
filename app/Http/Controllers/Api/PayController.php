@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Order;
 use App\TraitClass\ApiParamsTrait;
+use App\TraitClass\PayCallbackTrait;
 use App\TraitClass\PaySignVerifyTrait;
 use App\TraitClass\PayTrait;
 use App\TraitClass\IpTrait;
@@ -23,7 +24,7 @@ use Psr\SimpleCache\InvalidArgumentException;
  */
 class PayController extends Controller
 {
-    use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait;
+    use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait,PayCallbackTrait;
 
     public function getRechargeChannelByWeight($payChannelType)
     {

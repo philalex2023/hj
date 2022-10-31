@@ -6,13 +6,13 @@ use Illuminate\Support\Facades\Log;
 
 trait PaySignVerifyTrait
 {
-    function signYK($data, $md5Key): string
+    public function signYK($data, $md5Key): string
     {
         //签名数据转换为大写
         return strtolower(md5($md5Key . $data['orderNo'] . $data['appId'] . $data['amount'] . $data['notifyCallback']));
     }
 
-    function verifyYK($data, $md5Key, $pubKey): bool
+    public function verifyYK($data, $md5Key, $pubKey): bool
     {
         $sig_data = strtolower(md5($md5Key . $data['orderNo'] . $data['appId'] . $data['amount']));
         if ($sig_data == $pubKey) {
@@ -21,13 +21,13 @@ trait PaySignVerifyTrait
         return false;
     }
 
-    function signYL($data, $md5Key): string
+    public function signYL($data, $md5Key): string
     {
         $md5str = $data['orderId'].$data['amount'].$data['merchId'];
         return md5($md5str . $md5Key);
     }
 
-    function verifyYL($data, $md5Key, $pubKey): bool
+    public function verifyYL($data, $md5Key, $pubKey): bool
     {
         $sign = md5($data['orderId'].$data['respCode'].$md5Key);
         if ($sign == $pubKey) {
@@ -36,7 +36,7 @@ trait PaySignVerifyTrait
         return false;
     }
 
-    function signAX($data, $md5Key): string
+    public function signAX($data, $md5Key): string
     {
         $native = array(
             "fxid" => $data['fxid'],
@@ -48,7 +48,7 @@ trait PaySignVerifyTrait
         return md5($md5str . $md5Key);
     }
 
-    function verifyAX($data, $md5Key, $pubKey): bool
+    public function verifyAX($data, $md5Key, $pubKey): bool
     {
         $returnArray = array( // 返回字段
             "fxstatus" => $data["fxstatus"], // 状态

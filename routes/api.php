@@ -52,7 +52,8 @@ Route::group([
     }
     Route::get('pullOriginVideo', 'ConfigController@pullOriginVideo');
     foreach ($payNames as $n){
-        Route::post('callback'.$n, $n.'Controller@callback');  //大白鲨支付回调
+//        Route::post('callback'.$n, $n.'Controller@callback');
+        Route::post('callback'.$n, 'PayController@callback'.$n);  //支付回调
     }
 });
 
@@ -104,9 +105,9 @@ Route::group([
 //    Route::post('payDbs', 'DBSController@pay');  //大白鲨支付动作
 //    Route::post('queryDbs', 'DBSController@query');  //大白鲨支付查询
 //    Route::post('methodDbs', 'DBSController@method');  //大白鲨支付方式
-    foreach ($payNames as $n){
+    /*foreach ($payNames as $n){
         Route::post('pay'.$n, $n.'Controller@pay');
-    }
+    }*/
 
     Route::post('payBill', 'PayController@bill');  //支付
 
