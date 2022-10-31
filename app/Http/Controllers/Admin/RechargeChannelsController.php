@@ -178,6 +178,7 @@ class RechargeChannelsController extends BaseCurlController
                 'field' => 'weights',
                 'type' => 'number',
                 'name' => '权重',
+                'tips' => '范围0~100的区间值',
                 'must' => 0,
             ],
             [
