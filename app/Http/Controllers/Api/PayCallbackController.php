@@ -1,13 +1,28 @@
 <?php
 
-namespace App\TraitClass;
+namespace App\Http\Controllers\Api;
 
+use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\TraitClass\ApiParamsTrait;
+use App\TraitClass\PayCallbackTrait;
+use App\TraitClass\PaySignVerifyTrait;
+use App\TraitClass\PayTrait;
+use App\TraitClass\IpTrait;
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Validation\Rule;
+use Psr\SimpleCache\InvalidArgumentException;
 
-trait PayCallbackTrait
+/**
+ * 通达支付
+ * Class AXController
+ * @package App\Http\Controllers\Api
+ */
+class PayCallbackController extends Controller
 {
     use PaySignVerifyTrait,PayTrait,IpTrait;
 

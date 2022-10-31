@@ -53,7 +53,7 @@ Route::group([
     Route::get('pullOriginVideo', 'ConfigController@pullOriginVideo');
     foreach ($payNames as $n){
 //        Route::post('callback'.$n, $n.'Controller@callback');
-        Route::post('callback'.$n, 'PayController@callback'.$n);  //支付回调
+        Route::post('callback'.$n, 'PayCallbackController@callback'.$n);  //支付回调
     }
 });
 
