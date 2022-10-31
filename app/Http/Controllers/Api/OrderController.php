@@ -144,7 +144,7 @@ class OrderController extends PayBaseController
             $return = $this->format(0, ['pay_id' => $order->id,'order_id'=>$order->id], '取出成功');
         } catch (Exception $e) {
             DB::rollBack();
-            $return = $this->format($e->getCode(), [], $e->getMessage());
+            $return = $this->format((int)$e->getCode(), [], $e->getMessage());
         }
 
         return response()->json($return);
