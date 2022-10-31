@@ -33,7 +33,7 @@ class PayController extends Controller
         $channelIds = array ();
         foreach ($recharge_channels as $one){
             $weight += $one->weights;
-            for ($i=0;$i < $one['weight']; ++$i){
+            for ($i=0;$i < $one->weights; ++$i){
                 $channelIds[] = $one->pay_channel;
             }
         }
