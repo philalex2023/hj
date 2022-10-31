@@ -57,7 +57,7 @@ class GoldController extends BaseCurlController
                 'align' => 'center',
 //                'edit' => 1
             ],
-            [
+            /*[
                 'field' => 'zfb_action_name',
                 'minWidth' => 100,
                 'title' => '支付宝充值方式',
@@ -80,7 +80,7 @@ class GoldController extends BaseCurlController
                 'minWidth' => 100,
                 'title' => '微信通道',
                 'align' => 'center',
-            ],
+            ],*/
             [
                 'field' => 'status',
                 'minWidth' => 80,
