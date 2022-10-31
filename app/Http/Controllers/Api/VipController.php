@@ -104,8 +104,8 @@ class VipController extends \App\Http\Controllers\Controller
             } else {
                 $memberCard[$mcKey]['wx_url'] = '';
             }*/
-            $memberCard[$mcKey]['zfb_url'] = $baseUrl . $payUrl['zfb'];
-            $memberCard[$mcKey]['wx_url'] = $baseUrl . $payUrl['wx'];
+            $memberCard[$mcKey]['zfb_url'] = $payUrl['zfb'];
+            $memberCard[$mcKey]['wx_url'] = $payUrl['wx'];
         }
 
         $res['list'] = $memberCard;
@@ -122,7 +122,7 @@ class VipController extends \App\Http\Controllers\Controller
             ->orderBy('sort')
             ->get(['id','money','remark','zfb_action_id','wx_action_id','bonus'])->toArray();
 //       $rechargeData = $this->getRechargeChannel();
-       $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
+
        $payUrl = $this->getPayUrl();
        foreach ($gold as $mvItem) {
            /*if ($zfb_action_id = $rechargeData[$mvItem->zfb_action_id]) {
@@ -135,8 +135,8 @@ class VipController extends \App\Http\Controllers\Controller
            } else {
                $mvItem->wx_url = '';
            }*/
-           $mvItem->zfb_url = $baseUrl . $payUrl['zfb'];
-           $mvItem->wx_url = $baseUrl . $payUrl['wx'];
+           $mvItem->zfb_url = $payUrl['zfb'];
+           $mvItem->wx_url = $payUrl['wx'];
        }
         return response()->json([
             'state'=>0,
@@ -148,9 +148,10 @@ class VipController extends \App\Http\Controllers\Controller
     {
        $zfb = DB::table('recharge_channels')->where('status',1)->where('pay_type',1)->exists();
        $wx = DB::table('recharge_channels')->where('status',1)->where('pay_type',2)->exists();
+       $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
        return [
-           'zfb' => $zfb ? $this->payUrl : '',
-           'wx' => $wx ? $this->payUrl : '',
+           'zfb' => $zfb ? $baseUrl.$this->payUrl : '',
+           'wx' => $wx ? $baseUrl.$this->payUrl : '',
        ];
     }
 
