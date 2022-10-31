@@ -69,6 +69,7 @@ class PayController extends Controller
             2 => $payEnvInfo['wx_code'],
         };
         Log::info($payName.'_pay_url===', [$payEnvInfo['pay_url']]);//三方参数日志
+        Order::query()->where('id',$orderInfo->id)->update(['pay_channel_code'=>$channelNo,'pay_method'=>$payEnvInfo['id']]);
         return [
             'payName' => $payName,
             'secret' => $secret,
