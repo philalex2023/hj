@@ -18,6 +18,8 @@ class VipController extends \App\Http\Controllers\Controller
 {
     use MemberCardTrait, PHPRedisTrait, CacheTableTrait, ApiParamsTrait;
 
+    private string $payUrl = '/api/payBill';
+
     /**
      * @throws ValidationException
      */
@@ -88,10 +90,10 @@ class VipController extends \App\Http\Controllers\Controller
         }
         array_unshift($memberCard,...$ascItem);
         //Log::info('memberCard===',$ascItem);
-        $rechargeData = $this->getRechargeChannel();
+//        $rechargeData = $this->getRechargeChannel();
         $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
         foreach ($memberCard as $mcKey=>$mvItem) {
-            if ($zfb_action_id = $rechargeData[$mvItem['zfb_action_id']]) {
+            /*if ($zfb_action_id = $rechargeData[$mvItem['zfb_action_id']]) {
                 $memberCard[$mcKey]['zfb_url'] = $baseUrl . $zfb_action_id;
             } else {
                 $memberCard[$mcKey]['zfb_url'] = '';
@@ -100,7 +102,9 @@ class VipController extends \App\Http\Controllers\Controller
                 $memberCard[$mcKey]['wx_url'] = $baseUrl . $wx_action_id;
             } else {
                 $memberCard[$mcKey]['wx_url'] = '';
-            }
+            }*/
+            $memberCard[$mcKey]['zfb_url'] = $baseUrl . $this->payUrl;
+            $memberCard[$mcKey]['wx_url'] = $baseUrl . $this->payUrl;
         }
 
         $res['list'] = $memberCard;
@@ -119,7 +123,7 @@ class VipController extends \App\Http\Controllers\Controller
        $rechargeData = $this->getRechargeChannel();
        $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
        foreach ($gold as $mvItem) {
-           if ($zfb_action_id = $rechargeData[$mvItem->zfb_action_id]) {
+           /*if ($zfb_action_id = $rechargeData[$mvItem->zfb_action_id]) {
                $mvItem->zfb_url = $baseUrl . $zfb_action_id;
            } else {
                $mvItem->zfb_url = '';
@@ -128,7 +132,9 @@ class VipController extends \App\Http\Controllers\Controller
                $mvItem->wx_url = $baseUrl . $wx_action_id;
            } else {
                $mvItem->wx_url = '';
-           }
+           }*/
+           $mvItem->wx_url = $baseUrl . $this->payUrl;
+           $mvItem->zfb_url = $baseUrl . $this->payUrl;
        }
         return response()->json([
             'state'=>0,

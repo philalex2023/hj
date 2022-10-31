@@ -180,6 +180,18 @@ class RechargeChannelController extends BaseCurlController
                 'must' => 0,
             ],
             [
+                'field' => 'wx_code',
+                'type' => 'text',
+                'name' => '微信通道码',
+                'must' => 0,
+            ],
+            [
+                'field' => 'zfb_code',
+                'type' => 'text',
+                'name' => '支付宝通道码',
+                'must' => 0,
+            ],
+            [
                 'field' => 'status',
                 'type' => 'radio',
                 'name' => '是否启用',

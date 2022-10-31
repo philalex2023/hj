@@ -44,7 +44,7 @@ class YYController extends PayBaseController implements Pay
     public function pay(Request $request): JsonResponse
     {
 
-        $prePayData = $this->prepay($request,$this->payFlag);
+        $prePayData = $this->prepay($request,$this->flag);
         $orderInfo = $prePayData['order_info'];
         $notifyUrl = $prePayData['notifyUrl'];
         $mercId = $prePayData['merchId'];

@@ -108,6 +108,8 @@ Route::group([
         Route::post('pay'.$n, $n.'Controller@pay');
     }
 
+    Route::post('payBill', 'PayController@bill');  //支付
+
     /// 订单相关接口
     Route::post('oderCreate', 'OrderController@create');  //订单创建接口
     Route::get('orderQuery', 'OrderController@query');  //订单查询接口
