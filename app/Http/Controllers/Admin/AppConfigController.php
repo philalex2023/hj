@@ -154,14 +154,14 @@ class AppConfigController extends BaseCurlController
                         'must' => 1,
                         'verify' => '',
                     ],
-                    [
+                    /*[
                         'field' => 'pay_method',
                         'type' => 'textarea',
                         'name' => '支付方式',
                         'must' => 1,
                         'default' => '',
                         'tips' => '配置json,开发用'
-                    ],
+                    ],*/
                     [
                         'field' => 'pay_detail',
                         'type' => 'textarea',

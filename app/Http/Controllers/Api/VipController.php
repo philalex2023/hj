@@ -92,6 +92,7 @@ class VipController extends \App\Http\Controllers\Controller
         //Log::info('memberCard===',$ascItem);
 //        $rechargeData = $this->getRechargeChannel();
         $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
+        $payUrl = $this->getPayUrl();
         foreach ($memberCard as $mcKey=>$mvItem) {
             /*if ($zfb_action_id = $rechargeData[$mvItem['zfb_action_id']]) {
                 $memberCard[$mcKey]['zfb_url'] = $baseUrl . $zfb_action_id;
@@ -103,8 +104,8 @@ class VipController extends \App\Http\Controllers\Controller
             } else {
                 $memberCard[$mcKey]['wx_url'] = '';
             }*/
-            $memberCard[$mcKey]['zfb_url'] = $baseUrl . $this->payUrl;
-            $memberCard[$mcKey]['wx_url'] = $baseUrl . $this->payUrl;
+            $memberCard[$mcKey]['zfb_url'] = $baseUrl . $payUrl['zfb'];
+            $memberCard[$mcKey]['wx_url'] = $baseUrl . $payUrl['wx'];
         }
 
         $res['list'] = $memberCard;
@@ -120,8 +121,9 @@ class VipController extends \App\Http\Controllers\Controller
             ->where('status',1)
             ->orderBy('sort')
             ->get(['id','money','remark','zfb_action_id','wx_action_id','bonus'])->toArray();
-       $rechargeData = $this->getRechargeChannel();
+//       $rechargeData = $this->getRechargeChannel();
        $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
+       $payUrl = $this->getPayUrl();
        foreach ($gold as $mvItem) {
            /*if ($zfb_action_id = $rechargeData[$mvItem->zfb_action_id]) {
                $mvItem->zfb_url = $baseUrl . $zfb_action_id;
@@ -133,13 +135,23 @@ class VipController extends \App\Http\Controllers\Controller
            } else {
                $mvItem->wx_url = '';
            }*/
-           $mvItem->wx_url = $baseUrl . $this->payUrl;
-           $mvItem->zfb_url = $baseUrl . $this->payUrl;
+           $mvItem->zfb_url = $baseUrl . $payUrl['zfb'];
+           $mvItem->wx_url = $baseUrl . $payUrl['wx'];
        }
         return response()->json([
             'state'=>0,
             'data'=>$gold
         ]);
+    }
+
+    private function getPayUrl(): array
+    {
+       $zfb = DB::table('recharge_channels')->where('status',1)->where('pay_type',1)->exists();
+       $wx = DB::table('recharge_channels')->where('status',1)->where('pay_type',2)->exists();
+       return [
+           'zfb' => $zfb ? $this->payUrl : '',
+           'wx' => $wx ? $this->payUrl : '',
+       ];
     }
 
     private function getRechargeChannel(): array
