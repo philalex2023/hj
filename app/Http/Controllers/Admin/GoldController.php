@@ -107,7 +107,7 @@ class GoldController extends BaseCurlController
                 'must' => 1,
                 'verify' => 'rq',
             ],
-            [
+            /*[
                 'field' => 'zfb_action_id',
                 'minWidth' => 100,
                 'name' => '支付宝充值方式',
@@ -134,7 +134,7 @@ class GoldController extends BaseCurlController
                 'name' => '微信通道',
                 'type' => 'select',
                 'data' => $this->getPayTypeCode()
-            ],
+            ],*/
             [
                 'field' => 'remark',
                 'type' => 'text',

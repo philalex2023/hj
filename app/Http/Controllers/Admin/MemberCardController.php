@@ -91,7 +91,7 @@ class MemberCardController extends BaseCurlController
                 'title' => '活动面值',
                 'align' => 'center',
             ],
-            [
+            /*[
                 'field' => 'zfb_action_name',
                 'minWidth' => 100,
                 'title' => '支付宝充值方式',
@@ -114,7 +114,7 @@ class MemberCardController extends BaseCurlController
                 'minWidth' => 100,
                 'title' => '微信通道',
                 'align' => 'center',
-            ],
+            ],*/
             [
                 'field' => 'rights',
                 'minWidth' => 200,
