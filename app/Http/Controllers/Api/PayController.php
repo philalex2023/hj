@@ -27,7 +27,10 @@ class PayController extends Controller
 
     public function getRechargeChannelByWeight($payChannelType)
     {
-        $recharge_channels = DB::table('recharge_channels')->where('status',1)->get(['id','weights','pay_channel','pay_type']);
+        $recharge_channels = DB::table('recharge_channels')
+            ->where('status',1)
+            ->where('pay_type',$payChannelType)
+            ->get(['id','weights','pay_channel','pay_type']);
 
         $weight = 0;
         $channelIds = array ();

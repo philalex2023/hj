@@ -40,12 +40,12 @@ class RechargeUpdateData extends Command
     {
         $field = $this->argument('field') ?? '';
         if($field=='user_type'){
-            DB::table('recharge')->chunkById(1000,function ($recharge){
+            DB::table('orders')->where('status',1)->chunkById(1000,function ($recharge){
                 foreach ($recharge as $item) {
                     //
                     $diffTime = strtotime($item->created_at)-strtotime($item->reg_at);
                     if( $diffTime >= 24*3600){
-                        DB::table('recharge')->where('id',$item->id)->update(['user_type'=>1]);
+                        DB::table('orders')->where('id',$item->id)->update(['user_type'=>1]);
                     }
                 }
                 $this->info('finished update records 1000!');

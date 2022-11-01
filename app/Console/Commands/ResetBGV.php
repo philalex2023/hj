@@ -42,9 +42,9 @@ class ResetBGV extends Command
      */
     public function handle(): int
     {
-        $Items = DB::table('recharge')
+        $Items = DB::table('orders')
             ->where('type',2)
-//            ->where('status',1)
+            ->where('status',1)
 //            ->where('is_office',0)
             ->whereDate('created_at','>',date('Y-m-d',strtotime('-8 day')))
 //            ->whereDate('created_at','<=',date('Y-m-d',strtotime('-1 day')))
