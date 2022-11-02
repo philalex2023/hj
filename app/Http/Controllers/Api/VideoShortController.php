@@ -398,7 +398,7 @@ class VideoShortController extends Controller
                             'track_total_hits' => true,
                             'size' => $perPage,
                             'from' => $offset,
-//                            '_source' => [],
+                            '_source' => $this->videoFields,
                             'query' => $query,
                         ],
                     ];

@@ -22,7 +22,7 @@ trait VideoTrait
 
     public object $row;
 
-    public array $videoFields = ['id','is_top','name','gold','cat','likes','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','updated_at'];
+    public array $videoFields = ['id','is_top','name','author','gold','cat','likes','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','updated_at'];
 
     public string $coverImgDir = 'coverImg';
 
@@ -447,6 +447,8 @@ AV-海角伙伴
                 $prefix = $videoPrefix[$appendInfo['cid']] ?? false;
                 $prefix && $list['name'] = '【'.$prefix.'】:'.$list['name'];
             }*/
+            //up主头像(随机)
+            $list['up_avatar'] = $domainSync . '/upload/encImg/'.rand(1,43).'.htm';
         }
         return $lists;
     }
