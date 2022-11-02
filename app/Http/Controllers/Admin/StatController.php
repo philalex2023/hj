@@ -77,13 +77,13 @@ class StatController extends BaseCurlIndexController
             [
                 'field' => 'new_user_recharge',
                 'width' => 120,
-                'title' => '新增用户充值',
+                'title' => '新用户充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'old_user_recharge',
                 'width' => 120,
-                'title' => '老增用户充值',
+                'title' => '老用户充值',
                 'align' => 'center'
             ],
             [
@@ -141,15 +141,15 @@ class StatController extends BaseCurlIndexController
                 'align' => 'center'
             ],
             [
-                'field' => 'inc_auto_user',
-                'width' => 120,
-                'title' => '自来量用户',
-                'align' => 'center'
-            ],
-            [
                 'field' => 'channel_deduction_increase_user',
                 'width' => 120,
                 'title' => '渠道扣量后新增用户',
+                'align' => 'center'
+            ],
+            [
+                'field' => 'inc_auto_user',
+                'width' => 120,
+                'title' => '自来量用户',
                 'align' => 'center'
             ],
             [
