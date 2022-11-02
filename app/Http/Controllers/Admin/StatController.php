@@ -33,7 +33,7 @@ class StatController extends BaseCurlIndexController
             ],
             [
                 'field' => 'online_user',
-                'minWidth' => 80,
+                'minWidth' => 120,
                 'title' => '在线用户',
                 'align' => 'center'
             ],
@@ -45,56 +45,56 @@ class StatController extends BaseCurlIndexController
             ],
             [
                 'field' => 'inc_user',
-                'width' => 80,
+                'width' => 120,
                 'title' => '新增用户',
                 'align' => 'center'
 
             ],
             [
                 'field' => 'inc_android_user',
-                'width' => 80,
+                'width' => 120,
                 'title' => '新增安卓用户',
                 'align' => 'center'
             ],
             [
                 'field' => 'inc_ios_user',
-                'minWidth' => 80,
+                'minWidth' => 120,
                 'title' => '新增苹果用户',
                 'align' => 'center'
             ],
             [
                 'field' => 'gold_recharge',
-                'width' => 80,
+                'width' => 120,
                 'title' => '金币充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'vip_recharge',
-                'width' => 80,
+                'width' => 120,
                 'title' => 'VIP充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'new_user_recharge',
-                'width' => 80,
+                'width' => 120,
                 'title' => '新增用户充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'old_user_recharge',
-                'width' => 80,
+                'width' => 120,
                 'title' => '老增用户充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'total_recharge',
-                'width' => 80,
+                'width' => 120,
                 'title' => '总充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'inc_recharge_user',
-                'width' => 80,
+                'width' => 120,
                 'title' => '新增充值用户',
                 'align' => 'center'
             ],
@@ -106,49 +106,49 @@ class StatController extends BaseCurlIndexController
             ],
             [
                 'field' => 'success_order',
-                'width' => 80,
+                'width' => 120,
                 'title' => '成功订单数',
                 'align' => 'center'
             ],
             [
                 'field' => 'total_order',
-                'width' => 80,
+                'width' => 120,
                 'title' => '拉起订单数',
                 'align' => 'center'
             ],
             [
                 'field' => 'lp_access',
-                'width' => 80,
+                'width' => 120,
                 'title' => '落地页访问数',
                 'align' => 'center'
             ],
             [
                 'field' => 'android_recharge',
-                'width' => 80,
+                'width' => 100,
                 'title' => '安卓充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'ios_recharge',
-                'width' => 80,
+                'width' => 100,
                 'title' => '苹果充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'inc_channel_user',
-                'width' => 80,
+                'width' => 120,
                 'title' => '渠道新增用户',
                 'align' => 'center'
             ],
             [
                 'field' => 'inc_auto_user',
-                'width' => 80,
+                'width' => 120,
                 'title' => '自来量用户',
                 'align' => 'center'
             ],
             [
                 'field' => 'channel_deduction_increase_user',
-                'width' => 80,
+                'width' => 120,
                 'title' => '渠道扣量后新增用户',
                 'align' => 'center'
             ],
