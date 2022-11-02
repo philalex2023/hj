@@ -76,18 +76,22 @@ class StatController extends BaseCurlIndexController
             ],
             [
                 'field' => 'new_user_recharge',
-                'width' => 150,
+                'width' => 80,
                 'title' => '新增用户充值',
                 'align' => 'center'
             ],
             [
                 'field' => 'old_user_recharge',
-                'width' => 150,
+                'width' => 80,
                 'title' => '老增用户充值',
                 'align' => 'center'
             ],
-
-
+            [
+                'field' => 'at_time',
+                'width' => 150,
+                'title' => '日期',
+                'align' => 'center'
+            ],
         ];
     }
 
@@ -108,13 +112,20 @@ class StatController extends BaseCurlIndexController
         $this->uiBlade['search'] = $data;
     }
 
+    public function setListOutputItemExtend($item)
+    {
+        $item->at_time = date('Y-m-d',$item->at_time);
+    }
+
     public function handleResultModel($model): array
     {
         $atTime = $this->rq->input('at_time');
         if($atTime!=null){
             if($atTime > 0){
                 $timeRangeArr = explode('~',$atTime);
-                $model = $model->where('at_time','>=',$timeRangeArr[0])->where('at_time','<=',$timeRangeArr[1]);
+                $startTime = strtotime($timeRangeArr[0].' 00:00:00');
+                $endTime = strtotime($timeRangeArr[1].' 23:59:59');
+                $model = $model->where('at_time','>=',$startTime)->where('at_time','<=',$endTime);
             }
         }
         return parent::handleResultModel($model);
