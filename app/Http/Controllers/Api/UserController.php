@@ -283,7 +283,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ],JSON_FORCE_OBJECT);
+            ]);
         }
         return response()->json([
             'state'=>-1,
