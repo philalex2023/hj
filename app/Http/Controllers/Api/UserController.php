@@ -234,7 +234,7 @@ class UserController extends Controller
                     'state'=>0,
                     'msg' => '删除成功',
                     'data'=>[]
-                ],JSON_FORCE_OBJECT);
+                ]);
             }
             $page = $params['page'] ?? 1;
             if(isset($params['pageSize']) && ($params['pageSize']<$perPage)){
