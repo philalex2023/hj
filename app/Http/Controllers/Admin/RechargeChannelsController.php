@@ -164,8 +164,7 @@ class RechargeChannelsController extends BaseCurlController
 
     protected function afterSaveSuccessEvent($model, $id = '')
     {
-        /*Cache::forget('cachedVideoById.'.$model->id);
-        $this->redis()->set('freshTag_'.$model->type,1);*/
+        $this->redis()->del('recharge_channels_Z');
         return $model;
     }
 
