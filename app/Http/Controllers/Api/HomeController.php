@@ -200,8 +200,6 @@ class HomeController extends Controller
                     $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
                     $redis->expire($sectionKey,3600);
                     $redis->del('homeLists_fresh');
-                }else{
-                    $res = json_decode($sectionKey,true);
                 }
 
                 if(isset($res['list'])){
