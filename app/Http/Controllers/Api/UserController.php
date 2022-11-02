@@ -233,7 +233,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'msg' => '删除成功',
-                    'data'=>[]
+                    'data'=>new \stdClass()
                 ]);
             }
             $page = $params['page'] ?? 1;
@@ -253,8 +253,8 @@ class UserController extends Controller
             if(empty($vidArrAll)){
                 return response()->json([
                     'state'=>0,
-                    'data'=>[]
-                ],200,[],JSON_FORCE_OBJECT);
+                    'data'=>new \stdClass()
+                ]);
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
@@ -283,7 +283,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ],200,[],JSON_FORCE_OBJECT);
+            ]);
         }
         return response()->json([
             'state'=>-1,
