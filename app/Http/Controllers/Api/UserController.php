@@ -252,14 +252,11 @@ class UserController extends Controller
             if(empty($vidArrAll)){
                 Log::info('myCollect==',[$vidArrAll]);
 //                dump($con);
-                echo json_encode([
+                $con = json_encode([
                     'state'=>0,
                     'data'=>[],
                 ],JSON_FORCE_OBJECT);
-                /*return response()->json([
-                    'state'=>0,
-                    'data'=>[],
-                ]);*/
+                return response()->json($con);
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
