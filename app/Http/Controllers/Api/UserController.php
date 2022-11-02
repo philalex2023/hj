@@ -213,7 +213,7 @@ class UserController extends Controller
         return response()->json([]);
     }
 
-    public function myCollect(Request $request): JsonResponse
+    public function myCollect(Request $request)
     {
         if(isset($request->params)){
             $perPage = 10;
@@ -230,11 +230,12 @@ class UserController extends Controller
                     $videoRedis->zRem($videoCollectsKey,...$vid);
                     $videoRedis->zRem($shortCollectsKey,...$vid);
                 }
-                return response()->json([
+                $con = json_encode([
                     'state'=>0,
                     'msg' => '删除成功',
-                    'data'=>(new \stdClass)
-                ]);
+                    'data'=> []
+                ],JSON_FORCE_OBJECT);
+                return response($con)->header('Content-Type', 'application/json');
             }
             $page = $params['page'] ?? 1;
             if(isset($params['pageSize']) && ($params['pageSize']<$perPage)){
@@ -251,10 +252,10 @@ class UserController extends Controller
 
             if(empty($vidArrAll)){
                 Log::info('myCollect==',[$vidArrAll]);
-                return response()->json([
+                return response(json_encode([
                     'state'=>0,
                     'data'=>[]
-                ],200,[],16);
+                ],JSON_FORCE_OBJECT))->header('Content-Type', 'application/json');
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
@@ -352,6 +353,7 @@ class UserController extends Controller
                 //时长转秒
                 $res['list'] = self::transferSeconds($res['list']);
                 $res['hasMorePages'] = $hasMorePages;
+
                 return response()->json([
                     'state'=>0,
                     'data'=>$res
