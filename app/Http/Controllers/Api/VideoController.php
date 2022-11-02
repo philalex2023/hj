@@ -52,6 +52,8 @@ class VideoController extends Controller
         }
         //统计在线
         $dayData = date('Ymd');
+        $videoRedis->zAdd('online_user_'.$dayData,time(),$uid);
+        $videoRedis->expire('online_user_'.$dayData,3600*24*7);
         $redis = $this->redis();
         $redis->zAdd('online_user_'.$dayData,time(),$uid);
         $redis->expire('online_user_'.$dayData,3600*24*7);
@@ -112,13 +114,13 @@ class VideoController extends Controller
                     }
                 }
                 Cache::forget('cachedUser.'.$user->id);
-                return response()->json(['state' => 0, 'data' => $one],JSON_FORCE_OBJECT);
+                return response()->json(['state' => 0, 'data' => $one]);
             }
-            return response()->json(['state' => -1, 'msg' => "参数错误",'data'=>[],JSON_FORCE_OBJECT]);
+            return response()->json(['state' => -1, 'msg' => "参数错误",'data'=>[]]);
         } catch (Exception $exception) {
             $msg = $exception->getMessage();
             Log::error("actionView", [$msg]);
-            return response()->json(['state' => -1, 'msg' => $msg,'data'=>[]],JSON_FORCE_OBJECT);
+            return response()->json(['state' => -1, 'msg' => $msg,'data'=>[]]);
         }
 
     }
@@ -151,7 +153,7 @@ class VideoController extends Controller
                 return response()->json([
                     'state' => 0,
                     'data' => [],
-                ],JSON_FORCE_OBJECT);
+                ]);
             } catch (Exception $exception) {
                 $msg = $exception->getMessage();
                 Log::error("actionLike", [$msg]);
@@ -240,7 +242,7 @@ class VideoController extends Controller
         return response()->json([
             'state' => 0,
             'data' => [],
-        ],JSON_FORCE_OBJECT);
+        ]);
     }
 
     /**
