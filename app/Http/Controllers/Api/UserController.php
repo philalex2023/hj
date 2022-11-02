@@ -213,7 +213,7 @@ class UserController extends Controller
         return response()->json([]);
     }
 
-    public function myCollect(Request $request)
+    public function myCollect(Request $request): JsonResponse
     {
         if(isset($request->params)){
             $perPage = 10;
@@ -255,7 +255,7 @@ class UserController extends Controller
                     'state'=>0,
                     'data'=>(object)'{}',
                 ],JSON_FORCE_OBJECT);
-                dump($con);
+//                dump($con);
                 return response($con)->json();
                 /*return response()->json();*/
             }
