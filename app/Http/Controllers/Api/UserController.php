@@ -256,9 +256,7 @@ class UserController extends Controller
                     'data'=>(object)'{}',
                 ],JSON_FORCE_OBJECT);
                 dump($con);
-                return response($con)->withHeaders([
-                        'Content-Type' => 'application/json',
-                    ]);
+                return response($con);
                 /*return response()->json();*/
             }
 
