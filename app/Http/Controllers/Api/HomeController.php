@@ -106,104 +106,105 @@ class HomeController extends Controller
                 $page = $validated['page'];
 
                 $redis = $this->redis();
-                //$sectionKey = 'homeLists_'.$cid.'-'.$page;
+                $sectionKey = 'homeLists_'.$cid.'-'.$page;
 
                 //二级分类列表
-                /*$res = $redis->get($sectionKey);
-                $res = json_decode($res,true);*/
-                /*if(!$res || $redis->get('homeLists_fresh')){
+                $res = $redis->get($sectionKey);
+                $res = json_decode($res,true);
 
-                }*/
-
-                $topicJson = $redis->get('topic_cid_'.$cid);
-                if(!$topicJson){
-                    $lock = Cache::lock('homeLists_lock');
-                    if(!$lock->get()){
-                        Log::info('index_list',['topic_cid_'.$cid]);
-                        return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
-                    }
-                    $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
-                    $res['hasMorePages'] = $paginator->hasMorePages();
-                    $topics = $paginator->items();
-                    $lock->release();
-                }else{
-                    $topicsArr = json_decode($topicJson,true);
-                    $offset = ($page-1)*$perPage;
-                    $topics = array_slice($topicsArr,$offset,$perPage);
-                    $res['hasMorePages'] = count($topicsArr) > $perPage*$page;
-                }
-//
-                //Log::info('index_list_topics',[$topics]);
-                foreach ($topics as &$topic){
-                    $topic = (array)$topic;
-                    $topic['style'] = (string)$topic['show_type']; //android要是字符串
-                    $videoList = [];
-                    if(!empty($topic['contain_vids'])){
-                        //获取专题数据
-                        $topic['title'] = '';
-                        $ids = explode(',',$topic['contain_vids']);
-                        //$ids = array_slice($ids,0,3);
-                        //
-                        $idParams = [];
-                        $length = count($ids);
-                        foreach ($ids as $key => $id) {
-                            $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+                if(!$res || $redis->get('homeLists_fresh')){
+                    $topicJson = $redis->get('topic_cid_'.$cid);
+                    if(!$topicJson){
+                        $lock = Cache::lock('homeLists_lock');
+                        if(!$lock->get()){
+                            Log::info('index_list',['topic_cid_'.$cid]);
+                            return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
                         }
-                        //Log::info('index_list_str',$idParams);
-                        $size = $topic['style'] == 7 ? 7: 8;
-                        $source = ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
-                        $searchParams = [
-                            'index' => 'video_index',
-                            'body' => [
-                                'track_total_hits' => true,
-                                'size' => $size,
-                                '_source' => $source,
+                        $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
+                        $res['hasMorePages'] = $paginator->hasMorePages();
+                        $topics = $paginator->items();
+                        $lock->release();
+                    }else{
+                        $topicsArr = json_decode($topicJson,true);
+                        $offset = ($page-1)*$perPage;
+                        $topics = array_slice($topicsArr,$offset,$perPage);
+                        $res['hasMorePages'] = count($topicsArr) > $perPage*$page;
+                    }
+//
+                    //Log::info('index_list_topics',[$topics]);
+                    foreach ($topics as &$topic){
+                        $topic = (array)$topic;
+                        $topic['style'] = (string)$topic['show_type']; //android要是字符串
+                        $videoList = [];
+                        if(!empty($topic['contain_vids'])){
+                            //获取专题数据
+                            $topic['title'] = '';
+                            $ids = explode(',',$topic['contain_vids']);
+                            //$ids = array_slice($ids,0,3);
+                            //
+                            $idParams = [];
+                            $length = count($ids);
+                            foreach ($ids as $key => $id) {
+                                $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+                            }
+                            //Log::info('index_list_str',$idParams);
+                            $size = $topic['style'] == 7 ? 7: 8;
+                            $source = ['id','is_top','name','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
+                            $searchParams = [
+                                'index' => 'video_index',
+                                'body' => [
+                                    'track_total_hits' => true,
+                                    'size' => $size,
+                                    '_source' => $source,
 //                                '_source' => false,
-                                'query' => [
-                                    'function_score' => [
-                                        'query' => [
-                                            'bool'=>[
-                                                'must' => [
-                                                    ['terms' => ['id'=>$ids]],
-                                                    //['term' => ['dev_type'=>0]],
+                                    'query' => [
+                                        'function_score' => [
+                                            'query' => [
+                                                'bool'=>[
+                                                    'must' => [
+                                                        ['terms' => ['id'=>$ids]],
+                                                        //['term' => ['dev_type'=>0]],
+                                                    ]
                                                 ]
-                                            ]
-                                        ],
-                                        'script_score' => [
-                                            'script' => [
-                                                //'lang' => 'painless',
-                                                'params' => [
-                                                    'scoring' => $idParams
-                                                ],
-                                                'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                            ],
+                                            'script_score' => [
+                                                'script' => [
+                                                    //'lang' => 'painless',
+                                                    'params' => [
+                                                        'scoring' => $idParams
+                                                    ],
+                                                    'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                                ]
                                             ]
                                         ]
                                     ]
-                                ]
-                            ],
-                        ];
+                                ],
+                            ];
 
-                        $es = $this->esClient();
-                        $response = $es->search($searchParams);
-                        //Log::info('searchParam_home_list',[json_encode($searchParams)]);
-                        if(isset($response['hits']) && isset($response['hits']['hits'])){
-                            foreach ($response['hits']['hits'] as $item) {
-                                $videoList[] = $item['_source'];
+                            $es = $this->esClient();
+                            $response = $es->search($searchParams);
+                            //Log::info('searchParam_home_list',[json_encode($searchParams)]);
+                            if(isset($response['hits']) && isset($response['hits']['hits'])){
+                                foreach ($response['hits']['hits'] as $item) {
+                                    $videoList[] = $item['_source'];
+                                }
                             }
                         }
+
+                        $topic['small_video_list'] = $videoList;
+                        unset($topic['contain_vids']);
                     }
+                    //广告
+                    $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
+                    $res['list'] = $topics;
 
-                    $topic['small_video_list'] = $videoList;
-                    unset($topic['contain_vids']);
+                    //todo cache
+                    $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
+                    $redis->expire($sectionKey,3600);
+                    $redis->del('homeLists_fresh');
+                }else{
+                    $res = json_decode($sectionKey,true);
                 }
-                //广告
-                $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
-                $res['list'] = $topics;
-
-                //todo cache
-                /*$redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
-                $redis->expire($sectionKey,600);*/
-                $redis->del('homeLists_fresh');
 
 
                 if(isset($res['list'])){
