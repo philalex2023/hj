@@ -254,7 +254,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'data'=>[]
-                ],JSON_FORCE_OBJECT);
+                ]);
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
