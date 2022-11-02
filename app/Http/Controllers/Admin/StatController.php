@@ -156,6 +156,7 @@ class StatController extends BaseCurlIndexController
                 'field' => 'at_time',
                 'width' => 150,
                 'title' => '日期',
+                'fixed' => 'right',
                 'align' => 'center'
             ],
         ];
