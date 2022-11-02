@@ -100,7 +100,7 @@ class StatController extends BaseCurlIndexController
     {
         $data = [
             [
-                'field' => 'query_at_time',
+                'field' => 'at_time',
                 'type' => 'date',
 //                'attr' => 'data-range=true',
                 'attr' => 'data-range=~',//需要特殊分割
