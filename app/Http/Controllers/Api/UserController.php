@@ -213,7 +213,7 @@ class UserController extends Controller
         return response()->json([]);
     }
 
-    public function myCollect(Request $request): JsonResponse
+    public function myCollect(Request $request)
     {
         if(isset($request->params)){
             $perPage = 10;
@@ -251,10 +251,15 @@ class UserController extends Controller
 
             if(empty($vidArrAll)){
                 Log::info('myCollect==',[$vidArrAll]);
-                return response()->json([
+                $con = json_encode([
                     'state'=>0,
                     'data'=>(object)'{}',
-                ]);
+                ],JSON_FORCE_OBJECT);
+                dump($con);
+                return response($con)->withHeaders([
+                        'Content-Type' => 'application/json',
+                    ]);
+                /*return response()->json();*/
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
