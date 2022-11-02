@@ -253,8 +253,8 @@ class UserController extends Controller
                 Log::info('myCollect==',[$vidArrAll]);
                 return response()->json([
                     'state'=>0,
-                    'data'=>(new \stdClass)
-                ]);
+                    'data'=>[]
+                ],200,[],16);
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
