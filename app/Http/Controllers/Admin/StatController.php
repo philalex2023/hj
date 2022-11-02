@@ -46,7 +46,7 @@ class StatController extends BaseCurlIndexController
             [
                 'field' => 'inc_user',
                 'width' => 80,
-                'title' => '管理员昵称',
+                'title' => '新增用户',
                 'align' => 'center'
 
             ],
