@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Models\Order;
+use App\Models\RechargeChannels;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\PaySignVerifyTrait;
 use App\TraitClass\PayTrait;
@@ -25,19 +26,32 @@ class PayController extends Controller
 {
     use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait;
 
+    public function getRechargeChannelsByCache($payChannelType)
+    {
+        $key = 'recharge_channels_Z';
+        $redis = $this->redis();
+        $cacheData = $redis->zRange($key,0,-1,true);
+        if(!$cacheData){
+            $items = RechargeChannels::query()->where('status',1)->where('pay_type',$payChannelType)->get(['pay_channel','weights']);
+            $zData = [];
+            foreach ($items as $item){
+                $zData[$item->pay_channel] = $item->weights;
+                $redis->zAdd($key,$item->weights,$item->pay_channel);
+            }
+            return $zData;
+        }
+        return $cacheData;
+    }
+
     public function getRechargeChannelByWeight($payChannelType)
     {
-        $recharge_channels = DB::table('recharge_channels')
-            ->where('status',1)
-            ->where('pay_type',$payChannelType)
-            ->get(['id','weights','pay_channel','pay_type']);
-
+        $recharge_channels = $this->getRechargeChannelsByCache($payChannelType);
         $weight = 0;
         $channelIds = array ();
-        foreach ($recharge_channels as $one){
-            $weight += $one->weights;
-            for ($i=0;$i < $one->weights; ++$i){
-                $channelIds[] = $one->pay_channel;
+        foreach ($recharge_channels as $pay_channel => $weights){
+            $weight += $weights;
+            for ($i=0;$i < $weights; ++$i){
+                $channelIds[] = $pay_channel;
             }
         }
         $use = rand(0, $weight -1);

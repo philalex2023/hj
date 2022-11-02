@@ -34,7 +34,6 @@ class RechargeChannelsController extends BaseCurlController
         foreach ($channels as $channel){
             $selector[$channel->id] = [
                 'id' => $channel->id,
-//                'name' => $channel->name.'['.$channel->remark.']',
                 'name' => $channel->remark,
             ];
         }
@@ -43,7 +42,6 @@ class RechargeChannelsController extends BaseCurlController
 
     public function setModel(): RechargeChannels
     {
-//        $this->payChannel = [''=>['id'=>'','name'=>'选择充值渠道']]+array_column(RechargeChannel::query()->get(['id','name'])->all(),null,'id');
         $this->payChannel = $this->getPayChannels();
         return $this->model = new RechargeChannels();
     }
@@ -162,6 +160,13 @@ class RechargeChannelsController extends BaseCurlController
     {
         $match_amount = $this->rq->input('match_nums',[]);
         $model->match_amount = json_encode($match_amount);
+    }
+
+    protected function afterSaveSuccessEvent($model, $id = '')
+    {
+        /*Cache::forget('cachedVideoById.'.$model->id);
+        $this->redis()->set('freshTag_'.$model->type,1);*/
+        return $model;
     }
 
     public function setOutputUiCreateEditForm($show = '')
