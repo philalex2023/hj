@@ -29,14 +29,15 @@ class PayController extends Controller
     public function getRechargeChannelsByCache($payChannelType)
     {
         $key = 'recharge_channels_Z';
-        $redis = $this->redis();
-        $cacheData = $redis->zRange($key,0,-1,true);
+//        $redis = $this->redis();
+//        $cacheData = $redis->zRange($key,0,-1,true);
+        $cacheData = false;
         if(!$cacheData){
             $items = RechargeChannels::query()->where('status',1)->where('pay_type',$payChannelType)->get(['pay_channel','weights']);
             $zData = [];
             foreach ($items as $item){
                 $zData[$item->pay_channel] = $item->weights;
-                $redis->zAdd($key,$item->weights,$item->pay_channel);
+//                $redis->zAdd($key,$item->weights,$item->pay_channel);
             }
             return $zData;
         }
