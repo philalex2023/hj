@@ -251,12 +251,11 @@ class UserController extends Controller
 
             if(empty($vidArrAll)){
                 Log::info('myCollect==',[$vidArrAll]);
-                $con = json_encode([
+//                dump($con);
+                return response()->json([
                     'state'=>0,
-                    'data'=>(object)'{}',
-                ],JSON_FORCE_OBJECT);
-                dump($con);
-                return response($con)->json();
+                    'data'=>[],
+                ],200,[],16);
                 /*return response()->json();*/
             }
 
