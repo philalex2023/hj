@@ -255,7 +255,7 @@ class UserController extends Controller
                     'state'=>0,
                     'data'=>(object)'{}',
                 ],JSON_FORCE_OBJECT);
-//                dump($con);
+                dump($con);
                 return response($con)->json();
                 /*return response()->json();*/
             }
