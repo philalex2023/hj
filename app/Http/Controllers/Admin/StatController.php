@@ -115,6 +115,7 @@ class StatController extends BaseCurlIndexController
     public function setListOutputItemExtend($item)
     {
         $item->at_time = date('Y-m-d',$item->at_time);
+        return $item;
     }
 
     public function handleResultModel($model): array
