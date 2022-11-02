@@ -253,7 +253,8 @@ class UserController extends Controller
                 Log::info('myCollect==',[$vidArrAll]);
                 return response()->json([
                     'state'=>0,
-                    'data'=>(object)'{}'
+//                    'data'=>(object)'{}',
+                    'data'=>json_encode(json_decode("{}"))
                 ]);
             }
 
