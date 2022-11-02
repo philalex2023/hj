@@ -56,7 +56,7 @@ class UserController extends Controller
                     'state'=>$state,
                     'msg'=>$msg,
                     'data'=>$res
-                ],JSON_FORCE_OBJECT);
+                ]);
             }
         }
         return response()->json([
@@ -113,7 +113,7 @@ class UserController extends Controller
                         'id' => $user->id
                     ])['kf_url'],
                 ] ;
-                return response()->json(['state'=>0, 'data'=>$res],JSON_FORCE_OBJECT);
+                return response()->json(['state'=>0, 'data'=>$res]);
             }
             return response()->json([]);
         }catch (\Exception $exception){
@@ -151,7 +151,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ],JSON_FORCE_OBJECT);
+            ]);
         }
         return response()->json([]);
     }
@@ -208,7 +208,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ],JSON_FORCE_OBJECT);
+            ]);
         }
         return response()->json([]);
     }
@@ -234,7 +234,7 @@ class UserController extends Controller
                     'state'=>0,
                     'msg' => '删除成功',
                     'data'=>[]
-                ],JSON_FORCE_OBJECT);
+                ]);
             }
             $page = $params['page'] ?? 1;
             if(isset($params['pageSize']) && ($params['pageSize']<$perPage)){
@@ -254,14 +254,16 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'data'=>[]
-                ],JSON_FORCE_OBJECT);
+                ]);
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
 
+//            $videoList = DB::table('video')->select($this->videoFields)->whereIn('id',$ids)->get()->toArray();
             $videoList = $this->getVideoByIdsForEs($ids,$this->videoFields);
 
             foreach ($videoList as &$iv){
+                $iv = (array)$iv;
                 $iv['usage'] = 1;
                 $iv['score'] = $vidArrAll[$iv['id']] ?? 0;
                 $iv['updated_at'] = date('Y-m-d H:i:s',$iv['score']);
@@ -281,7 +283,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ],JSON_FORCE_OBJECT);
+            ]);
         }
         return response()->json([
             'state'=>-1,
@@ -308,7 +310,7 @@ class UserController extends Controller
                         'state'=>0,
                         'msg' => '删除成功',
                         'data'=>[]
-                    ],JSON_FORCE_OBJECT);
+                    ]);
                 }
                 $page = $params['page'] ?? 1;
                 if(isset($params['pageSize']) && ($params['pageSize']<10)){
@@ -353,7 +355,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'data'=>$res
-                ],JSON_FORCE_OBJECT);
+                ]);
             }
             return response()->json([]);
         }catch (\Exception $exception){
@@ -366,54 +368,60 @@ class UserController extends Controller
     {
         try {
             //if(isset($request->params)){
-                $perPage = 6;
-                $res = [];
-                //$params = self::parse($request->params??'');
-                $user = $request->user();
-                $videoRedis = $this->redis('video');
-                $view_history_key = 'view_history_'.$user->id;
+            $perPage = 6;
+            $res = [];
+            //$params = self::parse($request->params??'');
+            $user = $request->user();
+            $videoRedis = $this->redis('video');
+            $view_history_key = 'view_history_'.$user->id;
 
-                $page = 1;
+            $page = 1;
 
-                $vidArr = $videoRedis->zRevRange($view_history_key,0,-1,true);
-                $videoIds = $vidArr ? array_keys($vidArr) : [];
 
-                $video = $this->getVideoByIdsForEs($videoIds,$this->videoFields);
+            $vidArr = $videoRedis->zRevRange($view_history_key,0,-1,true);
+            $videoIds = $vidArr ? array_keys($vidArr) : [];
 
-                foreach ($video as &$r){
-                    $r = (array)$r;
-                    $r['usage'] = 1;
-                    $r['score'] = $vidArr[$r['id']];
-                    $r['updated_at'] = date('Y-m-d H:i:s',$r['score']);
-                }
-                //短视频
-                $view_history_key_short = 'viewShortHistory_'.$user->id;
-                $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
-                //Log::info('test==',$vidArrShort);
-                $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
-                $videoShort = !empty($videoShortIds) ? DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray() : [];
-                foreach ($videoShort as &$sr){
-                    $sr['usage'] = 2;
-                    $sr['score'] = $vidArrShort[$sr['vs_id']];
-                    $sr['updated_at'] = date('Y-m-d H:i:s',$sr['score']);
-                }
-                $result = [...$video,...$videoShort];
-                $score = array_column($result,'score');
-                array_multisort($score,SORT_DESC,$result);
-                $offset = ($page-1)*$perPage;
-                $pageLists = array_slice($result,$offset,$perPage);
-                if(!isset($result[0])){
-                    $pageLists = $this->getVideoByRandomForEs(6,$this->videoFields);
+            $offset = ($page-1)*$perPage;
+            $video = DB::table('video')->whereIn('id',$videoIds)->get($this->videoFields)->toArray();
+            $video = $this->getVideoByIdsForEs($videoIds,$this->videoFields);
+
+            foreach ($video as &$r){
+                $r = (array)$r;
+                $r['usage'] = 1;
+                $r['score'] = $vidArr[$r['id']];
+                $r['updated_at'] = date('Y-m-d H:i:s',$r['score']);
+            }
+            //短视频
+            $view_history_key_short = 'viewShortHistory_'.$user->id;
+            $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
+            //Log::info('test==',$vidArrShort);
+            $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
+            $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray();
+            $videoShort = !empty($videoShortIds) ? DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray() : [];
+            foreach ($videoShort as &$sr){
+                $sr = (array)$sr;
+                $sr['usage'] = 2;
+                $sr['score'] = $vidArrShort[$sr['vs_id']];
+                $sr['updated_at'] = date('Y-m-d H:i:s',$sr['score']);
+            }
+            $result = [...$video,...$videoShort];
+            $score = array_column($result,'score');
+            array_multisort($score,SORT_DESC,$result);
+            $offset = ($page-1)*$perPage;
+            $pageLists = array_slice($result,$offset,$perPage);
+            if(!isset($result[0])){
+                $pageLists = DB::table('video')->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
+                $pageLists = $this->getVideoByRandomForEs(6,$this->videoFields);
 //                    $pageLists = DB::table('video')->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
-                }
-                //路径处理
-                $res['list'] = $this->handleVideoItems($pageLists,true, $user->id);
-                //时长转秒
-                $res['list'] = self::transferSeconds($res['list']);
-                return response()->json([
-                    'state'=>0,
-                    'data'=>$res
-                ],JSON_FORCE_OBJECT);
+            }
+            //路径处理
+            $res['list'] = $this->handleVideoItems($pageLists,true, $user->id);
+            //时长转秒
+            $res['list'] = self::transferSeconds($res['list']);
+            return response()->json([
+                'state'=>0,
+                'data'=>$res
+            ]);
             //}
             //return response()->json([]);
         }catch (\Exception $exception){
@@ -477,7 +485,7 @@ class UserController extends Controller
 
     public function getAreaNum(Request $request): JsonResponse
     {
-        return response()->json(['state'=>0, 'data'=>$this->getSmsAreaNum()],JSON_FORCE_OBJECT);
+        return response()->json(['state'=>0, 'data'=>$this->getSmsAreaNum()]);
     }
 
     public function sendSmsCode(Request $request): JsonResponse
@@ -650,7 +658,7 @@ class UserController extends Controller
                     Cache::forget("cachedUser.".$requestUser['id']);
                     $lock->release();
                     Log::debug('==findADByPhoneRes===',['find back success']);
-                    return response()->json(['state'=>0, 'data'=>$requestUser, 'msg'=>'账号找回成功'],JSON_FORCE_OBJECT);
+                    return response()->json(['state'=>0, 'data'=>$requestUser, 'msg'=>'账号找回成功']);
                 }else{
                     Log::debug('==findADByPhoneGetLock===',['未释放锁',...$validated]);
                     return response()->json(['state'=>-1, 'msg'=>'操作频繁']);
