@@ -233,7 +233,10 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'msg' => '删除成功',
-                    'data'=>json_decode('{}')
+                    'data'=>[
+                        "list"=>[],
+                        "hasMorePages"=>false,
+                    ]
                 ]);
             }
             $page = $params['page'] ?? 1;
@@ -251,12 +254,13 @@ class UserController extends Controller
 
             if(empty($vidArrAll)){
                 Log::info('myCollect==',[$vidArrAll]);
-//                dump($con);
-                $con = json_encode([
+                return response()->json([
                     'state'=>0,
-                    'data'=>[],
-                ],JSON_FORCE_OBJECT);
-                return response()->json($con);
+                    'data'=>[
+                        "list"=>[],
+                        "hasMorePages"=>false,
+                    ],
+                ]);
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
