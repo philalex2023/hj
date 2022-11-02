@@ -442,11 +442,11 @@ AV-海角伙伴
             //标签
             isset($list['tag_kv']) && $list['tag_kv'] = json_decode($list['tag_kv'],true);
             //片名加前缀
-            if(!empty($appendInfo) && isset($appendInfo['cid'])){
+            /*if(!empty($appendInfo) && isset($appendInfo['cid'])){
                 $videoPrefix = $this->getVideoPrefix();
                 $prefix = $videoPrefix[$appendInfo['cid']] ?? false;
                 $prefix && $list['name'] = '【'.$prefix.'】:'.$list['name'];
-            }
+            }*/
         }
         return $lists;
     }
