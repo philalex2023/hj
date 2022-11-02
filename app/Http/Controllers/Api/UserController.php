@@ -113,7 +113,7 @@ class UserController extends Controller
                         'id' => $user->id
                     ])['kf_url'],
                 ] ;
-                return response()->json(['state'=>0, 'data'=>$res],JSON_FORCE_OBJECT);
+                return response()->json(['state'=>0, 'data'=>$res]);
             }
             return response()->json([]);
         }catch (\Exception $exception){
