@@ -181,6 +181,13 @@ class StatController extends BaseCurlIndexController
     public function setListOutputItemExtend($item)
     {
         $item->at_time = date('Y-m-d',$item->at_time);
+        $item->gold_recharge = round($item->gold_recharge/100,2);
+        $item->vip_recharge = round($item->vip_recharge/100,2);
+        $item->new_user_recharge = round($item->new_user_recharge/100,2);
+        $item->old_user_recharge = round($item->old_user_recharge/100,2);
+        $item->total_recharge = round($item->total_recharge/100,2);
+        $item->android_recharge = round($item->android_recharge/100,2);
+        $item->ios_recharge = round($item->ios_recharge/100,2);
         return $item;
     }
 
