@@ -233,7 +233,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'msg' => '删除成功',
-                    'data'=>new \stdClass()
+                    'data'=>json_encode(new \stdClass)
                 ]);
             }
             $page = $params['page'] ?? 1;
@@ -253,7 +253,7 @@ class UserController extends Controller
                 Log::info('myCollect==',[$vidArrAll]);
                 return response()->json([
                     'state'=>0,
-                    'data'=>new \stdClass()
+                    'data'=>json_encode(new \stdClass)
                 ]);
             }
 
