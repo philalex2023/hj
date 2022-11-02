@@ -254,7 +254,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
 //                    'data'=>(object)'{}',
-                    'data'=>json_encode(json_decode("{}"))
+                    'data'=>(object)json_encode(json_decode("{}"))
                 ]);
             }
 
