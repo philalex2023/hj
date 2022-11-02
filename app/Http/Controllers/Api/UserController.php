@@ -234,7 +234,7 @@ class UserController extends Controller
                     'state'=>0,
                     'msg' => '删除成功',
                     'data'=>[]
-                ]);
+                ],JSON_FORCE_OBJECT);
             }
             $page = $params['page'] ?? 1;
             if(isset($params['pageSize']) && ($params['pageSize']<$perPage)){
@@ -254,7 +254,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'data'=>[]
-                ]);
+                ],JSON_FORCE_OBJECT);
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
@@ -283,7 +283,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ]);
+            ],JSON_FORCE_OBJECT);
         }
         return response()->json([
             'state'=>-1,
