@@ -249,8 +249,8 @@ class UserController extends Controller
 //            $vidArrAll = [...$vidArr,...$vidArrShort];
             $vidArrAll = $vidArr + $vidArrShort;
 
-            Log::info('myCollect',$vidArrAll);
             if(empty($vidArrAll)){
+                Log::info('myCollect==',[$vidArrAll]);
                 return response()->json([
                     'state'=>0,
                     'data'=>new \stdClass()
