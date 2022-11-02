@@ -105,6 +105,7 @@ $route->middleware(['admin_auth'])->name($route_name)->group(function ($route) {
     $only_index = [
         'LogController',
         'StatisticsController',
+        'StatController',
         'DbOperateController',
         'RedisOperateController',
         'ChannelReferController',
