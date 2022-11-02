@@ -56,7 +56,7 @@ class UserController extends Controller
                     'state'=>$state,
                     'msg'=>$msg,
                     'data'=>$res
-                ]);
+                ],JSON_FORCE_OBJECT);
             }
         }
         return response()->json([
@@ -113,7 +113,7 @@ class UserController extends Controller
                         'id' => $user->id
                     ])['kf_url'],
                 ] ;
-                return response()->json(['state'=>0, 'data'=>$res]);
+                return response()->json(['state'=>0, 'data'=>$res],JSON_FORCE_OBJECT);
             }
             return response()->json([]);
         }catch (\Exception $exception){
@@ -151,7 +151,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ]);
+            ],JSON_FORCE_OBJECT);
         }
         return response()->json([]);
     }
@@ -208,7 +208,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ]);
+            ],JSON_FORCE_OBJECT);
         }
         return response()->json([]);
     }
@@ -234,7 +234,7 @@ class UserController extends Controller
                     'state'=>0,
                     'msg' => '删除成功',
                     'data'=>[]
-                ]);
+                ],JSON_FORCE_OBJECT);
             }
             $page = $params['page'] ?? 1;
             if(isset($params['pageSize']) && ($params['pageSize']<$perPage)){
@@ -254,7 +254,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'data'=>[]
-                ]);
+                ],JSON_FORCE_OBJECT);
             }
 
             $ids = [...$videoIds,...$shortVideoIds];
@@ -281,7 +281,7 @@ class UserController extends Controller
             return response()->json([
                 'state'=>0,
                 'data'=>$res
-            ]);
+            ],JSON_FORCE_OBJECT);
         }
         return response()->json([
             'state'=>-1,
@@ -308,7 +308,7 @@ class UserController extends Controller
                         'state'=>0,
                         'msg' => '删除成功',
                         'data'=>[]
-                    ]);
+                    ],JSON_FORCE_OBJECT);
                 }
                 $page = $params['page'] ?? 1;
                 if(isset($params['pageSize']) && ($params['pageSize']<10)){
@@ -353,7 +353,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'data'=>$res
-                ]);
+                ],JSON_FORCE_OBJECT);
             }
             return response()->json([]);
         }catch (\Exception $exception){
@@ -413,7 +413,7 @@ class UserController extends Controller
                 return response()->json([
                     'state'=>0,
                     'data'=>$res
-                ]);
+                ],JSON_FORCE_OBJECT);
             //}
             //return response()->json([]);
         }catch (\Exception $exception){
@@ -477,7 +477,7 @@ class UserController extends Controller
 
     public function getAreaNum(Request $request): JsonResponse
     {
-        return response()->json(['state'=>0, 'data'=>$this->getSmsAreaNum()]);
+        return response()->json(['state'=>0, 'data'=>$this->getSmsAreaNum()],JSON_FORCE_OBJECT);
     }
 
     public function sendSmsCode(Request $request): JsonResponse
@@ -650,7 +650,7 @@ class UserController extends Controller
                     Cache::forget("cachedUser.".$requestUser['id']);
                     $lock->release();
                     Log::debug('==findADByPhoneRes===',['find back success']);
-                    return response()->json(['state'=>0, 'data'=>$requestUser, 'msg'=>'账号找回成功']);
+                    return response()->json(['state'=>0, 'data'=>$requestUser, 'msg'=>'账号找回成功'],JSON_FORCE_OBJECT);
                 }else{
                     Log::debug('==findADByPhoneGetLock===',['未释放锁',...$validated]);
                     return response()->json(['state'=>-1, 'msg'=>'操作频繁']);
