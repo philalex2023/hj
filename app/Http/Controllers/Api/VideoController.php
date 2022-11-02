@@ -112,13 +112,13 @@ class VideoController extends Controller
                     }
                 }
                 Cache::forget('cachedUser.'.$user->id);
-                return response()->json(['state' => 0, 'data' => $one]);
+                return response()->json(['state' => 0, 'data' => $one],JSON_FORCE_OBJECT);
             }
-            return response()->json(['state' => -1, 'msg' => "参数错误",'data'=>[]]);
+            return response()->json(['state' => -1, 'msg' => "参数错误",'data'=>[],JSON_FORCE_OBJECT]);
         } catch (Exception $exception) {
             $msg = $exception->getMessage();
             Log::error("actionView", [$msg]);
-            return response()->json(['state' => -1, 'msg' => $msg,'data'=>[]]);
+            return response()->json(['state' => -1, 'msg' => $msg,'data'=>[]],JSON_FORCE_OBJECT);
         }
 
     }
@@ -151,7 +151,7 @@ class VideoController extends Controller
                 return response()->json([
                     'state' => 0,
                     'data' => [],
-                ]);
+                ],JSON_FORCE_OBJECT);
             } catch (Exception $exception) {
                 $msg = $exception->getMessage();
                 Log::error("actionLike", [$msg]);
@@ -240,7 +240,7 @@ class VideoController extends Controller
         return response()->json([
             'state' => 0,
             'data' => [],
-        ]);
+        ],JSON_FORCE_OBJECT);
     }
 
     /**

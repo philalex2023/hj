@@ -214,7 +214,7 @@ class HomeController extends Controller
                     }
                     return response()->json(['state'=>0, 'data'=>$res]);
                 }
-                return response()->json(['state'=>0, 'data'=>[]]);
+                return response()->json(['state'=>0, 'data'=>[]],JSON_FORCE_OBJECT);
             }
             return response()->json(['state' => -1, 'msg' => "参数错误"]);
         }catch (\Exception $exception){
