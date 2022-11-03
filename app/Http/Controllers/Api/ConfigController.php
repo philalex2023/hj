@@ -42,6 +42,7 @@ class ConfigController extends Controller
         }*/
         $size = 100;
         $id = $request->get('id');
+        $origin = $request->get('origin');
         if(!$id){
             return response()->json([
                 'state'=>401,
@@ -50,6 +51,9 @@ class ConfigController extends Controller
         }
 //        $offset = ($page-1)*$size;
         $source = ['id','name','gold','tag_kv','hls_url','duration_seconds','restricted','cover_img'];
+        if($origin=='saol'){
+            $source = ['id','name','gold','hls_url','duration','duration_seconds','restricted','cover_img','url','status','type'];
+        }
         $searchParams = [
             'index' => 'video_index',
             'body' => [
