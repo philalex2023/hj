@@ -35,7 +35,7 @@ trait AdTrait
             $res['kf_url'] = $appConfig['kf_url'];
             $res['send_sms_intervals'] = (int)$appConfig['send_sms_intervals'];
             //广告部分
-            $ads = $this->weightGet('open_screen');
+            $ads = $this->weightGet('open_screen','weight',true);
             $res['activity_ads'] = $this->weightGet('activity','weight',true);
             $res['md_ads'] = $this->weightGet('md_ads','weight',true);
             $res['short_video_ads'] = $this->weightGet('short_video_ads','weight',true);
@@ -76,26 +76,6 @@ trait AdTrait
             return $ads;
         }
 
-        if(!empty($ads)){
-            //权重显示
-            $weight = 0;
-            $keys = [];
-            foreach ($ads as $key => $ad){
-                $weight += $ad['weight'];
-                for ($i=0;$i<$weight;++$i){
-                    $keys[] = $key;
-                }
-            }
-            $use = rand(0, $weight -1);
-            $hitKey = $weight==0 ? 0 : $keys[$use];
-            $one = $ads[$hitKey];
-
-            //图片处理
-            $one['img'] = $this->transferImgOut($one['img'],$domain,$_v,'auto');
-            $one['action_type'] = (string) $one['action_type'];
-            $one['vid'] = (string) $one['vid'];
-            return [$one];
-        }
         return [];
     }
 

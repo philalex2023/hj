@@ -21,6 +21,23 @@ class ConfigController extends Controller
         $configKey = 'api_config';
         $configData = $this->redis()->get($configKey);
         $res = $configData ? (array)json_decode($configData,true) : $this->getConfigDataFromDb();
+        //开屏广告权重显示
+        if(!empty($res['open_screen_ads'])){
+            //权重显示
+            $weight = 0;
+            $keys = [];
+            foreach ($res['open_screen_ads'] as $key => $ad){
+                $weight += $ad['weight'];
+                for ($i=0;$i<$weight;++$i){
+                    $keys[] = $key;
+                }
+            }
+            $use = rand(0, $weight -1);
+            $hitKey = $weight==0 ? 0 : $keys[$use];
+            $one = $res['open_screen_ads'][$hitKey];
+            $res['open_screen_ads'] = [$one];
+        }
+
         $this->frontFilterAd($res['open_screen_ads']);
         $this->frontFilterAd($res['activity_ads']);
         //Log::info('==ack==',[$res]);
