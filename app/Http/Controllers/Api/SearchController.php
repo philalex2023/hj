@@ -40,68 +40,57 @@ class SearchController extends Controller
                 $validated = Validator::make($params, [
                     'words' => 'nullable',
                     'page' => 'required|integer',
-                    "cid" => 'array',// 分类
-                    "bid" => 'array',// 版块
                     "tag" => 'array', // 标签
                     "type" => 'nullable', // 类型
                     "sort" => 'nullable', // 排序
                     "project" => 'nullable', // 项目
                 ])->validate();
                 $perPage = 16;
-                $cats = $params['cid']??[];
-                $bids = $params['bid']??[];
-                if(isset($bids[0]) && $bids[0]=='-1'){
-                    $bids = [];
-                }
-
                 $page = $validated['page'];
-                $order = $this->getOrderColumn(isset($validated['sort']) ? (string)$validated['sort'] : -1);
-                $type = $validated['type']??-1;
+                $offset = ($page-1)*$perPage;
+
                 $words = $validated['words']??false;
                 $project = intval($validated['project'] ?? 1);
                 $project = $project>0 ? $project : 1;
 //                $model = Video::search($words?:"*")->where('status', 1)->where('type',$project);
-                $model = Video::search($words?:"*")->where('status', 1);
+//                $model = Video::search($words?:"*")->where('status', 1);
                     //->where('type',$project);
-                // 分类
-                if (!empty($cats) || !empty($bids)) {
-                    $cats = !empty($bids) ? $bids : $cats;
-                    $catsWords = [];
-                    if(isset($cats[0])){
-                        $redis = $this->redis();
-                        $catsKey = 'searchCats_'.$cats[0];
-                        $catsWords = $redis->sMembers($catsKey);
-                        if(!$catsWords){
-                            $catsWords = DB::table('categories')->where('parent_id',$cats[0])->pluck('id')->all();
-                            $redis->sAddArray($catsKey,$catsWords);
-                            $redis->expire($catsKey,24*3600);
-                        }
-                    }
-                    if(!empty($bids)){
-                        $catsWords = $bids;
-                    }
-                    $catsWords = @implode(' ',$catsWords);
-//                    Log::info('TestSearchCat2',[$catsWords]);
-                    $model = Video::search($catsWords)->where('status', 1);
-                }
-                // 类别
-                if ($type != -1) {
-                    $model->where('restricted',$type);
-                }
-                // 排序
-                if ($order) {
-                    $model->orderBy($order,'desc');
-                }
-                // 标签 预留
-                $paginator =$model->simplePaginate($perPage, 'searchPage', $page);
-                $paginatorArr = $paginator->toArray()['data'];
 
-                //$client = ClientBuilder::create()->build();
-                $res['list'] = $this->handleVideoItems($paginatorArr,false,$request->user()->id);
+                $es = $this->esClient();
+                $searchParams = [
+                    'index' => 'video_index',
+                    'body' => [
+                        'track_total_hits' => true,
+                        'size' => $perPage,
+                        'from' => $offset,
+                        '_source' => $this->videoFields,
+                        'query' => [
+                            'match_phrase'=>[
+                                'name' => ['query' => $words?:"*",'slop'=>50]
+                            ]
+                        ],
+                        'sort' => [
+                            'id' => ['order'=>'desc']
+                        ]
+                    ],
+                ];
 
-                $res['hasMorePages'] = $paginator->hasMorePages();
+                //Log::info('ES_keyword_params',[json_encode($searchParams)]);
+                $response = $es->search($searchParams);
+                $videoList = [];
+                if(isset($response['hits']) && isset($response['hits']['hits'])){
+                    $total = $response['hits']['total']['value'];
+                    foreach ($response['hits']['hits'] as $item) {
+                        $videoList[] = $item['_source'];
+                    }
+                }
+                $res['total'] = $total ?? 0;
+                $hasMorePages = $res['total'] >= $perPage*$page;
+
+                $res['list'] = $this->handleVideoItems($videoList,false,$request->user()->id);
+
+                $res['hasMorePages'] = $hasMorePages;
                 if ($words && $words!='') {
-//                    UpdateKeyWords::dispatchAfterResponse($validated['words']);
                     //增加标签权重
                     $key = 'projectTag_'.$project;
                     $redis = $this->redis();

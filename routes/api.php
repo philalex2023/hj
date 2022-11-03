@@ -52,7 +52,6 @@ Route::group([
     }
     Route::get('pullOriginVideo', 'ConfigController@pullOriginVideo');
     foreach ($payNames as $n){
-//        Route::post('callback'.$n, $n.'Controller@callback');
         Route::post('callback'.$n, 'PayCallbackController@callback'.$n);  //支付回调
     }
 });
@@ -63,7 +62,6 @@ Route::group([
 ], function() use ($payNames){
     Route::get('getAreaNum','UserController@getAreaNum'); //获取国际码
     Route::get('rechargeMethods','RechargeController@methods'); //充值方式
-//    Route::post('recharge','RechargeController@submit'); //充值
     Route::post('viewShare','VideoController@actionShare'); //分享
     Route::post('viewCollect','VideoController@actionCollect'); //收藏
     Route::post('viewLike','VideoController@actionLike'); //点赞/喜欢
@@ -97,17 +95,6 @@ Route::group([
     Route::post('bindPhone','UserController@bindPhone'); //绑定手机
     Route::post('sendSmsCode','UserController@sendSmsCode'); //发送短信验证码
     Route::post('findADByPhone','UserController@findADByPhone'); //手机找回账号
-    //Route::post('uploadVideo', 'FileUploadController@uploadVideo'); //上传视频
-    //Route::post('uploadImg', 'FileUploadController@uploadImg'); //上传图片
-    //Route::post('userVideo', 'UserController@videoList'); //用户上传的视频列表
-    //Route::post('upgrade', 'ConfigController@upgrade');  //升级
-    /// 大白鲨相关接口
-//    Route::post('payDbs', 'DBSController@pay');  //大白鲨支付动作
-//    Route::post('queryDbs', 'DBSController@query');  //大白鲨支付查询
-//    Route::post('methodDbs', 'DBSController@method');  //大白鲨支付方式
-    /*foreach ($payNames as $n){
-        Route::post('pay'.$n, $n.'Controller@pay');
-    }*/
 
     Route::post('payBill', 'PayController@bill');  //支付
 

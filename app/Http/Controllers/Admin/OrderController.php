@@ -52,21 +52,18 @@ class OrderController extends BaseCurlController
                 'field' => 'id',
                 'width' => 80,
                 'title' => '编号',
-                'sort' => 1,
                 'align' => 'center'
             ],
             [
                 'field' => 'uid',
                 'minWidth' => 80,
                 'title' => '用户',
-                'sort' => 1,
                 'align' => 'center'
             ],
             [
                 'field' => 'channel_id',
                 'minWidth' => 80,
                 'title' => '渠道',
-                'sort' => 1,
                 'align' => 'center'
             ],
             [
