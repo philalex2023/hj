@@ -36,7 +36,7 @@ trait AdTrait
             $res['send_sms_intervals'] = (int)$appConfig['send_sms_intervals'];
             //广告部分
             $ads = $this->weightGet('open_screen','weight',true);
-            Log::info('open_screen_ads==',[$ads]);
+//            Log::info('open_screen_ads==',[$ads]);
             $res['activity_ads'] = $this->weightGet('activity','weight',true);
             $res['md_ads'] = $this->weightGet('md_ads','weight',true);
             $res['short_video_ads'] = $this->weightGet('short_video_ads','weight',true);
