@@ -20,7 +20,7 @@ class ConfigController extends Controller
     {
         $configKey = 'api_config';
         $configData = $this->redis()->get($configKey);
-        $res = $configData ? (array)json_decode($configData,true) : $this->getConfigDataFromDb();
+        $res = $configData ? (array)json_decode($configData,true) : $this->getConfigDataFromDb(true);
         //开屏广告权重显示
         if(!empty($res['open_screen_ads'])){
             //权重显示
