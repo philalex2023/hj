@@ -52,9 +52,6 @@ class SearchController extends Controller
                 $words = $validated['words']??false;
                 $project = intval($validated['project'] ?? 1);
                 $project = $project>0 ? $project : 1;
-//                $model = Video::search($words?:"*")->where('status', 1)->where('type',$project);
-//                $model = Video::search($words?:"*")->where('status', 1);
-                    //->where('type',$project);
 
                 $es = $this->esClient();
                 $searchParams = [
