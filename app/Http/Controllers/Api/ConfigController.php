@@ -65,6 +65,7 @@ class ConfigController extends Controller
                     'bool'=>[
                         'must' => [
                             ['term' => ['type'=>4]],
+                            ['term' => ['dev_type'=>0]],
                             ['range' => ['id'=>['gt'=>$id]]],
                         ]
                     ]
