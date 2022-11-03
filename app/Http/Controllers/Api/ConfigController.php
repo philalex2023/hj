@@ -52,7 +52,7 @@ class ConfigController extends Controller
 //        $offset = ($page-1)*$size;
         $source = ['id','name','gold','tag_kv','hls_url','duration_seconds','restricted','cover_img'];
         if($origin=='saol'){
-            $source = ['id','name','gold','hls_url','duration','duration_seconds','restricted','cover_img','url','status','type'];
+            $source = ['id','name','gold','hls_url','duration','duration_seconds','restricted','cover_img','url','status','type','created_at','updated_at'];
         }
         $searchParams = [
             'index' => 'video_index',
