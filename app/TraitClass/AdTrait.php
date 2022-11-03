@@ -86,8 +86,8 @@ trait AdTrait
                     $keys[] = $key;
                 }
             }
-            $use = $weight==0 ? 0 : rand(0, $weight -1);
-            $hitKey = $keys[$use];
+            $use = rand(0, $weight -1);
+            $hitKey = $weight==0 ? 0 : $keys[$use];
             $one = $ads[$hitKey];
 
             //图片处理
