@@ -76,21 +76,20 @@ trait AdTrait
             return $ads;
         }
 
-        $one = [];
-
-        foreach ($ads as $ad){
-            $weight = $ad['weight']; //权重值要设置在一到10的范围
-            $randValue = rand(1,10);
-            if($randValue <= $weight){
-                $one = $ad;
-                break;
-            }
-        }
         if(!empty($ads)){
-            if(empty($one)){ //若未命中权重概率,则随机取一
-                $key = array_rand($ads);
-                $one = $ads[$key];
+            //权重显示
+            $weight = 0;
+            $keys = [];
+            foreach ($ads as $key => $ad){
+                $weight += $ad['weight'];
+                for ($i=0;$i<$weight;++$i){
+                    $keys[] = $key;
+                }
             }
+            $use = $weight==0 ? 0 : rand(0, $weight -1);
+            $hitKey = $keys[$use];
+            $one = $ads[$hitKey];
+
             //图片处理
             $one['img'] = $this->transferImgOut($one['img'],$domain,$_v,'auto');
             $one['action_type'] = (string) $one['action_type'];

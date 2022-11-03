@@ -277,7 +277,7 @@ class AdController extends BaseCurlController
                 'name' => '权重',
                 'must' => 0,
                 'default' => '',
-                'tips' => '权重值设置在1~10范围的整数'
+                'tips' => '权重值设置在0~100范围的整数'
             ],
 
         ];
