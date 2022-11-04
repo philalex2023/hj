@@ -30,6 +30,7 @@ trait AdTrait
             //视频ID
             $res['videoId'] = $appConfig['announcement_video_id'];
             $res['obUrl'] = $appConfig['announcement_url'];
+            $res['official_url'] = $appConfig['official_url']??''; //官方交流群
             $res['adTime'] = (int)$appConfig['ad_time'];
             $res['version'] = $appConfig['app_version'];
             $res['kf_url'] = $appConfig['kf_url'];

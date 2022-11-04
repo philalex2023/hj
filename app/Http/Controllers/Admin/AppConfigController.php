@@ -71,6 +71,13 @@ class AppConfigController extends BaseCurlController
                         'tips' => 'https://xxx.com'
                     ],
                     [
+                        'field' => 'official_url',
+                        'type' => 'text',
+                        'name' => '官方交流群链接',
+                        'verify' => '',
+                        'tips' => 'https://xxx.com'
+                    ],
+                    [
                         'field' => 'announcement_video_id',
                         'type' => 'number',
                         'name' => '公告视频ID',
