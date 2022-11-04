@@ -3,13 +3,14 @@
 namespace App\Console\Commands;
 
 use App\Jobs\ProcessBackupRes;
+use App\TraitClass\PHPRedisTrait;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
 use Illuminate\Support\Facades\DB;
 
 class BackupRes extends Command
 {
-    use DispatchesJobs;
+    use DispatchesJobs,PHPRedisTrait;
     /**
      * The name and signature of the console command.
      *
@@ -42,9 +43,12 @@ class BackupRes extends Command
     public function handle()
     {
         $paramTableName = $this->argument('tableName')??'video';
+        $redis = $this->redis();
+        $startId = $redis->get('backup_end_id');
+        !$startId && $startId = 31229;
         $Items = DB::table($paramTableName)
             ->where('status',1)
-            ->where('id','<',31230)
+            ->where('id','>',$startId)
 //            ->where('id','>=',31230)
 //            ->where('id','<=',33102)
             ->orderByDesc('id')
@@ -53,7 +57,13 @@ class BackupRes extends Command
             //->where('sync',1)
             //->take(1)
             ->get(['id','url','hls_url','cover_img']);
-        $bar = $this->output->createProgressBar(count($Items));
+        $count = count($Items);
+        if($count > 0){
+            $endItem = end($Items);
+            $endId = $endItem->id;
+            $redis->set('backup_end_id',$endId);
+        }
+        $bar = $this->output->createProgressBar($count);
         $bar->start();
         foreach ($Items as $item)
         {
