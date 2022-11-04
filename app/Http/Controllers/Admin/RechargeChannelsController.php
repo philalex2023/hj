@@ -155,8 +155,8 @@ class RechargeChannelsController extends BaseCurlController
             1 => '开启',
             default => '-',
         };
-//
-        $redis = $this->redis();
+// todo
+        /*$redis = $this->redis();
         $rechargeChannelsKey = 'rechargeChannels_'.$item->pay_method.'_'.$item->pay_channel_code;
         $cacheItem = $redis->hGetAll($rechargeChannelsKey);
 
@@ -177,7 +177,7 @@ class RechargeChannelsController extends BaseCurlController
         $item->send_order = $cacheItem['send_order']??'-';
         $item->success_order = $cacheItem['success_order']??'-';
         $item->success_rate = $cacheItem['order_price']??0 ? round($cacheItem['success_order']*100/$cacheItem['send_order'],2).'%' : '-';
-        $item->order_price = $cacheItem['order_price']??'-';
+        $item->order_price = $cacheItem['order_price']??'-';*/
         return $item;
     }
 
