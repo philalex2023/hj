@@ -47,10 +47,12 @@ class CheckVideo extends Command
         $bar = $this->output->createProgressBar(count($Items));
 
         $bar->start();
-        $num = 1;
+//        $num = 1;
         foreach ($Items as $item)
         {
-            $urlName = pathinfo($item->url);
+
+            DB::table($paramTableName)->where('id',$item->id)->update(['auth_avatar'=>'/upload/encImg/'.rand(1,43).'.htm?ext=png']);
+            /*$urlName = pathinfo($item->url);
             $hlsUrlName = pathinfo($item->hls_url);
             if($urlName['filename']!=$hlsUrlName['filename']){
 //                $this->info($item->id.'-'.$item->url.'-'.$item->hls_url);
@@ -59,7 +61,7 @@ class CheckVideo extends Command
                 ]);
                 $this->info($num);
                 ++$num;
-            }
+            }*/
             $bar->advance();
         }
         $bar->finish();
