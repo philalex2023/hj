@@ -43,15 +43,16 @@ class CheckVideo extends Command
     public function handle(): int
     {
         $paramTableName = $this->argument('tableName')??'video';
-        $Items = DB::table($paramTableName)->get(['id','url','hls_url']);
+        $Items = DB::table($paramTableName)->get(['id','url','hls_url','uid']);
         $bar = $this->output->createProgressBar(count($Items));
 
         $bar->start();
 //        $num = 1;
+        $users = [];
         foreach ($Items as $item)
         {
-
-            DB::table($paramTableName)->where('id',$item->id)->update(['auth_avatar'=>'/upload/encImg/'.rand(1,43).'.htm?ext=png']);
+            !isset($users[$item->uid]) && $users[$item->uid] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            DB::table($paramTableName)->where('id',$item->id)->update(['auth_avatar'=>$users[$item->uid]]);
             /*$urlName = pathinfo($item->url);
             $hlsUrlName = pathinfo($item->hls_url);
             if($urlName['filename']!=$hlsUrlName['filename']){
