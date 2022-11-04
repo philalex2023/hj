@@ -138,14 +138,15 @@ class PayController extends Controller
             $signFun = 'sign'.$prePayData['payName'];
             $input['sign'] = $this->$signFun($input, $secret);
             Log::info($prePayData['payName'].'_third_params===', [$input]);//三方参数日志
-            $curl = (new Client([
+            /*$curl = (new Client([
                 'headers' => ['Content-Type' => 'application/json'],
                 'verify' => false,
             ]))->post($payUrl, [
                 'body' => json_encode($input)
-            ]);
-            $response = $curl->getBody();
-            // Log::info('yk_third_response===', [$response]);//三方响应日志
+            ]);*/
+//            $response = $curl->getBody();
+            $response = $this->reqPostPayUrl($payUrl, ['body' => json_encode($input)], ['Content-Type' => 'application/json']);
+            Log::info('yk_third_response===', [$response]);//三方响应日志
             $resJson = json_decode($response, true);
             if ($resJson['code'] == 1) {
                 $this->pullPayEvent($orderInfo);
@@ -184,11 +185,11 @@ class PayController extends Controller
         $signFun = 'sign'.$prePayData['payName'];
         $input['sign'] = $this->$signFun($input, $secret);
 
-        $curl = (new Client([
+        /*$curl = (new Client([
             'verify' => false,
         ]))->post($payUrl, ['form_params' => $input]);
-
-        $response = $curl->getBody();
+        $response = $curl->getBody();*/
+        $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
         Log::info($payName.'_third_response', [$response]);//三方响应日志
 
         //返回H5页面方式
@@ -237,12 +238,14 @@ class PayController extends Controller
             $signFun = 'sign'.$prePayData['payName'];
             $input['fxsign'] = $this->$signFun($input, $secret);
             Log::info('ax_third_params===', [$input]);//三方参数日志
-            $curl = (new Client([
+            /*$curl = (new Client([
                 //  'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
                 'verify' => false,
             ]))->post($payUrl, ['form_params' => $input]);
 
-            $response = $curl->getBody();
+            $response = $curl->getBody();*/
+            $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
+            Log::info('ax_third_response', [$response]);//三方响应日志
             $resJson = json_decode($response, true);
             Log::info('ax_third_response', [$resJson]);//三方响应日志
             if ($resJson['status'] == 1) {

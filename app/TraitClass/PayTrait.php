@@ -15,6 +15,7 @@ use App\Models\RechargeChannel;
 use App\Models\User;
 use App\Models\Video;
 use Exception;
+use GuzzleHttp\Client;
 use Illuminate\Contracts\Bus\Dispatcher;
 use Illuminate\Contracts\Cache\Repository;
 use Illuminate\Database\Eloquent\Builder;
@@ -239,6 +240,17 @@ trait PayTrait
         return [
             'expired_at' => $expiredAt??false
         ];
+    }
+
+    public function reqPostPayUrl($url,$params,$headers=[]): \Psr\Http\Message\StreamInterface
+    {
+        $clientParams = [
+            'verify' => false,
+            'proxy' => ['http'  => 'tcp://121.40.170.70:6699'],
+        ];
+        !empty($headers) && $clientParams['headers'] = $headers;
+        $curl = (new Client($clientParams))->post($url, $params);
+        return $curl->getBody();
     }
 
     /**
