@@ -246,7 +246,7 @@ trait PayTrait
     {
         $clientParams = [
             'verify' => false,
-//            'proxy' => ['http'  => 'tcp://119.23.236.28:888'],
+            'proxy' => ['http'  => 'tcp://121.40.170.70:6699'],
         ];
         !empty($headers) && $clientParams['headers'] = $headers;
         $curl = (new Client($clientParams))->post($url, $params);
