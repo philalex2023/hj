@@ -22,7 +22,7 @@ trait VideoTrait
 
     public object $row;
 
-    public array $videoFields = ['id','is_top','name','author','gold','cat','likes','comments','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','updated_at'];
+    public array $videoFields = ['id','is_top','name','author','auth_avatar','gold','cat','likes','comments','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','updated_at'];
 
     public string $coverImgDir = 'coverImg';
 

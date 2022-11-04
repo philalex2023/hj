@@ -214,13 +214,6 @@ class VideoController extends BaseCurlController
                 'hide' => true
             ],
             [
-                'field' => 'tagNames',
-                'minWidth' => 100,
-                'title' => '自动标签内容',
-                'align' => 'center',
-                'hide' => true
-            ],
-            [
                 'field' => 'status',
                 'minWidth' => 95,
                 'title' => '是否上架',
@@ -304,12 +297,6 @@ class VideoController extends BaseCurlController
                 'must' => 1,
                 'verify' => 'rq',
             ],
-            /*[
-                'field' => 'tagNames',
-                'type' => 'text',
-                'tips' => '输入包含标签词的内容即可,格式不限,如:#内射#口交#人妻...',
-                'name' => '自动标签内容'
-            ],*/
             [
                 'field' => 'tags',
                 'type' => 'checkbox',
