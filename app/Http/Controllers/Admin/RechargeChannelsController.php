@@ -7,12 +7,13 @@ namespace App\Http\Controllers\Admin;
 use App\Models\Order;
 use App\Models\RechargeChannel;
 use App\Models\RechargeChannels;
+use App\TraitClass\ChannelTrait;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Support\Facades\Cache;
 
 class RechargeChannelsController extends BaseCurlController
 {
-    use PHPRedisTrait;
+    use PHPRedisTrait,ChannelTrait;
     public $pageName = "充值通道";
     public array $payChannel = [];
     public array $pay_type = [
@@ -154,11 +155,28 @@ class RechargeChannelsController extends BaseCurlController
             1 => '开启',
             default => '-',
         };
-        /*$order = Order::query();
-        $item->send_order = $order
-            ->where('channel_id',$item->pay_channel)
-            ->where('pay_type',$item->pay_channel)
-        ;*/
+//
+        $redis = $this->redis();
+        $rechargeChannelsKey = 'rechargeChannels_'.$item->pay_method.'_'.$item->pay_channel_code;
+        $cacheItem = $redis->hGetAll($rechargeChannelsKey);
+
+        if(!$cacheItem){
+            $ordersBuild = Order::query()->where('pay_method',$item->pay_method)->where('pay_channel_code',$item->pay_channel_code);
+            $sendOrder = $ordersBuild->count();
+            $success_order = $ordersBuild->where('status',1)->count();
+            $totalAmount = $ordersBuild->where('status',1)->sum('amount');
+            $redis->hMset($rechargeChannelsKey,[
+                'send_order' => $sendOrder,
+                'success_order' => $success_order,
+                'order_price' => $totalAmount,
+            ]);
+            $redis->expire($rechargeChannelsKey,7200);
+        }
+
+        $item->send_order = $cacheItem['send_order']??'-';
+        $item->success_order = $cacheItem['success_order']??'-';
+        $item->success_rate = $cacheItem['order_price'] >0 ? round($cacheItem['success_order']*100/$cacheItem['send_order'],2).'%' : '-';
+        $item->order_price = $cacheItem['order_price']??'-';
         return $item;
     }
 

@@ -12,6 +12,7 @@ use App\Models\Order;
 use App\Models\PayLog;
 use App\Models\Recharge;
 use App\Models\RechargeChannel;
+use App\Models\RechargeChannels;
 use App\Models\User;
 use App\Models\Video;
 use Exception;
@@ -187,14 +188,19 @@ trait PayTrait
         return [];
     }
 
-    private function pullPayEvent($orderInfo): void
+    private function pullPayEvent($prePayData): void
     {
+        $orderInfo = $prePayData['order_info'];
+//        $payMethod = $prePayData['pay_method'];
+//        $payType = $prePayData['pay_type'];
+
         //首页统计拉起
         $redis = Redis::connection()->client();
         $dayData = date('Ymd');
         $nowTime = time();
         $redis->zAdd('day_pull_order_'.$dayData,$nowTime,$orderInfo->id);
         $redis->expire('day_pull_order_'.$dayData,3600*24*7);
+
     }
 
     /**

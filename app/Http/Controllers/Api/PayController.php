@@ -87,6 +87,7 @@ class PayController extends Controller
         };
         Log::info($payName.'_pay_url===', [$payEnvInfo['pay_url']]);//三方参数日志
         Order::query()->where('id',$orderInfo->id)->update(['pay_channel_code'=>$channelNo,'pay_method'=>$payEnvInfo['id']]);
+
         return [
             'payName' => $payName,
             'secret' => $secret,
@@ -95,6 +96,8 @@ class PayController extends Controller
             'merchId' => $mercId,
             'channelNo' => $channelNo,
             'pay_url' => $payEnvInfo['pay_url'],
+            'pay_type' => $payChannelType,
+            'pay_method' => $payEnvInfo['id'],
             'ip' => $this->getRealIp(),
         ];
     }
@@ -201,7 +204,7 @@ class PayController extends Controller
         //返回json方式
         $resJson = json_decode($response, true);
         if ($resJson['code']=='0100') {
-            $this->pullPayEvent($orderInfo);
+            $this->pullPayEvent($prePayData);
             $url = $resJson['data']['html'];
             $return = $this->format(0, ['url' => $url], 'ok');
         } else {
