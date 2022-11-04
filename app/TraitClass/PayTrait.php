@@ -242,11 +242,11 @@ trait PayTrait
         ];
     }
 
-    public function reqPostPayUrl($url,$params,$headers=[]): \Psr\Http\Message\StreamInterface
+    public function reqPostPayUrl($url,$params,$headers=[])
     {
         $clientParams = [
             'verify' => false,
-            'proxy' => ['http'  => 'tcp://119.23.236.28:888'],
+//            'proxy' => ['http'  => 'tcp://119.23.236.28:888'],
         ];
         !empty($headers) && $clientParams['headers'] = $headers;
         $curl = (new Client($clientParams))->post($url, $params);
