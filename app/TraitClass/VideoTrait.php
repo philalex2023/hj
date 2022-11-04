@@ -448,8 +448,8 @@ AV-海角伙伴
                 $prefix && $list['name'] = '【'.$prefix.'】:'.$list['name'];
             }*/
             //up主头像(随机)
-//            $list['up_avatar'] = $domainSync . '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-            $list['up_avatar'] = $domainSync . $list['auth_avatar'];
+            $upAvatar = $list['auth_avatar'] ?? '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $list['up_avatar'] = $domainSync . $upAvatar;
         }
         return $lists;
     }
