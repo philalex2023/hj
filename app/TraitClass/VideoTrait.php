@@ -449,7 +449,7 @@ AV-海角伙伴
             }*/
             //up主头像(随机)
 //            $list['up_avatar'] = $domainSync . '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-            $list['up_avatar'] = $domainSync . $list['up_avatar'];
+            $list['up_avatar'] = $domainSync . $list['auth_avatar'];
         }
         return $lists;
     }
