@@ -34,6 +34,7 @@ class ConfigController extends Controller
             }
             $use = rand(0, $weight -1);
             $hitKey = $weight==0 ? 0 : $keys[$use];
+            Log::info('==weight==',[$keys,$use,$hitKey]);
             $one = $res['open_screen_ads'][$hitKey];
             $res['open_screen_ads'] = [$one];
         }
