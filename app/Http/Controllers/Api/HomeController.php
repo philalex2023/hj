@@ -63,6 +63,14 @@ class HomeController extends Controller
                 $cid = $validated['cid'];
                 // Log::info('==carouselLog===',[$validated]);
                 $carouselData = Cache::get('api_carousel.'.$cid);
+                if(!$carouselData){
+                    $carouselData = Carousel::query()
+                        ->where('cid', $cid)
+                        ->where('status', 1)
+                        ->orderByDesc('sort')
+                        ->get(['id','title','img','url','action_type','vid','status','sort','line','end_at']);
+                }
+
                 $data = $carouselData ? $carouselData->toArray() : [];
                 $res = [];
                 if(!empty($data)){

@@ -231,19 +231,7 @@ class CarouselController extends BaseCurlController
         $coverImg = str_replace(self::getDomain(env('SFTP_SYNC',1)),"",$model->img);
         $model->img = $coverImg;
         $model->save();
-
-//        $model = $this->carousel;
-        $cid = $model->cid??0;
-        $key = 'api_carousel.'.$cid;
-        $value = Carousel::query()
-            ->where('cid', $cid)
-            ->where('status', 1)
-            ->orderByDesc('sort')
-            ->get(['id','title','img','url','action_type','vid','status','sort','line','end_at']);
-        Cache::forever($key,$value);
         $this->syncUpload($model->img);
-        /*$job = new ProcessCarousel($model);
-        $this->dispatch($job->onQueue('high'));*/
     }
 
     public function setListOutputItemExtend($item)
