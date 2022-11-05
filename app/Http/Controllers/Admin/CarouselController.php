@@ -232,6 +232,19 @@ class CarouselController extends BaseCurlController
         $model->img = $coverImg;
         $model->save();
         $this->syncUpload($model->img);
+
+//        $model = $this->carousel;
+        $cid = $model->cid??0;
+        $key = 'api_carousel.'.$cid;
+        $value = Carousel::query()
+            ->where('cid', $cid)
+            ->where('status', 1)
+            ->orderByDesc('sort')
+            ->get(['id','title','img','url','action_type','vid','status','sort','line','end_at']);
+        Cache::forever($key,$value);
+
+        /*$job = new ProcessCarousel($model);
+        $this->dispatch($job->onQueue('high'));*/
     }
 
     public function setListOutputItemExtend($item)
