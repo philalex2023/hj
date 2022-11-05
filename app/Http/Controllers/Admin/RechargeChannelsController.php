@@ -173,6 +173,7 @@ class RechargeChannelsController extends BaseCurlController
 
         $redis = $this->redis();
         $payChannel = $item->pay_channel;
+        dump($item->pay_type);
         $code = match ($item->pay_type){
             1 => $this->payChannelCode[$payChannel]['zfb_code'],
             2 => $this->payChannelCode[$payChannel]['wx_code'],
