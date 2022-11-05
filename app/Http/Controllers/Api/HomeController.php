@@ -69,6 +69,7 @@ class HomeController extends Controller
                         ->where('status', 1)
                         ->orderByDesc('sort')
                         ->get(['id','title','img','url','action_type','vid','status','sort','line','end_at']);
+                    Cache::put('api_carousel.'.$cid,$carouselData,3600);
                 }
 
                 $data = $carouselData ? $carouselData->toArray() : [];
