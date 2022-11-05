@@ -37,7 +37,7 @@ class ConfigController extends Controller
             $hitKey = $weight==0 ? 0 : $keys[$use];
 
 //            Log::info('==weight==',['命中第 '.($hitKey+1).' 张',$use,count($keys),$weight]);
-            Log::info('==weight_keys==',$keys);
+            Log::info('==weight_ads==',$res['open_screen_ads']);
             $one = $res['open_screen_ads'][$hitKey];
             $res['open_screen_ads'] = [$one];
         }
