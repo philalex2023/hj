@@ -153,7 +153,7 @@ class PayController extends Controller
             ]);*/
 //            $response = $curl->getBody();
             $response = $this->reqPostPayUrl($payUrl, ['body' => json_encode($input)], ['Content-Type' => 'application/json']);
-            Log::info('yk_third_response===', [$response]);//三方响应日志
+            Log::info('YK_third_response===', [$response]);//三方响应日志
             $resJson = json_decode($response, true);
             if ($resJson['code'] == 1) {
                 $this->pullPayEvent($orderInfo);
