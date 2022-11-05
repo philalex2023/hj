@@ -29,22 +29,37 @@ class RechargeChannelsController extends BaseCurlController
         6=>['id'=>6,'name'=>'500'],
     ];
 
-    public function getPayChannels(): array
+    private array $payChannelCode=[];
+
+    public function getPayChannels($code=false): array
     {
-        $channels = RechargeChannel::query()->get(['id','name','remark']);
-        $selector = [''=>['id'=>'','name'=>'选择充值渠道']];
-        foreach ($channels as $channel){
-            $selector[$channel->id] = [
-                'id' => $channel->id,
-                'name' => $channel->remark,
-            ];
+        $channels = RechargeChannel::query()->get(['id','name','zfb_code','wx_code']);
+        if(!$code){
+            $selector = [''=>['id'=>'','name'=>'选择充值渠道']];
+            foreach ($channels as $channel){
+                $selector[$channel->id] = [
+                    'id' => $channel->id,
+                    'name' => $channel->remark,
+                ];
+            }
+            return $selector;
+        }else{
+            $selector = [];
+            foreach ($channels as $channel){
+                $selector[$channel->id] = [
+                    'zfb_code' => $channel->zfb_code,
+                    'wx_code' => $channel->wx_code,
+                ];
+            }
+            return $selector;
         }
-        return $selector;
+
     }
 
     public function setModel(): RechargeChannels
     {
         $this->payChannel = $this->getPayChannels();
+        $this->payChannelCode = $this->getPayChannels(true);
         return $this->model = new RechargeChannels();
     }
 
@@ -155,17 +170,18 @@ class RechargeChannelsController extends BaseCurlController
             1 => '开启',
             default => '-',
         };
-// todo
-        /*$redis = $this->redis();
-        $rechargeChannelsKey = 'rechargeChannels_'.$item->pay_method.'_'.$item->pay_channel_code;
+
+        $redis = $this->redis();
+        $code = $this->payChannelCode[$item];
+        $payChannel = $item->pay_channel;
+        $rechargeChannelsKey = 'rechargeChannels_'.$payChannel.'_'.$code;
         $cacheItem = $redis->hGetAll($rechargeChannelsKey);
 
         if(!$cacheItem){
-            $ordersBuild = Order::query()->where('pay_method',$item->pay_method)->where('pay_channel_code',$item->pay_channel_code);
+            $ordersBuild = Order::query()->where('pay_method',$payChannel)->where('pay_channel_code',$code);
             $sendOrder = $ordersBuild->count();
             $success_order = $ordersBuild->where('status',1)->count();
             $totalAmount = $ordersBuild->where('status',1)->sum('amount');
-            dump($sendOrder);
             $redis->hMset($rechargeChannelsKey,[
                 'send_order' => $sendOrder,
                 'success_order' => $success_order,
@@ -177,7 +193,7 @@ class RechargeChannelsController extends BaseCurlController
         $item->send_order = $cacheItem['send_order']??'-';
         $item->success_order = $cacheItem['success_order']??'-';
         $item->success_rate = $cacheItem['order_price']??0 ? round($cacheItem['success_order']*100/$cacheItem['send_order'],2).'%' : '-';
-        $item->order_price = $cacheItem['order_price']??'-';*/
+        $item->order_price = $cacheItem['order_price']??'-';
         return $item;
     }
 
