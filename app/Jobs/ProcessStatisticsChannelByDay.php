@@ -121,8 +121,9 @@ class ProcessStatisticsChannelByDay implements ShouldQueue
 
         //首页统计
 //        $dayData = date('Ymd');
-        $dayData = date('Ymd',strtotime($this->orderInfo->created_at));
-        $nowTime = time();
+//        $nowTime = time();
+        $nowTime = strtotime($this->orderInfo->created_at);
+        $dayData = date('Ymd',$nowTime);
         if($this->orderInfo->type==1){ //VIP
             $redis->zAdd('vip_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
             $redis->expire('vip_recharge_'.$dayData,3600*24*7);
