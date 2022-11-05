@@ -181,12 +181,14 @@ class RechargeChannelsController extends BaseCurlController
             $sendOrder = $ordersBuild->count();
             $success_order = $ordersBuild->where('status',1)->count();
             $totalAmount = $ordersBuild->where('status',1)->sum('amount');
-            $redis->hMset($rechargeChannelsKey,[
+            $data = [
                 'send_order' => $sendOrder,
                 'success_order' => $success_order,
                 'order_price' => $totalAmount,
-            ]);
+            ];
+            $redis->hMset($rechargeChannelsKey,$data);
             $redis->expire($rechargeChannelsKey,7200);
+            $cacheItem = $data;
         }
 
         $item->send_order = $cacheItem['send_order']??'-';
