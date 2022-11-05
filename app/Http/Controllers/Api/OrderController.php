@@ -48,7 +48,7 @@ class OrderController extends PayBaseController
         $hourAgo = strtotime('-1 hour');
         $nowTime = time();
         $userUnpaidOrders = $redis->zCount($unpaidKey,$hourAgo,$nowTime);
-        if($userUnpaidOrders && $userUnpaidOrders>10){
+        if($userUnpaidOrders && $userUnpaidOrders>=10){
             Log::debug('==order_reply_create=',['ID为:'.$user->id.'的恶意用户在重复拉起订单']);//参数日志
             return response()->json(['state' => -1, 'msg' => '一定时间受限']);
         }
