@@ -161,10 +161,6 @@ class RechargeChannelsController extends BaseCurlController
 
     public function setListOutputItemExtend($item)
     {
-        $item->pay_type = match ($item->pay_type){
-            $item->pay_type => $this->pay_type[$item->pay_type]['name'],
-            default => '-',
-        };
         $item->status = match ($item->status){
             0 => '关闭',
             1 => '开启',
@@ -173,7 +169,6 @@ class RechargeChannelsController extends BaseCurlController
 
         $redis = $this->redis();
         $payChannel = $item->pay_channel;
-        dump($item->pay_type);
         $code = match ($item->pay_type){
             1 => $this->payChannelCode[$payChannel]['zfb_code'],
             2 => $this->payChannelCode[$payChannel]['wx_code'],
@@ -198,6 +193,11 @@ class RechargeChannelsController extends BaseCurlController
         $item->success_order = $cacheItem['success_order']??'-';
         $item->success_rate = $cacheItem['order_price']??0 ? round($cacheItem['success_order']*100/$cacheItem['send_order'],2).'%' : '-';
         $item->order_price = $cacheItem['order_price']??'-';
+
+        $item->pay_type = match ($item->pay_type){
+            $item->pay_type => $this->pay_type[$item->pay_type]['name'],
+            default => '-',
+        };
         return $item;
     }
 
