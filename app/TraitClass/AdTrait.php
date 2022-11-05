@@ -71,6 +71,7 @@ trait AdTrait
 
         if($more){
             foreach ($ads as &$item){
+                $item = (array)$item;
                 $item['img'] = $this->transferImgOut($item['img'],$domain,$_v,'auto');
                 $item['action_type'] = (string) $item['action_type'];
                 $item['vid'] = (string) $item['vid'];
