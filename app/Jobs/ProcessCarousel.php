@@ -41,7 +41,7 @@ class ProcessCarousel implements ShouldQueue
     public function handle(): void
     {
         //
-        $model = $this->carousel;
+        /*$model = $this->carousel;
         $cid = $model->cid??0;
         $key = 'api_carousel.'.$cid;
         $value = Carousel::query()
@@ -50,6 +50,6 @@ class ProcessCarousel implements ShouldQueue
             ->orderByDesc('sort')
             ->get(['id','title','img','url','action_type','vid','status','sort','line','end_at']);
         Cache::forever($key,$value);
-        $this->syncUpload($model->img);
+        $this->syncUpload($model->img);*/
     }
 }
