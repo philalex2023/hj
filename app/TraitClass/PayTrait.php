@@ -296,6 +296,11 @@ trait PayTrait
         ProcessStatisticsChannelByDay::dispatchAfterResponse($orderInfo,$userType);
         //#############################
 
+        //
+        $redis = $this->redis();
+        $unpaidKey = 'unpaid_user_'.$orderInfo->uid;
+        $redis->zRem($unpaidKey,$orderInfo->number);
+
     }
 
     /**

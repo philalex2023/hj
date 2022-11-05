@@ -72,6 +72,10 @@ class PayController extends Controller
 
         $payName = $payEnvInfo['name'];
         $orderInfo = Order::query()->find($validated['pay_id']);
+
+        //一小时10次拉起未付
+//        $unpaidKey = 'unpaid_user_'.$orderInfo->uid;
+
         if (!$orderInfo) {
             Log::error($payName.'_pay_exception===', [$validated]);
             $return = $this->format(-1, [], '订单不存在');

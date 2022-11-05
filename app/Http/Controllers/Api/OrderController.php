@@ -37,10 +37,22 @@ class OrderController extends PayBaseController
     public function create(Request $request): JsonResponse
     {
         $user = $request->user();
+
         if(!Cache::lock('createOrder_'.$user->id,5)->get()){
             Log::debug('==order_create=',['ID为:'.$user->id.'的用户在重复拉起订单']);//参数日志
             return response()->json(['state' => -1, 'msg' => '当前用户较多,请稍候重试']);
         }
+        //一小时10次拉起未付的用户,一小时后才能发起订单 todo
+        $redis = $this->redis();
+        $unpaidKey = 'unpaid_user_'.$user->id;
+        $hourAgo = strtotime('-1 hour');
+        $nowTime = time();
+        $userUnpaidOrders = $redis->zCount($unpaidKey,$hourAgo,$nowTime);
+        if($userUnpaidOrders && $userUnpaidOrders>10){
+            Log::debug('==order_reply_create=',['ID为:'.$user->id.'的恶意用户在重复拉起订单']);//参数日志
+            return response()->json(['state' => -1, 'msg' => '一定时间受限']);
+        }
+
         $params = self::parse($request->params ?? '');
         Validator::make($params, [
             'type' => [
@@ -140,6 +152,10 @@ class OrderController extends PayBaseController
 
             // 创建订单
             $order = Order::query()->create($createData);
+
+            //
+            $redis->zAdd($unpaidKey,time(),$number);
+            $redis->expire($unpaidKey,3600);
 //            $return = $this->format(0, ['pay_id' => $pay->id,'order_id'=>$order->id], '取出成功');
             $return = $this->format(0, ['pay_id' => $order->id,'order_id'=>$order->id], '取出成功');
         } catch (Exception $e) {
