@@ -155,10 +155,10 @@ class PayController extends Controller
 //            $response = $curl->getBody();
             $response = $this->reqPostPayUrl($payUrl, ['body' => json_encode($input)], ['Content-Type' => 'application/json']);
             Log::info('YK_third_response===', [$response]);//三方响应日志
-            Log::info('Yk_order_info===', [$orderInfo]);
+//            Log::info('Yk_order_info===', [$orderInfo]);
             $resJson = json_decode($response, true);
             if ($resJson['code'] == 1) {
-                $this->pullPayEvent($orderInfo);
+                $this->pullPayEvent($prePayData);
                 $return = $this->format(0, ['url'=>$resJson['payUrl']], '取出成功');
             } else {
                 $return = $this->format($resJson['code'], [], $response);
@@ -258,7 +258,7 @@ class PayController extends Controller
             $resJson = json_decode($response, true);
             Log::info('ax_third_response', [$resJson]);//三方响应日志
             if ($resJson['status'] == 1) {
-                $this->pullPayEvent($orderInfo);
+                $this->pullPayEvent($prePayData);
                 $return = $this->format(0, ['url' => $resJson['payurl']], '取出成功');
             } else {
                 Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
