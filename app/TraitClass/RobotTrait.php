@@ -10,7 +10,7 @@ trait RobotTrait
     public function RobotSendMsg($msg='')
     {
         //通知
-        $tgApiToken = '5497303996:AAGjlfy0NDjM-L7p7ql74ZOVyte5ZeLGtGg';
+        $tgApiToken = env('TG_ROBOT_TOKEN');
         $apiUrl = 'https://api.telegram.org/bot' .$tgApiToken.'/sendMessage';
         $input = [
             'chat_id'=>'-804384145',
