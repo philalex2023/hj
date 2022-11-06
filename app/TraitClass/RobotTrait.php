@@ -11,9 +11,10 @@ trait RobotTrait
     {
         //通知
         $tgApiToken = env('TG_ROBOT_TOKEN');
+        $chat_id = env('TG_CHAT_ID');
         $apiUrl = 'https://api.telegram.org/bot' .$tgApiToken.'/sendMessage';
         $input = [
-            'chat_id'=>'-804384145',
+            'chat_id'=>$chat_id,
             'text'=>$msg,
         ];
         $curl = (new Client([
