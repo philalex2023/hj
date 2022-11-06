@@ -56,7 +56,7 @@ class BackupRes extends Command
             //->where('id','>=',11665)
             //->where('sync',1)
             //->take(1)
-            ->get(['id','url','hls_url','cover_img']);
+            ->get(['id','url','hls_url','cover_img'])->toArray();
         $count = count($Items);
         if($count > 0){
             $endItem = end($Items);
