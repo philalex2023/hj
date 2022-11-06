@@ -71,7 +71,8 @@ class PayController extends Controller
         $payEnvInfo = $this->getRechargeChannelByWeight($payChannelType);
 
         $payName = $payEnvInfo['name'];
-        $orderInfo = Order::query()->find($validated['pay_id']);
+        //$orderInfo = Order::query()->find($validated['pay_id']);
+        $orderInfo = DB::connection('master_mysql')->table('orders')->find($validated['pay_id']);
 
         //一小时10次拉起未付
 //        $unpaidKey = 'unpaid_user_'.$orderInfo->uid;
