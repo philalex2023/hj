@@ -38,7 +38,7 @@ class OrderController extends PayBaseController
     {
         $user = $request->user();
 
-        if(!Cache::lock('createOrder_'.$user->id,5)->get()){
+        /*if(!Cache::lock('createOrder_'.$user->id,5)->get()){
             Log::debug('==order_create=',['ID为:'.$user->id.'的用户在重复拉起订单']);//参数日志
             return response()->json(['state' => -1, 'msg' => '当前用户较多,请稍候重试']);
         }
@@ -51,7 +51,7 @@ class OrderController extends PayBaseController
         if($userUnpaidOrders && $userUnpaidOrders>=10){
             Log::debug('==order_reply_create=',['ID为:'.$user->id.'的恶意用户在重复拉起订单']);//参数日志
             return response()->json(['state' => -1, 'msg' => '一定时间受限']);
-        }
+        }*/
 
         $params = self::parse($request->params ?? '');
         Validator::make($params, [
@@ -154,8 +154,8 @@ class OrderController extends PayBaseController
             $order = Order::query()->create($createData);
 
             //
-            $redis->zAdd($unpaidKey,time(),$number);
-            $redis->expire($unpaidKey,3600);
+           /* $redis->zAdd($unpaidKey,time(),$number);
+            $redis->expire($unpaidKey,3600);*/
 //            $return = $this->format(0, ['pay_id' => $pay->id,'order_id'=>$order->id], '取出成功');
             $return = $this->format(0, ['pay_id' => $order->id,'order_id'=>$order->id], '取出成功');
         } catch (Exception $e) {
