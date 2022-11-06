@@ -38,6 +38,8 @@ trait DayStatisticTrait
         $hashData['hour_inc_user'] = $redis->zCount('new_increase_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_inc_user'] = $redis->zCount('new_increase_'.$dayData,$starTime,$dayEndTime);
 
+        $hashData['hour_inc_android_user'] = $redis->zCount('new_inc_android_'.$dayData,$hourAgo,$dayEndTime);
+        $hashData['hour_inc_ios_user'] = $redis->zCount('new_inc_ios_'.$dayData,$hourAgo,$dayEndTime);
         $hashData['day_inc_android_user'] = $redis->zCount('new_inc_android_'.$dayData,$starTime,$dayEndTime);
         $hashData['day_inc_ios_user'] = $redis->zCount('new_inc_ios_'.$dayData,$starTime,$dayEndTime);
 
