@@ -67,7 +67,7 @@ class ProcessLogin implements ShouldQueue
 //        $areaJson = json_encode($area,JSON_UNESCAPED_UNICODE);
 
         if($this->loginLogData['type']==1){
-            $this->saveStatisticByDay('install',$this->loginLogData['channel_id'],$this->device_system);
+            $this->saveStatisticByDay('install',$this->loginLogData['channel_id'],$this->device_system,null,$uid);
         }else{
             $this->saveStatisticByDay('login_number',$this->loginLogData['channel_id'],$this->device_system);
         }

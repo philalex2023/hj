@@ -88,7 +88,8 @@ trait DayStatisticTrait
         $hashData['day_inc_auto_user'] = $redis->zCount('new_inc_auto_'.$dayData,$starTime,$dayEndTime);
 
 //        $hashData['day_channel_deduction_increase_user'] = $redis->get('ch_deduction_increase_user_'.$dayData);
-        $hashData['day_channel_deduction_increase_user'] = $redis->zCount('ch_deduction_inc_user_'.$dayData,$starTime,$dayEndTime);
+        $oldDeductData = (int)$redis->zCount('ch_deduction_inc_user_'.$dayData,$starTime,$dayEndTime);
+        $hashData['day_channel_deduction_increase_user'] = $oldDeductData + $this->sumRangeValue($redis->zRangeByScore('ch_deduct_inc_user_'.$dayData,$starTime,$dayEndTime));
 
         $day_up_master_income = DB::table('up_income_day')
             ->where('at_time','>=',$starTime)
@@ -103,7 +104,7 @@ trait DayStatisticTrait
     {
         $sum = 0;
         foreach ($rangeValues as $value) {
-            $sum += intval(explode(',',$value)[1]);
+            $sum += floatval(explode(',',$value)[1]);
         }
         return round($sum,2);
     }
