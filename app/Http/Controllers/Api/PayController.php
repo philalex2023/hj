@@ -9,13 +9,12 @@ use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\PaySignVerifyTrait;
 use App\TraitClass\PayTrait;
 use App\TraitClass\IpTrait;
-use GuzzleHttp\Client;
+use App\TraitClass\RobotTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
-use Psr\SimpleCache\InvalidArgumentException;
 
 /**
  * 通达支付
@@ -24,7 +23,7 @@ use Psr\SimpleCache\InvalidArgumentException;
  */
 class PayController extends Controller
 {
-    use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait;
+    use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait,RobotTrait;
 
     public function getRechargeChannelsByCache($payChannelType)
     {
@@ -161,7 +160,9 @@ class PayController extends Controller
                 $this->pullPayEvent($prePayData);
                 $return = $this->format(0, ['url'=>$resJson['payUrl']], '取出成功');
             } else {
+                Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
                 $return = $this->format($resJson['code'], [], $response);
+                $this->RobotSendMsg('YK通道异常未拉起');
             }
         } catch (\Exception $e) {
             $return = $this->format($e->getCode(), [], $e->getMessage());
@@ -216,6 +217,7 @@ class PayController extends Controller
         } else {
             Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
             $return = $this->format(-1, $resJson, $resJson['message']??'');
+            $this->RobotSendMsg($payName.'通道异常未拉起');
         }
         return response()->json($return);
     }
@@ -263,6 +265,7 @@ class PayController extends Controller
             } else {
                 Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
                 $return = $this->format(-1, [], $resJson['error']);
+                $this->RobotSendMsg('AX通道异常未拉起');
             }
         } catch (\Exception $e) {
             $return = $this->format($e->getCode(), [], $e->getMessage());
