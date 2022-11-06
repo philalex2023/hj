@@ -18,7 +18,7 @@ trait RobotTrait
         ];
         $curl = (new Client([
             'verify' => false,
-            'proxy' => ['https'  => 'tcp://github.com/:80']
+            'proxy' => ['https'  => 'tcp://github.com:80']
         ]))->post($apiUrl,['form_params' => $input]);
         $this->info($curl->getBody()->getContents());
     }
