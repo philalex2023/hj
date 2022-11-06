@@ -80,8 +80,8 @@ trait DayStatisticTrait
         if(!empty($hourLpHitArr)){
             $hour_hit_access = end($hourLpHitArr)-$hourLpHitArr[0];
         }
-        $hashData['hour_hit_access'] = $hour_hit_access;
-        $hashData['day_hit_access'] = $redis->zCount('lp_hit_'.$dayData,$starTime,$dayEndTime);
+        $hashData['hour_lp_hit'] = $hour_hit_access;
+        $hashData['day_lp_hit'] = $redis->zCount('lp_hit_'.$dayData,$starTime,$dayEndTime);
 
         $hashData['hour_android_recharge'] = $this->sumRangeValue($redis->zRangeByScore('android_recharge_'.$dayData,$hourAgo,$nowTime));
         $hashData['day_android_recharge'] = $this->sumRangeValue($redis->zRangeByScore('android_recharge_'.$dayData,$starTime,$dayEndTime));
