@@ -66,8 +66,20 @@ class ReportSend extends Command
 
         $msg .= "\n";
 
-        $channelDayRecharge = DB::table('orders')->where('status',1)->where('channel_id','>',0)->sum('amount');
-        $officialDayRecharge = DB::table('orders')->where('status',1)->where('channel_id','=',0)->sum('amount');
+        $startDate = date('Y-m-d '.'00:00:00');
+        $endDate = date('Y-m-d '.'23:59:59');
+        $channelDayRecharge = DB::table('orders')
+            ->where('created_at','>=',$startDate)
+            ->where('created_at','<=',$endDate)
+            ->where('status',1)
+            ->where('channel_id','>',0)
+            ->sum('amount');
+        $officialDayRecharge = DB::table('orders')
+            ->where('created_at','>=',$startDate)
+            ->where('created_at','<=',$endDate)
+            ->where('status',1)
+            ->where('channel_id','=',0)
+            ->sum('amount');
 
         $msg .= '渠道充值：'.$channelDayRecharge."\n";
         $msg .= '官方充值：'.$officialDayRecharge."\n";
