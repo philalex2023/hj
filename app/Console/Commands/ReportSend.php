@@ -3,16 +3,14 @@
 namespace App\Console\Commands;
 
 use App\TraitClass\DayStatisticTrait;
-use App\TraitClass\PHPRedisTrait;
-use GuzzleHttp\Client;
+use App\TraitClass\RobotTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Http;
 
 class ReportSend extends Command
 {
 
-    use DayStatisticTrait,PHPRedisTrait;
+    use DayStatisticTrait,RobotTrait;
     /**
      * The name and signature of the console command.
      *
@@ -91,26 +89,8 @@ class ReportSend extends Command
         $msg .= "渠道新增：".$data['day_inc_channel_user']."\n";
         $msg .= "渠道扣量后新增：".$data['day_channel_deduction_increase_user']."\n";
 
-        $this->sendMsg($msg);
+        $this->RobotSendMsg($msg);
         return 0;
-    }
-
-
-    public function sendMsg($msg='')
-    {
-        //通知
-//        $tgApiToken = '5463455642:AAFPPpmsx_b4UvrQvlHZzKyd2ItxMIQnhgM';
-        $tgApiToken = '5497303996:AAGjlfy0NDjM-L7p7ql74ZOVyte5ZeLGtGg';
-        $apiUrl = 'https://api.telegram.org/bot' .$tgApiToken.'/sendMessage';
-        $input = [
-            'chat_id'=>'-804384145',
-            'text'=>$msg,
-        ];
-        $curl = (new Client([
-            //'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
-            'verify' => false,
-        ]))->post($apiUrl,['form_params' => $input]);
-//        $this->info($curl->getBody()->getContents());
     }
 
 }
