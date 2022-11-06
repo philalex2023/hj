@@ -91,6 +91,12 @@
                         </div>
                         <div class="layui-col-md3">
                             <div class="layui-card">
+                                <div class="layui-card-header"> 落地页点击量(小时/日)</div>
+                                <div class="layui-card-body">{{ $data['hour_lp_hit'] }} / {{ $data['day_lp_hit'] }}</div>
+                            </div>
+                        </div>
+                        <div class="layui-col-md3">
+                            <div class="layui-card">
                                 <div class="layui-card-header"> 安卓充值(小时/日)</div>
                                 <div class="layui-card-body">{{ $data['hour_android_recharge'] }} / {{ $data['day_android_recharge'] }}</div>
                             </div>
