@@ -89,7 +89,6 @@ class ReportSend extends Command
         $msg .= "渠道新增：".$data['day_inc_channel_user']."\n";
         $msg .= "渠道扣量后新增：".$data['day_channel_deduction_increase_user']."\n";
 
-        $msg = '测试消息';
         $this->RobotSendMsg($msg);
         return 0;
     }
