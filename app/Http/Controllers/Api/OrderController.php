@@ -104,64 +104,53 @@ class OrderController extends PayBaseController
             '2' => 'money',
             '3' => 'gold',
         }];
-        /*if ($params['method_id']??false) {
-            $amount = $goodsInfo[match ($params['method_id']) {
-                '1' => 'zfb_fee',
-                '2' => 'wx_fee',
-            }];
-        } else {
-            $amount = $goodsInfo[match ($params['type']) {
-                '1' => $useRealValue ? 'real_value' : 'value',
-                '2' => 'money',
-                '3' => 'gold',
-            }];
+        $number = self::getPayNumber($user->id);
+        /*$payMethod = $params['pay_method']??1;
+        $payNumber = '';
+        if ($params['pay_method'] == 0) {
+            $payMethod = $this->getOwnCode($params['type'],$params['goods_id'],$params['method_id']);
+            $payNumber = $this->getOwnMethod($params['type'],$params['goods_id'],$params['method_id']);
         }*/
-        try {
-            $number = self::getPayNumber($user->id);
-            /*$payMethod = $params['pay_method']??1;
-            $payNumber = '';
-            if ($params['pay_method'] == 0) {
-                $payMethod = $this->getOwnCode($params['type'],$params['goods_id'],$params['method_id']);
-                $payNumber = $this->getOwnMethod($params['type'],$params['goods_id'],$params['method_id']);
-            }*/
-            $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : null;
-            $createData = [
-                'remark' => json_encode(['id'=>$goodsInfo['id']??0,'name'=>$goodsInfo['name']??'']),
-                'number' => $number,
-                'type' => $params['type'],
-                'type_id' => $params['goods_id'],
-                'amount' => $amount,
-                'uid' => $user->id,
-                'channel_id' => $user->channel_id??0,
-                'channel_pid' => $user->channel_pid??0,
-                'status' => 0,
-                'forward' => $params['forward'] ?? '',
-                'vid' => $params['vid'] ?? 0,
-                'created_at' => $now,
-                'updated_at' => $now,
+        $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : null;
+        $createData = [
+            'remark' => json_encode(['id'=>$goodsInfo['id']??0,'name'=>$goodsInfo['name']??'']),
+            'number' => $number,
+            'type' => $params['type'],
+            'type_id' => $params['goods_id'],
+            'amount' => $amount,
+            'uid' => $user->id,
+            'channel_id' => $user->channel_id??0,
+            'channel_pid' => $user->channel_pid??0,
+            'status' => 0,
+            'forward' => $params['forward'] ?? '',
+            'vid' => $params['vid'] ?? 0,
+            'created_at' => $now,
+            'updated_at' => $now,
 //                'pay_channel_code' => $payNumber, //
 //                'pay_method' => $payMethod, //
-                'device_system' => $user->device_system, //
-                'channel_name' => !$channelInfo ? '官方' : $channelInfo->name, //
+            'device_system' => $user->device_system, //
+            'channel_name' => !$channelInfo ? '官方' : $channelInfo->name, //
 
-                'channel_principal' => $channelInfo->principal??'', //
-                'reg_at' => $user->created_at??'', //
-                'user_type' => time()-strtotime($user->created_at)>=24*3600 ? 1 : 0
-            ];
-            Log::info('order_create_Data===',[$createData]);//参数日志
+            'channel_principal' => $channelInfo->principal??'', //
+            'reg_at' => $user->created_at??'', //
+            'user_type' => time()-strtotime($user->created_at)>=24*3600 ? 1 : 0
+        ];
+        Log::info('order_create_Data===',[$createData]);//参数日志
 
-            // 创建订单
-            $order = Order::query()->create($createData);
+        // 创建订单
+        $order = Order::query()->create($createData);
 
-            //
-            $redis->zAdd($unpaidKey,time(),$number);
-            $redis->expire($unpaidKey,3600);
+        //
+        $redis->zAdd($unpaidKey,time(),$number);
+        $redis->expire($unpaidKey,3600);
 //            $return = $this->format(0, ['pay_id' => $pay->id,'order_id'=>$order->id], '取出成功');
-            $return = $this->format(0, ['pay_id' => $order->id,'order_id'=>$order->id], '取出成功');
+        $return = $this->format(0, ['pay_id' => $order->id,'order_id'=>$order->id], '取出成功');
+        /*try {
+
         } catch (Exception $e) {
             DB::rollBack();
             $return = $this->format((int)$e->getCode(), [], $e->getMessage());
-        }
+        }*/
 
         return response()->json($return);
     }
