@@ -52,6 +52,7 @@ class ReportSend extends Command
         $msg .= "\n";
 
         $msg .= '落地页访问：'.$data['hour_lp_access'].' / '.$data['day_lp_access']."\n";
+        $msg .= '落地页点击：'.$data['hour_lp_hit'].' / '.$data['day_lp_hit']."\n";
         $msg .= '总新增：'.$data['hour_inc_user'].' / '.$data['day_inc_user']."\n";
         $msg .= 'ios新增：'.$data['hour_inc_ios_user'].' / '.$data['day_inc_ios_user']."\n";
         $msg .= '安卓新增：'.$data['hour_inc_android_user'].' / '.$data['day_inc_android_user']."\n";
