@@ -48,6 +48,9 @@ class ReportSend extends Command
 //        dd($data);
 
         $msg = '统计时间：'.date('Y-m-d H:i:s')."\n";
+
+        $msg .= "\n";
+
         $msg .= '落地页访问：'.$data['hour_lp_access'].' / '.$data['day_lp_access']."\n";
         $msg .= '总新增：'.$data['hour_inc_user'].' / '.$data['day_inc_user']."\n";
         $msg .= 'ios新增：'.$data['hour_inc_ios_user'].' / '.$data['day_inc_ios_user']."\n";
