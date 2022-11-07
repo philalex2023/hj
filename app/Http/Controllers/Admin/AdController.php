@@ -95,7 +95,7 @@ class AdController extends BaseCurlController
                 'minWidth' => 150,
                 'title' => '标题',
                 'align' => 'center',
-
+                'hide' => true
             ],
             [
                 'field' => 'img',
