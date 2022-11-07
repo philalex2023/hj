@@ -47,7 +47,8 @@ class ReportSend extends Command
         $data = $this->getDayStatisticHashData();
 //        dd($data);
 
-        $msg = '落地页访问：'.$data['hour_lp_access'].' / '.$data['day_lp_access']."\n";
+        $msg = '统计时间：'.date('Y-m-d H:i:s')."\n";
+        $msg .= '落地页访问：'.$data['hour_lp_access'].' / '.$data['day_lp_access']."\n";
         $msg .= '总新增：'.$data['hour_inc_user'].' / '.$data['day_inc_user']."\n";
         $msg .= 'ios新增：'.$data['hour_inc_ios_user'].' / '.$data['day_inc_ios_user']."\n";
         $msg .= '安卓新增：'.$data['hour_inc_android_user'].' / '.$data['day_inc_android_user']."\n";
@@ -88,6 +89,7 @@ class ReportSend extends Command
 
         $msg .= "渠道新增：".$data['day_inc_channel_user']."\n";
         $msg .= "渠道扣量后新增：".$data['day_channel_deduction_increase_user']."\n";
+        $msg .= "日活：".$data['active_user']."\n";
 
         $this->RobotSendMsg($msg);
         return 0;
