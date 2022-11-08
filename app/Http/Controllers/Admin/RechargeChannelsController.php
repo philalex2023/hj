@@ -167,39 +167,60 @@ class RechargeChannelsController extends BaseCurlController
             default => '-',
         };
 
-        $redis = $this->redis();
+//        $redis = $this->redis();
         $payChannel = $item->pay_channel;
         $code = match ($item->pay_type){
             1 => $this->payChannelCode[$payChannel]['zfb_code'],
             2 => $this->payChannelCode[$payChannel]['wx_code'],
         };
-        $rechargeChannelsKey = 'rechargeChannels_'.$payChannel.'_'.$code;
-        $cacheItem = $redis->hGetAll($rechargeChannelsKey);
+//        $rechargeChannelsKey = 'rechargeChannels_'.$payChannel.'_'.$code;
+//        $cacheItem = $redis->hGetAll($rechargeChannelsKey);
+//        $cacheItem = false;
+//        if(!$cacheItem){
+            $model = Order::query();
+            if($item->last_save_time > 0){
+                $model = $model->where('created_at','>',date('Y-m-d H:i:s',$item->last_save_time));
+            }
+            $ordersBuild = $model->where('pay_method',$payChannel)->where('pay_channel_code',$code);
+            $orderRecords = $ordersBuild->get(['id','amount','status','created_at'])->toArray();
+            $sendOrder = 0;
+            $success_order = 0;
+            $totalAmount = 0;
+            foreach ($orderRecords as $orderRecord){
+                ++$sendOrder;
+                if($orderRecord['status']==1){
+                    ++$success_order;
+                    $totalAmount += $orderRecord['amount'];
+                }
+            }
 
-        if(!$cacheItem){
-            $ordersBuild = Order::query()->where('pay_method',$payChannel)->where('pay_channel_code',$code);
-            $sendOrder = $ordersBuild->count();
-            $success_order = $ordersBuild->where('status',1)->count();
-            $totalAmount = $ordersBuild->where('status',1)->sum('amount');
             $data = [
                 'send_order' => $sendOrder,
                 'success_order' => $success_order,
                 'order_price' => $totalAmount,
             ];
-            $redis->hMset($rechargeChannelsKey,$data);
-            $redis->expire($rechargeChannelsKey,7200);
-            $cacheItem = $data;
-        }
+//            $redis->hMset($rechargeChannelsKey,$data);
+//            $redis->expire($rechargeChannelsKey,7200);
+//            $cacheItem = $data;
+            //更新入库
+            RechargeChannels::query()->where('id',$item->id)->update([
+                'send_order' => $item->send_order + $sendOrder,
+                'success_order' => $item->success_order + $success_order,
+                'order_price' => $item->order_price + $totalAmount,
+                'last_save_time' => strtotime(end($orderRecords)['created_at']),
+            ]);
+//        }
 
-        $item->send_order = $cacheItem['send_order']??'-';
-        $item->success_order = $cacheItem['success_order']??'-';
-        $item->success_rate = $cacheItem['order_price']??0 ? round($cacheItem['success_order']*100/$cacheItem['send_order'],2).'%' : '-';
-        $item->order_price = $cacheItem['order_price']??'-';
+        $item->send_order = $data['send_order']??'-';
+        $item->success_order = $data['success_order']??'-';
+        $item->success_rate = $data['order_price']??0 ? round($item->success_order*100/$item->send_order,2).'%' : '-';
+        $item->order_price = $data['order_price']??'-';
 
         $item->pay_type = match ($item->pay_type){
             $item->pay_type => $this->pay_type[$item->pay_type]['name'],
             default => '-',
         };
+
         return $item;
     }
 
