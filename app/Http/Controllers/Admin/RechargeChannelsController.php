@@ -207,7 +207,7 @@ class RechargeChannelsController extends BaseCurlController
                 'send_order' => $item->send_order + $sendOrder,
                 'success_order' => $item->success_order + $success_order,
                 'order_price' => $item->order_price + $totalAmount,
-                'last_save_time' => strtotime(end($orderRecords)['created_at']),
+                'last_save_time' => strtotime(end($orderRecords)->created_at),
             ]);
 //        }
 
