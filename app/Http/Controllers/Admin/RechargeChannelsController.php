@@ -173,44 +173,41 @@ class RechargeChannelsController extends BaseCurlController
             1 => $this->payChannelCode[$payChannel]['zfb_code'],
             2 => $this->payChannelCode[$payChannel]['wx_code'],
         };
-//        $rechargeChannelsKey = 'rechargeChannels_'.$payChannel.'_'.$code;
-//        $cacheItem = $redis->hGetAll($rechargeChannelsKey);
-//        $cacheItem = false;
-//        if(!$cacheItem){
-            $model = Order::query();
-            if($item->last_save_time > 0){
-                $model = $model->where('created_at','>',date('Y-m-d H:i:s',$item->last_save_time));
-            }
-            $ordersBuild = $model->where('pay_method',$payChannel)->where('pay_channel_code',$code);
-            $orderRecords = $ordersBuild->get(['id','amount','status','created_at'])->toArray();
-            $sendOrder = 0;
-            $success_order = 0;
-            $totalAmount = 0;
-            foreach ($orderRecords as &$orderRecord){
-                $orderRecord = (array)$orderRecord;
-                ++$sendOrder;
-                if($orderRecord['status']==1){
-                    ++$success_order;
-                    $totalAmount += $orderRecord['amount'];
-                }
-            }
 
-            $data = [
-                'send_order' => $sendOrder,
-                'success_order' => $success_order,
-                'order_price' => $totalAmount,
-            ];
-//            $redis->hMset($rechargeChannelsKey,$data);
-//            $redis->expire($rechargeChannelsKey,7200);
-//            $cacheItem = $data;
-            //更新入库
+        $model = Order::query();
+        if($item->last_save_time > 0){
+            $model = $model->where('created_at','>',date('Y-m-d H:i:s',$item->last_save_time));
+        }
+        $ordersBuild = $model->where('pay_method',$payChannel)->where('pay_channel_code',$code);
+        $orderRecords = $ordersBuild->get(['id','amount','status','created_at']);
+        $sendOrder = 0;
+        $success_order = 0;
+        $totalAmount = 0;
+        foreach ($orderRecords as &$orderRecord){
+            $orderRecord = (array)$orderRecord;
+            ++$sendOrder;
+            if($orderRecord['status']==1){
+                ++$success_order;
+                $totalAmount += $orderRecord['amount'];
+            }
+        }
+
+        $data = [
+            'send_order' => $sendOrder,
+            'success_order' => $success_order,
+            'order_price' => $totalAmount,
+        ];
+
+        //更新入库
+        if(!empty($orderRecords)){
             RechargeChannels::query()->where('id',$item->id)->update([
                 'send_order' => $item->send_order + $sendOrder,
                 'success_order' => $item->success_order + $success_order,
                 'order_price' => $item->order_price + $totalAmount,
                 'last_save_time' => strtotime(end($orderRecords)['created_at']),
             ]);
-//        }
+        }
+
 
         $item->send_order = $data['send_order']??'-';
         $item->success_order = $data['success_order']??'-';
