@@ -182,7 +182,7 @@ class RechargeChannelsController extends BaseCurlController
                 $model = $model->where('created_at','>',date('Y-m-d H:i:s',$item->last_save_time));
             }
             $ordersBuild = $model->where('pay_method',$payChannel)->where('pay_channel_code',$code);
-            $orderRecords = $ordersBuild->get(['id','amount','status','created_at']);
+            $orderRecords = $ordersBuild->get(['id','amount','status','created_at'])->toArray();
             $sendOrder = 0;
             $success_order = 0;
             $totalAmount = 0;
