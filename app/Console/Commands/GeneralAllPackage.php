@@ -106,7 +106,7 @@ class GeneralAllPackage extends Command
 
         if (fread($stream, 16) != 'APK Sig Block 42') {
             //throw new Exception('数据格式异常，不存在ApkSigBlock魔法数');
-            $this->info('数据格式异常，不存在ApkSigBlock魔法数');
+            $this->info('数据格式异常，不存在ApkSigBlock魔法数 '.fread($stream, 16));
         }
         //获取V2签名块总大小
         fseek($stream, ftell($stream) - 24);
