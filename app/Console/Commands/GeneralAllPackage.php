@@ -104,11 +104,10 @@ class GeneralAllPackage extends Command
         //检查是否存在魔法数
         fseek($stream, $centerDirectoryOffsetPosition - 16);
 
-        /*$read = fread($stream, 16);
-        if ($read != 'APK Sig Block 42') {
-//            throw new \Exception('数据格式异常，不存在ApkSigBlock魔法数'.$read);
-            $this->info('数据格式异常，不存在ApkSigBlock魔法数 '.$read);
-        }*/
+        if (fread($stream, 16) != 'APK Sig Block 42') {
+            //throw new Exception('数据格式异常，不存在ApkSigBlock魔法数');
+            $this->info('数据格式异常，不存在ApkSigBlock魔法数');
+        }
         //获取V2签名块总大小
         fseek($stream, ftell($stream) - 24);
         $v2BlockSize = unpack('P*', fread($stream, 8))[1];
