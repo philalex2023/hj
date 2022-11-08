@@ -202,14 +202,11 @@ class RechargeChannelsController extends BaseCurlController
                 'last_save_time' => strtotime(end($orderRecords)['created_at']),
             ];
             RechargeChannels::query()->where('id',$item->id)->update($updateData);
-            $item->send_order = $updateData['send_order']??'-';
-            $item->success_order = $updateData['success_order']??'-';
-            $item->order_price = $updateData['order_price']??'-';
-            $item->success_rate = $updateData['order_price']??0 ? round($updateData['success_order']*100/$updateData['order_price'],2).'%' : '-';
-        }else{
-            $item->success_rate = $updateData['order_price']??0 ? round($item->success_order*100/$item->send_order,2).'%' : '-';
+            $item->send_order = $updateData['send_order'];
+            $item->success_order = $updateData['success_order'];
+            $item->order_price = $updateData['order_price'];
         }
-
+        $item->success_rate = $item->send_order>0 ? round($item->success_order*100/$item->send_order,2).'%' : '-';
         $item->pay_type = match ($item->pay_type){
             $item->pay_type => $this->pay_type[$item->pay_type]['name'],
             default => '-',
