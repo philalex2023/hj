@@ -192,12 +192,6 @@ class RechargeChannelsController extends BaseCurlController
             }
         }
 
-        $data = [
-            'send_order' => $sendOrder,
-            'success_order' => $success_order,
-            'order_price' => $totalAmount,
-        ];
-
         //更新入库
 //        dump($orderRecords);
         if(!empty($orderRecords)){
@@ -208,13 +202,13 @@ class RechargeChannelsController extends BaseCurlController
                 'last_save_time' => strtotime(end($orderRecords)['created_at']),
             ];
             RechargeChannels::query()->where('id',$item->id)->update($updateData);
-            $data = $updateData;
+            $item->send_order = $updateData['send_order']??'-';
+            $item->success_order = $updateData['success_order']??'-';
+            $item->order_price = $updateData['order_price']??'-';
+            $item->success_rate = $updateData['order_price']??0 ? round($updateData['success_order']*100/$updateData['order_price'],2).'%' : '-';
+        }else{
+            $item->success_rate = $updateData['order_price']??0 ? round($item->success_order*100/$item->send_order,2).'%' : '-';
         }
-
-        $item->send_order = $data['send_order']??'-';
-        $item->success_order = $data['success_order']??'-';
-        $item->success_rate = $data['order_price']??0 ? round($item->success_order*100/$item->send_order,2).'%' : '-';
-        $item->order_price = $data['order_price']??'-';
 
         $item->pay_type = match ($item->pay_type){
             $item->pay_type => $this->pay_type[$item->pay_type]['name'],
