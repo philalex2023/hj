@@ -179,7 +179,7 @@ class RechargeChannelsController extends BaseCurlController
             $model = $model->where('created_at','>',date('Y-m-d H:i:s',$item->last_save_time));
         }
         $ordersBuild = $model->where('pay_method',$payChannel)->where('pay_channel_code',$code);
-        $orderRecords = $ordersBuild->get(['id','amount','status','created_at']);
+        $orderRecords = $ordersBuild->get(['id','amount','status','created_at'])->toArray();
         $sendOrder = 0;
         $success_order = 0;
         $totalAmount = 0;
@@ -199,15 +199,17 @@ class RechargeChannelsController extends BaseCurlController
         ];
 
         //更新入库
+//        dump($orderRecords);
         if(!empty($orderRecords)){
-            RechargeChannels::query()->where('id',$item->id)->update([
+            $updateData = [
                 'send_order' => $item->send_order + $sendOrder,
                 'success_order' => $item->success_order + $success_order,
                 'order_price' => $item->order_price + $totalAmount,
                 'last_save_time' => strtotime(end($orderRecords)['created_at']),
-            ]);
+            ];
+            RechargeChannels::query()->where('id',$item->id)->update($updateData);
+            $data = $updateData;
         }
-
 
         $item->send_order = $data['send_order']??'-';
         $item->success_order = $data['success_order']??'-';
