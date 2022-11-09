@@ -78,11 +78,11 @@ trait DayStatisticTrait
 
         //点击
         $hourLpHitArr = $redis->zRangeByScore('lp_hit_'.$dayData,$hourAgo,$nowTime);
-        $hour_hit_access = 0;
+        $hour_lp_hit = 0;
         if(!empty($hourLpHitArr)){
             $hour_hit_access = end($hourLpHitArr)-$hourLpHitArr[0];
         }
-        $hashData['hour_lp_hit'] = $hour_hit_access;
+        $hashData['hour_lp_hit'] = $hour_lp_hit;
         $hashData['day_lp_hit'] = $redis->zCount('lp_hit_'.$dayData,$starTime,$dayEndTime);
 
         $hashData['hour_android_recharge'] = $this->sumRangeValue($redis->zRangeByScore('android_recharge_'.$dayData,$hourAgo,$nowTime));
