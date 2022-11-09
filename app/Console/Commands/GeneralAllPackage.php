@@ -74,7 +74,7 @@ class GeneralAllPackage extends Command
         $index = $redis->get($key);
         $s = env('PACKAGE_NO_START');
         !$index && $index=$s;
-        $file = env('PACKAGE_NAME').$index;
+        $file = env('PACKAGE_NAME').$index.'.apk';
         $bool = Storage::exists($file);
         if(!$bool){
             $this->info('no package');
@@ -83,7 +83,6 @@ class GeneralAllPackage extends Command
             $con = Storage::get($file);
             Storage::put($name,$con) && Storage::delete($file);
             $redis->set($key,$index+1);
-
             return 1;
         }
     }
