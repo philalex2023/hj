@@ -70,11 +70,17 @@ class GeneralAllPackage extends Command
     public function replacePackage($name): int
     {
         $redis = $this->redis();
-        $key = 'package_no';
-        $index = $redis->get($key);
+        $key = 'package_info';
+        $packageName = env('PACKAGE_NAME');
         $s = env('PACKAGE_NO_START');
-        !$index && $index=$s;
-        $file = env('PACKAGE_NAME').$index.'.apk';
+        $hashV = $redis->hGetAll($key);
+        if(!$hashV){
+            $index = $s;
+        }else{
+            $index = $packageName==$hashV['name'] ? $hashV['index'] : $s;
+        }
+
+        $file = $packageName.$index.'.apk';
         $bool = Storage::exists($file);
         if(!$bool){
             $this->info('no package');
@@ -82,7 +88,7 @@ class GeneralAllPackage extends Command
         }else{
             $con = Storage::get($file);
             Storage::put($name,$con) && Storage::delete($file);
-            $redis->set($key,$index+1);
+            $redis->hMSet($key,['index'=>$index+1,'name'=>$packageName]);
             return 1;
         }
     }
