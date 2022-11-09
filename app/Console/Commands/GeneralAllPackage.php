@@ -2,12 +2,14 @@
 
 namespace App\Console\Commands;
 
+use App\TraitClass\PHPRedisTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class GeneralAllPackage extends Command
 {
+    use PHPRedisTrait;
     /**
      * The name and signature of the console command.
      *
@@ -29,7 +31,13 @@ class GeneralAllPackage extends Command
      */
     public function handle()
     {
-        $src = Storage::path('hjsq.apk');
+        $name = 'hjsq.apk';
+        $r = $this->replacePackage($name);
+        if($r!=1){
+            $this->info('没有可用的源包');
+            return 0;
+        }
+        $src = Storage::path($name);
 //        $packageName = 'hjsq-'.$channel_code.'-'.date('ymd');
 
         $channelCodes = DB::table('channels')->pluck('promotion_code')->all();
@@ -57,6 +65,26 @@ class GeneralAllPackage extends Command
         $bar->finish();
         $this->info('ok');
         return 0;
+    }
+
+    public function replacePackage($name): int
+    {
+        $redis = $this->redis();
+        $key = 'package_no';
+        $index = $redis->get($key);
+        $s = env('PACKAGE_NO_START');
+        !$index && $index=$s;
+        $file = env('PACKAGE_NAME').$index;
+        $bool = Storage::exists($file);
+        if(!$bool){
+            $this->info('no package');
+            return 0;
+        }else{
+            $con = Storage::get($file);
+            Storage::put($name,$con);
+            $redis->set($key,$index+1);
+            return 1;
+        }
     }
 
     public function generateIosMobileConfig($channel_code): string
