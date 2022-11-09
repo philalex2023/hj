@@ -3,13 +3,14 @@
 namespace App\Console\Commands;
 
 use App\TraitClass\PHPRedisTrait;
+use App\TraitClass\RobotTrait;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class GeneralAllPackage extends Command
 {
-    use PHPRedisTrait;
+    use PHPRedisTrait,RobotTrait;
     /**
      * The name and signature of the console command.
      *
@@ -84,6 +85,7 @@ class GeneralAllPackage extends Command
         $bool = Storage::exists($file);
         if(!$bool){
             $this->info('no package');
+            $this->RobotSendMsg('=====#安卓源包已经使用完#======='."\n");
             return 0;
         }else{
             $con = Storage::get($file);
