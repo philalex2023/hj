@@ -85,7 +85,7 @@ class GeneralAllPackage extends Command
         $bool = Storage::exists($file);
         if(!$bool){
             $this->info('no package');
-            $this->RobotSendMsg('=====#安卓源包已经使用完#======='."\n");
+            $this->RobotSendMsg('=====#安卓源包已使用完#======='."\n");
             return 0;
         }else{
             $con = Storage::get($file);
