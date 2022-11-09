@@ -80,7 +80,7 @@ trait DayStatisticTrait
         $hourLpHitArr = $redis->zRangeByScore('lp_hit_'.$dayData,$hourAgo,$nowTime);
         $hour_lp_hit = 0;
         if(!empty($hourLpHitArr)){
-            $hour_hit_access = end($hourLpHitArr)-$hourLpHitArr[0];
+            $hour_lp_hit = end($hourLpHitArr)-$hourLpHitArr[0];
         }
         $hashData['hour_lp_hit'] = $hour_lp_hit;
         $hashData['day_lp_hit'] = $redis->zCount('lp_hit_'.$dayData,$starTime,$dayEndTime);
