@@ -81,8 +81,9 @@ class GeneralAllPackage extends Command
             return 0;
         }else{
             $con = Storage::get($file);
-            Storage::put($name,$con);
+            Storage::put($name,$con) && Storage::delete($file);
             $redis->set($key,$index+1);
+
             return 1;
         }
     }
