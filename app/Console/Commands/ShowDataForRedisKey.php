@@ -46,7 +46,7 @@ class ShowDataForRedisKey extends Command
             $this->info('######无匹配的key######');
             return 1;
         }
-        $redis = $this->redis();
+        $redis = $this->redis('channel');
         $keys = $redis->keys('*'.$paramKey.'*');
         $channelData = [];
         foreach ($keys as $key){
