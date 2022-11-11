@@ -33,7 +33,7 @@ class RechargeChannelsController extends BaseCurlController
 
     public function getPayChannels($code=false): array
     {
-        $channels = RechargeChannel::query()->get(['id','name','zfb_code','wx_code']);
+        $channels = RechargeChannel::query()->where('status',1)->get(['id','name','zfb_code','wx_code']);
         if(!$code){
             $selector = [''=>['id'=>'','name'=>'选择充值渠道']];
             foreach ($channels as $channel){
@@ -231,6 +231,7 @@ class RechargeChannelsController extends BaseCurlController
     public function setOutputUiCreateEditForm($show = '')
     {
         //dd(1);
+        $this->payChannel = $this->getPayChannels();
         $data = [
             [
                 'field' => 'name',
