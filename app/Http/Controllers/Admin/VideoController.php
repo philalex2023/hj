@@ -555,7 +555,9 @@ class VideoController extends BaseCurlController
             $unshiftArr = [];
             foreach ($sorts as $id){
                 $unshiftArr[] = $idItems[$id];
-                unset($idItems[$id]);
+                if(isset($idItems[$id])){
+                    unset($idItems[$id]);
+                }
             }
             array_unshift($idItems,...$unshiftArr);
             //dd($idItems);
