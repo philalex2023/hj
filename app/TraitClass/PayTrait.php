@@ -253,9 +253,7 @@ trait PayTrait
         $clientParams = [
             'verify' => false,
             'proxy' => [
-                'http'  => 'tcp://www.runoob.com:80',
-                'https'  => 'tcp://www.runoob.com:80',
-//                'no' => ['.mit.edu', 'foo.com']
+                'https'  => 'tcp://www.runoob.com:80'
             ]
         ];
         !empty($headers) && $clientParams['headers'] = $headers;
