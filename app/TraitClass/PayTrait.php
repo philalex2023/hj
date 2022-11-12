@@ -253,7 +253,7 @@ trait PayTrait
         $clientParams = [
             'verify' => false,
             'proxy' => [
-                'http'  => 'tcp://www.php.net:80',
+                'http'  => 'tcp://www.runoob.com:80',
                 'https'  => 'tcp://www.runoob.com:80',
                 'no' => ['.mit.edu', 'foo.com']
             ]
