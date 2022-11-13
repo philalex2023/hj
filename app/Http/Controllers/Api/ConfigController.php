@@ -50,6 +50,12 @@ class ConfigController extends Controller
 
     }
 
+    public function robotsUpdate(Request $request)
+    {
+        $all = $request->all();
+        Log::info('robotsUpdate',$all);
+    }
+
     public function pullOriginVideo(Request $request): \Illuminate\Http\JsonResponse
     {
         /*$ip = $this->getRealIp();
