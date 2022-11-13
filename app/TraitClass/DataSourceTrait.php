@@ -114,11 +114,6 @@ Trait DataSourceTrait
         $videoIds = array_unique($videoIds);
         $model->contain_vids = implode(',',$videoIds);
         $model->video_num = count($videoIds);
-        //更新数据源记录
-        DB::table('data_source')->where('id',$model->id)->update([
-            'video_num' => $model->video_num,
-            'contain_vids' => $model->contain_vids,
-        ]);
         return $model;
     }
 }

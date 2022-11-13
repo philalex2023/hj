@@ -82,9 +82,10 @@ class AutoUpdateData extends Command
                 krsort($firstIds);
                 //Log::info('firstIds',[$firstIds]);
                 //更新数据源
-                $updateIdStr = implode(',',array_unique([...$firstIds,...$sourceIds]));
+                $updateIds = array_unique([...$firstIds,...$sourceIds]);
+                $updateIdStr = implode(',',$updateIds);
                 //Log::info('idStr-1',[$updateIdStr]);
-                DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr]);
+                DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr,'video_num'=>count($updateIds)]);
             }
             $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
             $ids = array_unique($mergerArr);
