@@ -20,7 +20,7 @@ Route::group([
     'middleware' => $useSecret ? ['secret'] : []
 ],function (){
     Route::get('config', 'ConfigController@ack');   //配置
-    Route::get('robotsUpdate', 'ConfigController@robotsUpdate');   //机器人更新
+    Route::post('robotsUpdate', 'ConfigController@robotsUpdate');   //机器人更新
     Route::post('login', 'AuthController@login');
 });
 
