@@ -89,6 +89,7 @@ class GeneralAllPackage extends Command
             if($upBool){
                 $con = Storage::get($file);
                 Storage::put($name,$con) && Storage::delete($file);
+                $this->RobotSendMsg('=====#目前正在使用手动传包#======='."\n");
                 return 1;
             }else{
                 $this->info('no package');
