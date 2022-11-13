@@ -52,7 +52,7 @@ class AppConfigController extends BaseCurlController
                         'type' => 'text',
                         //'editor_type' => 'simple',//编辑器类型指定，默认是
                         'name' => '公告内容',
-                        'must' => 1,
+//                        'must' => 1,
                         'verify' => '',
                         'tips' => '我支持simple编辑器,还支持截图上传'
                     ],
@@ -60,8 +60,8 @@ class AppConfigController extends BaseCurlController
                         'field' => 'announcement_action_type',
                         'type' => 'text',
                         'name' => '公告操作',
-                        'must' => 1,
-                        'verify' => 'rq',
+//                        'must' => 1,
+//                        'verify' => 'rq',
                         'default' => '0',
                         'tips' => '0-无操作,1-打开链接'
                     ],
