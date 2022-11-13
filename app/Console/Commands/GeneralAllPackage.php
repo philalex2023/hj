@@ -82,11 +82,20 @@ class GeneralAllPackage extends Command
         }
 
         $file = $packageName.$index.'.apk';
+        $upFile = 'up.apk';
         $bool = Storage::exists($file);
         if(!$bool){
-            $this->info('no package');
-            $this->RobotSendMsg('=====#安卓包已使用完#======='."\n");
-            return 0;
+            $upBool = Storage::exists($upFile);
+            if($upBool){
+                $con = Storage::get($file);
+                Storage::put($name,$con) && Storage::delete($file);
+                return 1;
+            }else{
+                $this->info('no package');
+                $this->RobotSendMsg('=====#安卓包已使用完#======='."\n");
+                return 0;
+            }
+
         }else{
             $this->RobotSendMsg('=====#安卓包当前序号: '.$index.'#======='."\n");
             $con = Storage::get($file);

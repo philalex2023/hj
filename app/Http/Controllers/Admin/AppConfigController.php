@@ -12,6 +12,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use AetherUpload\Util;
 use App\Models\Config;
 use App\Models\User;
 use App\TraitClass\AboutEncryptTrait;
@@ -19,6 +20,7 @@ use App\TraitClass\AdTrait;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class AppConfigController extends BaseCurlController
 {
@@ -98,6 +100,13 @@ class AppConfigController extends BaseCurlController
                         'verify' => '',
                         'tips' => ''
                     ],*/
+                    [
+                        'field' => 'upload_apk',
+                        'type' => 'file',
+                        'name' => '上传包',
+                        'verify' => '',
+                        'tips' => ''
+                    ],
                     [
                         'field' => 'ad_time',
                         'type' => 'number',
@@ -208,12 +217,21 @@ class AppConfigController extends BaseCurlController
         /*if(isset($config_values['open_screen_logo'])){
             $this->syncUpload($config_values['open_screen_logo']);
         }*/
-        config_cache($config_name, $config_values);
-        //
-        cache()->delete('payEnv');
-        if($this->getConfigDataFromDb()){
-            $this->insertLog(lang('系统配置成功'));
+        //上传包
+        if(isset($config_values['upload_apk'])){
+            $resource = Util::getResource($config_values['upload_apk']);
+            $path = $resource->path;
+            $con = Storage::get($path);
+            Storage::put('up.apk',$con) && Storage::delete($path);
+        }else{
+            config_cache($config_name, $config_values);
+            //
+            cache()->delete('payEnv');
+            if($this->getConfigDataFromDb()){
+                $this->insertLog(lang('系统配置成功'));
+            }
         }
+
         return $this->returnSuccessApi('设置成功');
 
     }
