@@ -26,7 +26,7 @@ class StatController extends BaseCurlIndexController
         return [
             [
                 'field' => 'active_user',
-                'width' => 80,
+                'width' => 120,
                 'title' => '日活',
 //                'sort' => 1,
                 'align' => 'center'

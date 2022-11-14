@@ -60,6 +60,18 @@ class ConfigController extends Controller
             $text = $message['text']??'none';
             $username = $message['chat']['username']??'';
             $chatId = $message['chat']['id'];
+            if(isset($switchChannel[$username])){
+                $payName = $switchChannel[$username];
+                $textExp = substr($text,'');
+                if(!$textExp || !isset($textExp[1])){
+                    $this->RobotSendMsg('格式错误, 正确格式为: 通道编码_1/0',$chatId);
+                }
+                /*else{
+                    $on = end($textExp);
+
+                }*/
+            }
+
             $this->RobotSendMsg('值 '.$text.' 设置成功',$chatId);
 //            Log::info('robotsUpdate',$message);
         }
