@@ -7,6 +7,17 @@ use GuzzleHttp\Client;
 
 trait RobotTrait
 {
+    public function RobotGetPayInfo(): array
+    {
+        $kf_payName = [
+            'Payspare' => 'YL',
+            'yk_0003' => 'YK',
+        ];
+        return [
+            'switch_channel'=>$kf_payName
+        ];
+    }
+
     public function RobotSendMsg($msg='')
     {
         //通知

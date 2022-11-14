@@ -8,13 +8,14 @@ use App\TraitClass\AdTrait;
 use App\TraitClass\EsTrait;
 use App\TraitClass\IpTrait;
 use App\TraitClass\PHPRedisTrait;
+use App\TraitClass\RobotTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Log;
 
 class ConfigController extends Controller
 {
-    use PHPRedisTrait,AdTrait,IpTrait,EsTrait;
+    use PHPRedisTrait,AdTrait,IpTrait,EsTrait,RobotTrait;
 
     public function ack(): \Illuminate\Http\JsonResponse
     {
@@ -53,6 +54,14 @@ class ConfigController extends Controller
     public function robotsUpdate(Request $request)
     {
         $all = $request->all();
+        $switchChannel = $this->RobotGetPayInfo()['switch_channel'];
+        $message = $all['message']??'';
+        if(!empty($message)){
+            $text = $message['text'];
+            $username = $message['chat']['username'];
+            $this->RobotSendMsg('设置成功');
+        }
+
         Log::info('robotsUpdate',$all);
     }
 
