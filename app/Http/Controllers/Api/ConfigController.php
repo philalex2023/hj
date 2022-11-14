@@ -63,7 +63,13 @@ class ConfigController extends Controller
             $text = $message['text']??'none';
             $username = $message['chat']['username']??'';
             $chatId = $message['chat']['id'];
-            $chatId<0 && $username = $message['from']['username']??'';
+
+            if($chatId<0){ //群
+                $username = $message['from']['username']??'';
+                $text = substr($text,13);
+                /*Log::info('RobotsTest',[$text]);
+                return 0;*/
+            }
 
             $super = $chatId=='1006585279' || $chatId=='1885660735';
 
