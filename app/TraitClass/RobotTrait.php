@@ -12,6 +12,7 @@ trait RobotTrait
         $kf_payName = [
             'Payspare' => 'YL',
             'yk_0003' => 'YK',
+//            'yk_0003' => 'AX',
         ];
         return [
             'switch_channel'=>$kf_payName

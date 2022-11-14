@@ -58,7 +58,7 @@ class ConfigController extends Controller
         $message = $all['message']??'';
         if(!empty($message)){
             $text = $message['text']??'none';
-            $username = $message['chat']['username'];
+            $username = $message['chat']['username']??'';
             $chatId = $message['chat']['id'];
             $this->RobotSendMsg('值 '.$text.' 设置成功',$chatId);
 //            Log::info('robotsUpdate',$message);
