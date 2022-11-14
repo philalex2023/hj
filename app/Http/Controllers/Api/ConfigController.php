@@ -76,13 +76,9 @@ class ConfigController extends Controller
                 if(!$super){
                     $payName = $switchChannel[$username];
                     $code = substr($text,0,-2);
-                    $on = substr($text,-1,0);
+                    $on = substr($text,-1,1);
                     Log::info('robotsUpdate',[$payName,$code,$on]);
                 }else{
-                    /*$code = substr($text,0,-2);
-                    $on = substr($text,-1,0);
-                    Log::info('robotsUpdate',[$switchChannel,$code,$on]);*/
-
                     if(!$availableTextForSup){
                         return 1;
                     }else{
