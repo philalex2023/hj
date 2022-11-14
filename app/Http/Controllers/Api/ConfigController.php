@@ -69,16 +69,6 @@ class ConfigController extends Controller
                 $text = substr($text,13);
             }
 
-            if($text=='pca'){
-                $items = self::rechargeChannelCache()->toArray();
-                $arr = [];
-                foreach ($items as $item){
-                    $arr[$item['name']] = [2=>$item['wx_code'],1=>$item['zfb_code'],'status'=>$item['status']];
-                }
-                $this->RobotSendMsg(json_encode($arr,JSON_UNESCAPED_UNICODE),$chatId);
-                return 0;
-            }
-
             $super = str_contains($username,'zhao');
             $availableTextForSup = str_contains($text,',');
             $availableTextForNotSup = str_contains($text,'_');
@@ -97,6 +87,15 @@ class ConfigController extends Controller
                     if(!$availableTextForSup){
                         return 1;
                     }else{
+                        if($text=='pca'){
+                            $items = self::rechargeChannelCache()->toArray();
+                            $arr = [];
+                            foreach ($items as $item){
+                                $arr[$item['name']] = [2=>$item['wx_code'],1=>$item['zfb_code'],'status'=>$item['status']];
+                            }
+                            $this->RobotSendMsg(json_encode($arr,JSON_UNESCAPED_UNICODE),$chatId);
+                            return 0;
+                        }
                         $textExp = explode(',',$text);
                         $payName = $textExp[0]??'';
                         $code = $textExp[1]??'';
