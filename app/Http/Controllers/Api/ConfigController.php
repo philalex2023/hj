@@ -57,10 +57,10 @@ class ConfigController extends Controller
         $switchChannel = $this->RobotGetPayInfo()['switch_channel'];
         $message = $all['message']??'';
         if(!empty($message)){
-            $text = $message['text'];
+            $text = $message['text']??'none';
             $username = $message['chat']['username'];
             $chatId = $message['chat']['id'];
-            $this->RobotSendMsg('设置成功',$chatId);
+            $this->RobotSendMsg('值 '.$text.' 设置成功',$chatId);
         }
 
         Log::info('robotsUpdate',$all);
