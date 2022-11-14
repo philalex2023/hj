@@ -32,6 +32,6 @@ trait RobotTrait
             'verify' => false,
 //            'proxy' => ['https'  => 'tcp://www.youtube.com:80']
         ]))->post($apiUrl,['form_params' => $input]);
-        $this->info($curl->getBody()->getContents());
+        //$this->info($curl->getBody()->getContents());
     }
 }
