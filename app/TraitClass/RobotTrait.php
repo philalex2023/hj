@@ -38,9 +38,4 @@ trait RobotTrait
         //$this->info($curl->getBody()->getContents());
     }
 
-    public function getRechargeChannelByName(): array
-    {
-        $cacheData = self::rechargeChannelCache();
-        return array_column($cacheData->toArray(),null,'name');
-    }
 }

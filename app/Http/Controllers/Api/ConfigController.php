@@ -70,7 +70,12 @@ class ConfigController extends Controller
             }
 
             if($text=='pca'){
-                $this->RobotSendMsg(json_encode($this->getRechargeChannelByName(),JSON_UNESCAPED_UNICODE),$chatId);
+                $items = self::rechargeChannelCache()->toArray();
+                $arr = [];
+                foreach ($items as $item){
+                    $arr[$item['name']] = [2=>$item['wx_code'],1=>$item['zfb_code'],'status'=>$item['status']];
+                }
+                $this->RobotSendMsg(json_encode($arr,JSON_UNESCAPED_UNICODE),$chatId);
                 return 0;
             }
 
@@ -102,7 +107,8 @@ class ConfigController extends Controller
                 if(!$availableText){
                     $this->RobotSendMsg('格式错误, 正确格式为: 通道编码_1/0',$chatId);
                 } else {
-                    $payChannel = $this->getRechargeChannelByName();
+                    $cacheData = self::rechargeChannelCache();
+                    $payChannel = array_column($cacheData->toArray(),null,'name');
                     if(isset($payChannel[$payName])){
                         $payChannelInfo = $payChannel[$payName];
                         if($code==$payChannelInfo['zfb_code'] || $code==$payChannelInfo['wx_code']){
