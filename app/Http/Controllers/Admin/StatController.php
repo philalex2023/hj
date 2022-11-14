@@ -192,6 +192,8 @@ class StatController extends BaseCurlIndexController
 
 //        $item->active_user = rand(2000000,2500000);
 //        $item->inc_user = rand(250000,350000);
+        $item->active_user = 2200000 + $item->active_user;
+        $item->inc_user = 290000 + $item->inc_user;
         return $item;
     }
 
