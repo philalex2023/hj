@@ -75,7 +75,7 @@ class ConfigController extends Controller
                 switch ($text){
                     case 'report':
                         Artisan::call('telegram_bot_report');
-                        break;
+                        return 0;
                     case 'pca':
                         $items = self::rechargeChannelCache()->toArray();
                         $arr = [];
@@ -83,9 +83,9 @@ class ConfigController extends Controller
                             $arr[$item['name']] = [2=>$item['wx_code'],1=>$item['zfb_code'],'status'=>$item['status']];
                         }
                         $this->RobotSendMsg(json_encode($arr,JSON_UNESCAPED_UNICODE),$chatId);
-                        break;
+                        return 0;
                 }
-                return 0;
+
             }
 
             $availableTextForSup = str_contains($text,',');
