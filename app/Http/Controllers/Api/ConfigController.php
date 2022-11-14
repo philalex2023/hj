@@ -71,7 +71,7 @@ class ConfigController extends Controller
                 return 0;*/
             }
 
-            $super = $username=='zhao_2021' || $username=='zhaoxiaosi';
+            $super = str_contains($username,'zhao');
 
             $availableTextForSup = str_contains($text,',');
             $availableTextForNotSup = str_contains($text,'_');
