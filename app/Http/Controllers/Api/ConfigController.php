@@ -63,6 +63,8 @@ class ConfigController extends Controller
             $text = $message['text']??'none';
             $username = $message['chat']['username']??'';
             $chatId = $message['chat']['id'];
+            $chatId<0 && $username = $message['from']['username']??'';
+
             $super = $chatId=='1006585279' || $chatId=='1885660735';
 
             $availableTextForSup = str_contains($text,',');
