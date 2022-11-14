@@ -189,6 +189,9 @@ class StatController extends BaseCurlIndexController
         $item->total_recharge = round($item->total_recharge/100,2);
         $item->android_recharge = round($item->android_recharge/100,2);
         $item->ios_recharge = round($item->ios_recharge/100,2);
+
+//        $item->active_user = rand(2000000,2500000);
+//        $item->inc_user = rand(250000,350000);
         return $item;
     }
 
