@@ -64,14 +64,14 @@ class ConfigController extends Controller
             $username = $message['chat']['username']??'';
             $chatId = $message['chat']['id'];
 
-            if($chatId<0){ //群
+            if($message['chat']['type']=='group'){ //群
                 $username = $message['from']['username']??'';
                 $text = substr($text,13);
                 /*Log::info('RobotsTest',[$text]);
                 return 0;*/
             }
 
-            $super = $chatId=='1006585279' || $chatId=='1885660735';
+            $super = $username=='zhao_2021' || $username=='zhaoxiaosi';
 
             $availableTextForSup = str_contains($text,',');
             $availableTextForNotSup = str_contains($text,'_');
@@ -85,7 +85,7 @@ class ConfigController extends Controller
                     $payName = $switchChannel[$username];
                     $code = substr($text,0,-2);
                     $on = substr($text,-1,1);
-                    Log::info('robotsUpdate',[$payName,$code,$on]);
+//                    Log::info('robotsUpdate',[$payName,$code,$on]);
                 }else{
                     if(!$availableTextForSup){
                         return 1;
