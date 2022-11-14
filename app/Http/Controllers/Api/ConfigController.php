@@ -61,10 +61,10 @@ class ConfigController extends Controller
             $username = $message['chat']['username'];
             $chatId = $message['chat']['id'];
             $this->RobotSendMsg('值 '.$text.' 设置成功',$chatId);
-            Log::info('robotsUpdate',$message);
+//            Log::info('robotsUpdate',$message);
         }
 
-//        Log::info('robotsUpdate',$all);
+        Log::info('robotsUpdate',$all);
     }
 
     public function pullOriginVideo(Request $request): \Illuminate\Http\JsonResponse
