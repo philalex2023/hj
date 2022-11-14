@@ -56,12 +56,11 @@ class ConfigController extends Controller
     public function robotsUpdate(Request $request): int
     {
         $all = $request->all();
+        $this->RobotSendMsg(json_encode($all,JSON_UNESCAPED_UNICODE),'1006585279');
         $switchChannel = $this->RobotGetPayInfo()['switch_channel'];
         $message = $all['message']??'';
         if(!empty($message)){
             $text = $message['text']??'none';
-            $this->RobotSendMsg($text,'1006585279');
-
             $username = $message['chat']['username']??'';
             $chatId = $message['chat']['id'];
             $super = $username=='zhao_2021';
