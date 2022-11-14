@@ -67,12 +67,9 @@ class ConfigController extends Controller
             if($message['chat']['type']=='group'){ //群
                 $username = $message['from']['username']??'';
                 $text = substr($text,13);
-                /*Log::info('RobotsTest',[$text]);
-                return 0;*/
             }
 
             $super = str_contains($username,'zhao');
-
             $availableTextForSup = str_contains($text,',');
             $availableTextForNotSup = str_contains($text,'_');
             $availableText = $availableTextForNotSup || $availableTextForSup;
