@@ -69,6 +69,11 @@ class ConfigController extends Controller
                 $text = substr($text,13);
             }
 
+            if($text=='pca'){
+                $this->RobotSendMsg(json_encode($this->getRechargeChannelByName(),JSON_UNESCAPED_UNICODE),$chatId);
+                return 0;
+            }
+
             $super = str_contains($username,'zhao');
             $availableTextForSup = str_contains($text,',');
             $availableTextForNotSup = str_contains($text,'_');
@@ -97,8 +102,7 @@ class ConfigController extends Controller
                 if(!$availableText){
                     $this->RobotSendMsg('格式错误, 正确格式为: 通道编码_1/0',$chatId);
                 } else {
-                    $cacheData = self::rechargeChannelCache();
-                    $payChannel = array_column($cacheData->toArray(),null,'name');
+                    $payChannel = $this->getRechargeChannelByName();
                     if(isset($payChannel[$payName])){
                         $payChannelInfo = $payChannel[$payName];
                         if($code==$payChannelInfo['zfb_code'] || $code==$payChannelInfo['wx_code']){

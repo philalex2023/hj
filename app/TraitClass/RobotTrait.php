@@ -7,6 +7,8 @@ use GuzzleHttp\Client;
 
 trait RobotTrait
 {
+    use CacheTableTrait;
+
     public function RobotGetPayInfo(): array
     {
         $kf_payName = [
@@ -34,5 +36,11 @@ trait RobotTrait
 //            'proxy' => ['https'  => 'tcp://www.youtube.com:80']
         ]))->post($apiUrl,['form_params' => $input]);
         //$this->info($curl->getBody()->getContents());
+    }
+
+    public function getRechargeChannelByName(): array
+    {
+        $cacheData = self::rechargeChannelCache();
+        return array_column($cacheData->toArray(),null,'name');
     }
 }
