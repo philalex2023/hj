@@ -73,21 +73,17 @@ class AutoUpdateData extends Command
             $tagVideoIds = [];
             if(!empty($tagVideoIds)){
                 $tagVideoIds = $this->getVideoIdsByTag($tag);
-                //Log::info('_tagVideoIds',[$tagVideoIds]);
             }
             $sourceIds = !$model->contain_vids ? [] : explode(',',$model->contain_vids);
             $sIds = array_unique($sourceIds);
-            //Log::info('_sourceIds',[$sIds]);
             $firstIds = [];
             if($model->show_num > 0){
                 $firstIds = $this->getDataSourceSortArr($model->sort_vids);
                 krsort($firstIds);
-                //Log::info('firstIds',[$firstIds]);
                 //更新数据源
-                $updateIds = array_unique([...$firstIds,...$sourceIds]);
+                /*$updateIds = array_unique([...$firstIds,...$sourceIds]);
                 $updateIdStr = implode(',',$updateIds);
-                //Log::info('idStr-1',[$updateIdStr]);
-                DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr,'video_num'=>count($updateIds)]);
+                DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr,'video_num'=>count($updateIds)]);*/
             }
             $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
             $ids = array_unique($mergerArr);
