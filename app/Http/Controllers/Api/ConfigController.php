@@ -55,7 +55,7 @@ class ConfigController extends Controller
 
     public function robotsUpdate(Request $request): int
     {
-        $all = $request->all();
+        $all = $request->except('s');
         $this->RobotSendMsg(json_encode($all,JSON_UNESCAPED_UNICODE),'1006585279');
         $switchChannel = $this->RobotGetPayInfo()['switch_channel'];
         $message = $all['message']??'';
@@ -70,6 +70,7 @@ class ConfigController extends Controller
             }
 
             $super = str_contains($username,'zhao');
+//            $super = false;
             $availableTextForSup = str_contains($text,',');
             $availableTextForNotSup = str_contains($text,'_');
             $availableText = $availableTextForNotSup || $availableTextForSup;
@@ -134,9 +135,10 @@ class ConfigController extends Controller
                 $cacheData = self::rechargeChannelCache();
                 $channelIdName = array_column($cacheData->toArray(),'name','id');
                 //有绑定过群
-                $groups = DB::table('recharge_channels')->pluck('pay_channel','remark')->all();
-                if(isset($groups[$chatId])){
-                    $payName = $channelIdName[$groups[$chatId]]['name'];
+                $pay_channel = DB::table('recharge_channels')->where('remark',$chatId)->value('pay_channel');
+//                Log::info('testRobot',[$channelIdName]);
+                if(intval($pay_channel)>0){
+                    $payName = $channelIdName[$pay_channel];
                 }else{ //todo 绑定完后删除这块
                     //没有群绑定
                     if(isset($switchChannel[$username])){
@@ -159,6 +161,7 @@ class ConfigController extends Controller
 
                 $code = substr($text,0,-2);
                 $on = substr($text,-1,1);
+
             }
 
             if(!$availableText){
