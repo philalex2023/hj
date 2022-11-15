@@ -133,7 +133,7 @@ class ConfigController extends Controller
             }else{
                 $cacheData = self::rechargeChannelCache();
                 $channelIdName = array_column($cacheData->toArray(),'name','id');
-                //有群绑定
+                //有绑定过群
                 $groups = DB::table('recharge_channels')->pluck('pay_channel','remark')->all();
                 if(isset($groups[$chatId])){
                     $payName = $channelIdName[$groups[$chatId]]['name'];
