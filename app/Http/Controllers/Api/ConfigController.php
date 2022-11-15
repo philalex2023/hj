@@ -185,7 +185,7 @@ class ConfigController extends Controller
                         };
                         $this->RobotSendMsg($msg,$chatId);
                         if($chatId>0){
-                            $this->RobotSendMsg('为了更好体验请请将机器人设为管理员并联系进行群绑定,之后在群里与机器人进行交互',$chatId);
+                            $this->RobotSendMsg('为了更好体验,请请将机器人设为管理员并联系进行群绑定,之后在群里与机器人进行交互!',$chatId);
                         }
                     }else{
                         $this->RobotSendMsg('通道码错误',$chatId);
