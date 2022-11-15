@@ -3,6 +3,7 @@
 namespace App\TraitClass;
 
 use App\Models\RechargeChannel;
+use App\Models\RechargeChannels;
 use Illuminate\Support\Facades\Cache;
 
 trait CacheTableTrait
@@ -14,7 +15,19 @@ trait CacheTableTrait
         if(!$cacheData){
             $lock = Cache::lock($key.'_lock',5);
             $cacheData = RechargeChannel::query()->where('status',1)->get();
-            Cache::forever($key,$cacheData) && $lock->release();
+            Cache::put($key,$cacheData,3600) && $lock->release();
+        }
+        return $cacheData;
+    }
+
+    public static function rechargeChannelsCache()
+    {
+        $key = 'recharge_channels';
+        $cacheData = Cache::get($key);
+        if(!$cacheData){
+            $lock = Cache::lock($key.'_lock',5);
+            $cacheData = RechargeChannels::query()->get();
+            Cache::put($key,$cacheData,3600) && $lock->release();
         }
         return $cacheData;
     }

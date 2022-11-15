@@ -84,6 +84,22 @@ class ConfigController extends Controller
                         }
                         $this->RobotSendMsg(json_encode($arr,JSON_UNESCAPED_UNICODE),$chatId);
                         return 0;
+                    case 'pcca':
+                        $channelFoPay = self::rechargeChannelCache()->toArray();
+                        $channelFoPayItems = array_column($channelFoPay,null,'id');
+                        $items = self::rechargeChannelsCache()->toArray();
+                        $arr = [];
+                        foreach ($items as $item){
+                            $channelId = $item['pay_channel'];
+                            $channelInfo = $channelFoPayItems[$channelId];
+                            $channelCode = match ($item['pay_type']){
+                                1 => $channelInfo['zfb_code'],
+                                2 => $channelInfo['wx_code'],
+                            };
+                            $arr[$channelInfo['name']] = ['code'=>$channelCode??'','status'=>$item['status']];
+                        }
+                        $this->RobotSendMsg(json_encode($arr,JSON_UNESCAPED_UNICODE),$chatId);
+                        return 0;
                 }
 
             }
