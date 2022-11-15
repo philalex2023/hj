@@ -96,7 +96,7 @@ class ConfigController extends Controller
                                 1 => $channelInfo['zfb_code'],
                                 2 => $channelInfo['wx_code'],
                             };
-                            $arr[] = ['name'=>$channelInfo['name']??'','code'=>$channelCode??'','status'=>$item['status']];
+                            $arr[] = ['name'=>$channelInfo['name']??'','code'=>$channelCode??'','type'=>$item['pay_type'],'status'=>$item['status']];
                         }
                         $this->RobotSendMsg(json_encode($arr,JSON_UNESCAPED_UNICODE),$chatId);
                         return 0;
