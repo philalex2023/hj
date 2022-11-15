@@ -74,11 +74,8 @@ class ConfigController extends Controller
             $availableTextForSup = str_contains($text,',');
             $availableTextForNotSup = str_contains($text,'_');
             $availableText = $availableTextForNotSup || $availableTextForSup;
-            if(!$availableText && $chatId>0){
-                //$this->RobotSendMsg('无效的命令格式',$chatId);
-                return 0;
-            }
 
+//            Log::info('testRobot',[$super,$chatId]);
             if($super && $chatId>0){
                 switch ($text){
                     case 'report':
@@ -132,6 +129,10 @@ class ConfigController extends Controller
                     }
                 }
             }else{
+                if(!$availableText){
+                    //$this->RobotSendMsg('无效的命令格式',$chatId);
+                    return 0;
+                }
                 $cacheData = self::rechargeChannelCache();
                 $channelIdName = array_column($cacheData->toArray(),'name','id');
                 //有绑定过群
