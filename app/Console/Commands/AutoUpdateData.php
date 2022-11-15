@@ -51,7 +51,9 @@ class AutoUpdateData extends Command
         foreach ($dataSource as $model){
             //
             $this->getDataSourceIdsForVideo($model);
+
             $dataSourceModel = DataSource::query()->findOrFail($model->id);
+            $dataSourceModel->save((array)$model);
             $this->updateTopicData($dataSourceModel);
             $bar->advance();
         }
