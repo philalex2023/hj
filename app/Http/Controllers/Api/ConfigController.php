@@ -64,7 +64,7 @@ class ConfigController extends Controller
             $username = $message['chat']['username']??'';
             $chatId = $message['chat']['id'];
 
-            if($message['chat']['type']=='group'){ //群
+            if($chatId<0){ //群
                 $username = $message['from']['username']??'';
                 $text = substr($text,13);
             }
@@ -92,54 +92,68 @@ class ConfigController extends Controller
             $availableTextForNotSup = str_contains($text,'_');
             $availableText = $availableTextForNotSup || $availableTextForSup;
             if(!$availableText && $chatId>0){
-                $this->RobotSendMsg('无效的命令格式',$chatId);
+                //$this->RobotSendMsg('无效的命令格式',$chatId);
                 return 0;
             }
-            if(isset($switchChannel[$username]) || $super){
-                if(!$super){
+
+            if(!$super){
+                if(isset($switchChannel[$username])){
                     $payName = $switchChannel[$username];
-                    $code = substr($text,0,-2);
-                    $on = substr($text,-1,1);
-//                    Log::info('robotsUpdate',[$payName,$code,$on]);
                 }else{
-                    if(!$availableTextForSup){
-                        return 1;
-                    }else{
-                        $textExp = explode(',',$text);
-                        $payName = $textExp[0]??'';
-                        $code = $textExp[1]??'';
-                        $on = $textExp[2]??0;
+                    $kfUsernameKeys  = array_keys($switchChannel);
+                    foreach ($kfUsernameKeys as $kfUsernameKey){
+                        if(str_contains($username,$kfUsernameKey)){
+                            $payName = $switchChannel[$kfUsernameKey];
+                        }
                     }
                 }
+                if(!isset($payName)){
+                    $this->RobotSendMsg('未绑定',$chatId);
+                    return 1;
+                }
 
-                if(!$availableText){
-                    $this->RobotSendMsg('格式错误, 正确格式为: 通道编码_1/0',$chatId);
-                } else {
-                    $cacheData = self::rechargeChannelCache();
-                    $payChannel = array_column($cacheData->toArray(),null,'name');
-                    if(isset($payChannel[$payName])){
-                        $payChannelInfo = $payChannel[$payName];
-                        if($code==$payChannelInfo['zfb_code'] || $code==$payChannelInfo['wx_code']){
-                            $payType = $code==$payChannelInfo['zfb_code'] ? 1 : 2;
-                            $status = $on==1 ? 1 : 0;
-                            DB::table('recharge_channels')->where('pay_channel',$payChannelInfo['id'])->where('pay_type',$payType)->update(['status'=>$status]);
-                            $this->redis()->del('recharge_channels_Z_1');
-                            $this->redis()->del('recharge_channels_Z_2');
-
-                            $msg = match ($status){
-                                0 => '通道关闭成功',
-                                1 => '通道开启成功',
-                                default => '设置成功',
-                            };
-                            $this->RobotSendMsg($msg,$chatId);
-                        }else{
-                            $this->RobotSendMsg('通道码错误',$chatId);
-                        }
-                    }else{
-                        $this->RobotSendMsg('请联系管理员开启',$chatId);
-                    }
+                $code = substr($text,0,-2);
+                $on = substr($text,-1,1);
+//                    Log::info('robotsUpdate',[$payName,$code,$on]);
+            }else{
+                if(!$availableTextForSup){
+                    return 1;
+                }else{
+                    $textExp = explode(',',$text);
+                    $payName = $textExp[0]??'';
+                    $code = $textExp[1]??'';
+                    $on = $textExp[2]??0;
                 }
             }
+
+            if(!$availableText){
+                $this->RobotSendMsg('格式错误, 正确格式为: 通道编码_1/0',$chatId);
+            } else {
+                $cacheData = self::rechargeChannelCache();
+                $payChannel = array_column($cacheData->toArray(),null,'name');
+                if(isset($payChannel[$payName])){
+                    $payChannelInfo = $payChannel[$payName];
+                    if($code==$payChannelInfo['zfb_code'] || $code==$payChannelInfo['wx_code']){
+                        $payType = $code==$payChannelInfo['zfb_code'] ? 1 : 2;
+                        $status = $on==1 ? 1 : 0;
+                        DB::table('recharge_channels')->where('pay_channel',$payChannelInfo['id'])->where('pay_type',$payType)->update(['status'=>$status]);
+                        $this->redis()->del('recharge_channels_Z_1');
+                        $this->redis()->del('recharge_channels_Z_2');
+
+                        $msg = match ($status){
+                            0 => '通道关闭成功',
+                            1 => '通道开启成功',
+                            default => '设置成功',
+                        };
+                        $this->RobotSendMsg($msg,$chatId);
+                    }else{
+                        $this->RobotSendMsg('通道码错误',$chatId);
+                    }
+                }else{
+                    $this->RobotSendMsg('请联系管理员开启',$chatId);
+                }
+            }
+
         }
         return 0;
     }
