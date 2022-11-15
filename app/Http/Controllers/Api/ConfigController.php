@@ -123,10 +123,10 @@ class ConfigController extends Controller
                     $payName = $textExp[0]??'';
                     $code = $textExp[1]??'';
                     $on = $textExp[2]??0;
-                    if($payName=='bindGroup'){
+                    if($payName=='bindGroup'){ //绑定群
                         $groupId = $textExp[1];
-                        $id = $textExp[2];
-                        DB::table('recharge_channels')->where('id',$id)->update(['remark'=>$groupId]);
+                        DB::table('recharge_channels')->where('pay_channel',$textExp[2])->update(['remark'=>$groupId]);
+                        $this->RobotSendMsg('绑定成功',$chatId);
                         return 1;
                     }
                 }
