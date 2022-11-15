@@ -13,6 +13,7 @@ trait RobotTrait
     {
         $kf_payName = [
             'Payspare' => 'YL',
+            'zhao_2021' => 'YL',
             'ylpay_' => 'YL',
             'yk_0003' => 'YK',
             'yutoutou' => 'AX',
