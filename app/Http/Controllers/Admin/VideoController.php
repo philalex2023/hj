@@ -564,7 +564,7 @@ class VideoController extends BaseCurlController
             //获取当前页数据
             $offset = ($page-1)*$pagesize;
             $result = array_slice($idItems,$offset,$pagesize);
-            $total = count($result);
+            $total = count($idItems);
         }else{
             $type>0 && $model=$model->where('type',$type);
             $cid>0 && $model=$model->where('cid',$cid);
