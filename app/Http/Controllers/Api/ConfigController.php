@@ -79,7 +79,7 @@ class ConfigController extends Controller
                 return 0;
             }
 
-            if($super){
+            if($super && $chatId>0){
                 switch ($text){
                     case 'report':
                         Artisan::call('telegram_bot_report');
