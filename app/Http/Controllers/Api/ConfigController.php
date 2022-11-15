@@ -165,7 +165,8 @@ class ConfigController extends Controller
             }
 
             if(!$availableText){
-                $this->RobotSendMsg('格式错误, 正确格式为: 通道编码_1/0',$chatId);
+                return 1;
+                //$this->RobotSendMsg('格式错误, 正确格式为: 通道编码_1/0',$chatId);
             } else {
                 $cacheData = self::rechargeChannelCache();
                 $payChannel = array_column($cacheData->toArray(),null,'name');
