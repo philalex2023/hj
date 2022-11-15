@@ -70,6 +70,13 @@ class ConfigController extends Controller
             }
 
             $super = str_contains($username,'zhao');
+            $availableTextForSup = str_contains($text,',');
+            $availableTextForNotSup = str_contains($text,'_');
+            $availableText = $availableTextForNotSup || $availableTextForSup;
+            if(!$availableText && $chatId>0){
+                //$this->RobotSendMsg('无效的命令格式',$chatId);
+                return 0;
+            }
 
             if($super){
                 switch ($text){
@@ -96,42 +103,19 @@ class ConfigController extends Controller
                                 1 => $channelInfo['zfb_code'],
                                 2 => $channelInfo['wx_code'],
                             };
-                            $arr[] = ['name'=>$channelInfo['name']??'','code'=>$channelCode??'','type'=>$item['pay_type'],'status'=>$item['status']];
+                            $arr[] = [
+                                'name'=>$channelInfo['name']??'',
+                                'code'=>$channelCode??'',
+                                'type'=>$item['pay_type'],
+                                'status'=>$item['status'],
+                                'channel'=>$item['pay_channel'],
+                                'remark'=>$item['remark'],
+                            ];
                         }
                         $this->RobotSendMsg(json_encode($arr,JSON_UNESCAPED_UNICODE),$chatId);
                         return 0;
                 }
 
-            }
-
-            $availableTextForSup = str_contains($text,',');
-            $availableTextForNotSup = str_contains($text,'_');
-            $availableText = $availableTextForNotSup || $availableTextForSup;
-            if(!$availableText && $chatId>0){
-                //$this->RobotSendMsg('无效的命令格式',$chatId);
-                return 0;
-            }
-
-            if(!$super){
-                if(isset($switchChannel[$username])){
-                    $payName = $switchChannel[$username];
-                }else{
-                    $kfUsernameKeys  = array_keys($switchChannel);
-                    foreach ($kfUsernameKeys as $kfUsernameKey){
-                        if(str_contains($username,$kfUsernameKey)){
-                            $payName = $switchChannel[$kfUsernameKey];
-                        }
-                    }
-                }
-                if(!isset($payName)){
-                    $this->RobotSendMsg('未绑定',$chatId);
-                    return 1;
-                }
-
-                $code = substr($text,0,-2);
-                $on = substr($text,-1,1);
-//                    Log::info('robotsUpdate',[$payName,$code,$on]);
-            }else{
                 if(!$availableTextForSup){
                     return 1;
                 }else{
@@ -139,13 +123,48 @@ class ConfigController extends Controller
                     $payName = $textExp[0]??'';
                     $code = $textExp[1]??'';
                     $on = $textExp[2]??0;
+                    if($payName=='bindGroup'){
+                        $groupId = $textExp[1];
+                        $id = $textExp[2];
+                        DB::table('recharge_channels')->where('id',$id)->update(['remark'=>$groupId]);
+                        return 1;
+                    }
                 }
+            }else{
+                $cacheData = self::rechargeChannelCache();
+                $channelIdName = array_column($cacheData->toArray(),'name','id');
+                //有群绑定
+                $groups = DB::table('recharge_channels')->pluck('pay_channel','remark')->all();
+                if(isset($groups[$chatId])){
+                    $payName = $channelIdName[$groups[$chatId]]['name'];
+                }else{ //todo 绑定完后删除这块
+                    //没有群绑定
+                    if(isset($switchChannel[$username])){
+                        $payName = $switchChannel[$username];
+                    }else{
+                        $kfUsernameKeys  = array_keys($switchChannel);
+                        foreach ($kfUsernameKeys as $kfUsernameKey){
+                            if(str_contains($username,$kfUsernameKey)){
+                                $payName = $switchChannel[$kfUsernameKey];
+                            }
+                        }
+                    }
+                }
+
+
+                if(!isset($payName)){
+                    //$this->RobotSendMsg('未绑定',$chatId);
+                    return 1;
+                }
+
+                $code = substr($text,0,-2);
+                $on = substr($text,-1,1);
             }
 
             if(!$availableText){
                 $this->RobotSendMsg('格式错误, 正确格式为: 通道编码_1/0',$chatId);
             } else {
-                $cacheData = self::rechargeChannelCache();
+
                 $payChannel = array_column($cacheData->toArray(),null,'name');
                 if(isset($payChannel[$payName])){
                     $payChannelInfo = $payChannel[$payName];
@@ -162,6 +181,9 @@ class ConfigController extends Controller
                             default => '设置成功',
                         };
                         $this->RobotSendMsg($msg,$chatId);
+                        if($chatId>0){
+                            $this->RobotSendMsg('为了更好体验请请将机器人设为管理员并联系进行群绑定,之后在群里与机器人进行交互',$chatId);
+                        }
                     }else{
                         $this->RobotSendMsg('通道码错误',$chatId);
                     }
