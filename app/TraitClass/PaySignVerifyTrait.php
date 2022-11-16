@@ -8,8 +8,19 @@ trait PaySignVerifyTrait
 {
     public function signKF($data, $md5Key): string
     {
-        $md5str = $data['nonce_str'].'&key='.$md5Key;
-        return strtoupper(md5($md5str));
+        /*$md5str = $data['nonce_str'].'&key='.$md5Key;
+        return strtoupper(md5($md5str));*/
+        $native = $data;
+        ksort($native);
+        $md5str = '';
+        $lastKeyName = array_key_last($native);
+        foreach ($native as $key => $val) {
+            if($val=="0" || (!empty($val) && $key!='sign')){
+                $md5str = ($key==$lastKeyName ? $md5str . $key . "=" . $val : $md5str . $key . "=" . $val . "&");
+            }
+        }
+        Log::info('_signStr===', [$md5str .'key='. $md5Key]);
+        return strtoupper(md5($md5str .'key='. $md5Key));
     }
 
     public function verifyKF($data, $md5Key, $pubKey): bool

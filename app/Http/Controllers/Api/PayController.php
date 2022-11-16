@@ -198,14 +198,15 @@ class PayController extends Controller
         $input['sign'] = $this->$signFun($input, $secret);
 
         $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
+        Log::info($payName.'_pull_req', [$input]);//拉起请求三方日志
         Log::info($payName.'_third_response', [$response]);//三方响应日志
 //        exit();
         $resJson = json_decode($response, true);
         if($resJson['status']==0){
             $this->pullPayEvent($orderInfo);
-            $return = $this->format($resJson['code'], ['url' => $resJson['data']['pay_url']??''], $resJson['msg']??'');
+            $return = $this->format($resJson['result_code'], ['url' => $resJson['pay_info']??''], $resJson['message']??'');
         }else{
-            $return = $this->format($resJson['code'], $resJson, $resJson['msg']??'');
+            $return = $this->format($resJson['result_code'], $resJson, $resJson['err_msg']??'');
         }
         return response()->json($return);
     }
