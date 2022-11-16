@@ -298,9 +298,7 @@ class AdController extends BaseCurlController
         $model->name = AdSet::query()->where('id',$model->flag_id)->value('flag');
     }
 
-    /**
-     * @throws \Illuminate\Contracts\Filesystem\FileNotFoundException
-     */
+
     public function afterSaveSuccessEvent($model, $id = '')
     {
         $coverImg = str_replace(VideoTrait::getDomain(env('SFTP_SYNC',1)),"",$model->img);
@@ -310,7 +308,8 @@ class AdController extends BaseCurlController
         //广告缓存
         $this->resetAdsData($model->name);
         //清除首页列表缓存
-        $this->resetHomeRedisData();
+        $redis = $this->redis();
+        $redis->set('homeLists_fresh',1);
         //配置信息
         $this->getConfigDataFromDb(true);
     }
