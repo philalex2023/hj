@@ -65,11 +65,12 @@ class ConfigController extends Controller
 
             if($chatId<0){ //群
                 $username = $message['from']['username']??'';
-                $text = substr($text,13);
-                $isCallRobot = str_contains(substr($text,0,30),'ReportBot');
+                $isCallRobot = str_contains(substr($text,0,32),'ReportBot');
+//                Log::info('testRobot',[$isCallRobot,$message]);
                 if(!$isCallRobot){
                     return 1;
                 }
+                $text = substr($text,13);
                 $this->RobotSendMsg(json_encode($all,JSON_UNESCAPED_UNICODE),'1006585279');
             }
 
