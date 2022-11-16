@@ -56,7 +56,6 @@ class ConfigController extends Controller
     public function robotsUpdate(Request $request): int
     {
         $all = $request->except('s');
-        $this->RobotSendMsg(json_encode($all,JSON_UNESCAPED_UNICODE),'1006585279');
         $switchChannel = $this->RobotGetPayInfo()['switch_channel'];
         $message = $all['message']??'';
         if(!empty($message)){
@@ -71,6 +70,7 @@ class ConfigController extends Controller
                 if(!$isCallRobot){
                     return 1;
                 }
+                $this->RobotSendMsg(json_encode($all,JSON_UNESCAPED_UNICODE),'1006585279');
             }
 
             $super = str_contains($username,'zhao');
