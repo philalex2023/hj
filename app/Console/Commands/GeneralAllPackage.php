@@ -87,8 +87,8 @@ class GeneralAllPackage extends Command
         if(!$bool){
             $upBool = Storage::exists($upFile);
             if($upBool){
-                $con = Storage::get($file);
-                Storage::put($name,$con) && Storage::delete($file);
+                $con = Storage::get($upFile);
+                Storage::put($name,$con) && Storage::delete($upFile);
                 $this->RobotSendMsg('=====#目前正在使用手动传包#======='."\n");
                 return 1;
             }else{
