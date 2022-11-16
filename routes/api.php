@@ -41,6 +41,7 @@ $payNames = [
     'HY', //汇银
     'ZZ', //至尊
     'YY', //优易
+    'KF', //咖啡
 ];
 
 Route::group([

@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
 
 /**
@@ -166,6 +167,45 @@ class PayController extends Controller
             }
         } catch (\Exception $e) {
             $return = $this->format($e->getCode(), [], $e->getMessage());
+        }
+        return response()->json($return);
+    }
+
+    public function KF($prePayData)
+    {
+        $payName = $prePayData['payName'];
+        $orderInfo = $prePayData['order_info'];
+        $notifyUrl = $prePayData['notifyUrl'];
+        $mercId = $prePayData['merchId'];
+        $channelNo = $prePayData['channelNo'];
+        $secret = $prePayData['secret'];
+//        $ip = $prePayData['ip'];
+        $payUrl = $prePayData['pay_url'];
+        $input = [
+            'service' => $channelNo,            //通道类型
+            'version' => '1.0',            //版本号
+            'charset' => 'UTF-8',            //字符集
+            'sign_type' => 'MD5',            //签名类型
+            'merchant_id' => $mercId,               //商户号
+            'out_trade_no' => strval($orderInfo->number),           //订单号，值允许英文数字
+            'goods_desc' => '网络购物',              //商品描述
+            'total_amount' => round($orderInfo->amount ?? 0,2),              //支持小数点后两位，比如9.99
+            'notify_url' => $notifyUrl,              //后台异步通知 (回调) 地址
+            'nonce_str' => Str::random(8),            //随机字符串,不长于32位
+        ];
+        //生成签名
+        $signFun = 'sign'.$prePayData['payName'];
+        $input['sign'] = $this->$signFun($input, $secret);
+
+        $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
+        Log::info($payName.'_third_response', [$response]);//三方响应日志
+//        exit();
+        $resJson = json_decode($response, true);
+        if($resJson['status']==0){
+            $this->pullPayEvent($orderInfo);
+            $return = $this->format($resJson['code'], ['url' => $resJson['data']['pay_url']??''], $resJson['msg']??'');
+        }else{
+            $return = $this->format($resJson['code'], $resJson, $resJson['msg']??'');
         }
         return response()->json($return);
     }

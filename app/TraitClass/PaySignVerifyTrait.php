@@ -6,6 +6,21 @@ use Illuminate\Support\Facades\Log;
 
 trait PaySignVerifyTrait
 {
+    public function signKF($data, $md5Key): string
+    {
+        $md5str = $data['nonce_str'].'&key='.$md5Key;
+        return strtoupper(md5($md5str));
+    }
+
+    public function verifyKF($data, $md5Key, $pubKey): bool
+    {
+        $sign = $this->signKF($data, $md5Key);
+        if ($sign == $pubKey) {
+            return true;
+        }
+        return false;
+    }
+
     public function signYK($data, $md5Key): string
     {
         //签名数据转换为大写
