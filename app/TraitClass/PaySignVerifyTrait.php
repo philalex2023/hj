@@ -19,8 +19,8 @@ trait PaySignVerifyTrait
                 $md5str = ($key==$lastKeyName ? $md5str . $key . "=" . $val : $md5str . $key . "=" . $val . "&");
             }
         }
-        Log::info('_signStr===', [$md5str .'key='. $md5Key]);
-        return strtoupper(md5($md5str .'key='. $md5Key));
+        Log::info('_signStr===', [$md5str .'&key='. $md5Key]);
+        return strtoupper(md5($md5str .'&key='. $md5Key));
     }
 
     public function verifyKF($data, $md5Key, $pubKey): bool
