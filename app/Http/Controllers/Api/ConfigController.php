@@ -125,6 +125,7 @@ class ConfigController extends Controller
                         $groupId = $textExp[1];
                         DB::table('recharge_channels')->where('pay_channel',$textExp[2])->update(['remark'=>$groupId]);
                         $this->RobotSendMsg('绑定成功',$chatId);
+                        $this->RobotSendMsg('绑定成功',$groupId);
                         return 1;
                     }
                 }
