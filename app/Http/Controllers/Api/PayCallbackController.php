@@ -35,7 +35,7 @@ class PayCallbackController extends Controller
                 // 签名验证不通过
                 Log::info($payName.'_verify_no_pass===', ['签名验证不通过']);
             }
-            if ($postResp['status'] == 0) {
+            if ($postResp['status'] == 0 && $postResp['result_code'] == 0) {
                 // 记录支付信息
                 DB::beginTransaction();
                 $this->orderUpdate($postResp['out_trade_no'], $postResp);
