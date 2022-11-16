@@ -203,7 +203,7 @@ class PayController extends Controller
 //        exit();
         $resJson = json_decode($response, true);
         if($resJson['status']==0){
-            $this->pullPayEvent($orderInfo);
+            $this->pullPayEvent($prePayData);
             $return = $this->format($resJson['result_code'], ['url' => $resJson['pay_info']??''], $resJson['message']??'');
         }else{
             $return = $this->format($resJson['result_code'], $resJson, $resJson['err_msg']??'');
