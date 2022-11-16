@@ -73,7 +73,7 @@ class BackupRes extends Command
             $bar->advance();
         }
         $bar->finish();
-        $this->info('######执行成功######');
+        $this->info('######执行成功###### '.date('Y-m-d H:i:s'));
         return 0;
     }
 }
