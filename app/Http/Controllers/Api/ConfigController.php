@@ -66,7 +66,7 @@ class ConfigController extends Controller
             if($chatId<0){ //群
                 $username = $message['from']['username']??'';
                 $text = substr($text,13);
-                $isCallRobot = str_contains(substr($text,0,13),'ReportBot');
+                $isCallRobot = str_contains(substr($text,0,20),'ReportBot');
                 if(!$isCallRobot){
                     return 1;
                 }
