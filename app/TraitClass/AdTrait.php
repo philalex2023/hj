@@ -187,5 +187,7 @@ trait AdTrait
             ->where('status',1)
             ->orderByDesc('sort')
             ->get(['id','sort','name','title','weight','img','position','url','play_url','type','status','action_type','vid','end_at']));
+        //清除首页列表缓存
+        $this->redis()->set('homeLists_fresh',1);
     }
 }
