@@ -181,7 +181,7 @@ trait AdTrait
 
     public function resetAdsData($flag): void
     {
-        Cache::forget('ads_key_'.$flag);
+        //Cache::forget('ads_key_'.$flag);
         Cache::forever('ads_key_'.$flag,Ad::query()
             ->where('name',$flag)
             ->where('status',1)

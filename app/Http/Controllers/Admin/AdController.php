@@ -308,8 +308,8 @@ class AdController extends BaseCurlController
         //广告缓存
         $this->resetAdsData($model->name);
         //清除首页列表缓存
-        $redis = $this->redis();
-        $redis->set('homeLists_fresh',1);
+        $this->redis()->set('homeLists_fresh',1);
+        $this->redis()->set('homeLists_fresh_test',1);
         //配置信息
         $this->getConfigDataFromDb(true);
     }
