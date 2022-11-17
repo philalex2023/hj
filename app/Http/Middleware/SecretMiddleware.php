@@ -21,6 +21,7 @@ class SecretMiddleware
     {
         $response = $next($request);
         $status = $request->user()->status ?? 1;
+//        Log::info('testAccessIp',[$request->ip()]);
         if($status==0){
             return response()->json(['state' => -1,'data'=>[],'msg' => '该账号已被禁用!']);
         }
