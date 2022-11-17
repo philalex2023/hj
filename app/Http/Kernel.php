@@ -48,7 +48,7 @@ class Kernel extends HttpKernel
 
         'api' => [
 //            'throttle:30,1',
-             'throttle:600,1', //一分钟600次
+             'throttle:120,1', //一分钟600次
             //'auth:api', //路由添加
             //'secret',
             \Illuminate\Routing\Middleware\SubstituteBindings::class
