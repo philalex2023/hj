@@ -120,7 +120,7 @@ class HomeController extends Controller
                 //二级分类列表
                 $res = $redis->get($sectionKey);
                 $res = json_decode($res,true);
-                $freshTime = $redis->get('homeLists_fresh_time');
+                $freshTime = $redis->get('homeLists_fresh_time')??0;
                 $ctime = $res['ctime'] ?? 0;
                 if($freshTime > $ctime){
                     $topicJson = $redis->get('topic_cid_'.$cid);
