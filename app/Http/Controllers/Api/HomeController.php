@@ -122,7 +122,7 @@ class HomeController extends Controller
                 $res = json_decode($res,true);
                 $freshTime = $redis->get('homeLists_fresh_time')??0;
                 $ctime = $res['ctime'] ?? 0;
-                if($freshTime > $ctime){
+                if(!$res || $freshTime > $ctime){
                     $topicJson = $redis->get('topic_cid_'.$cid);
                     if(!$topicJson){
                         $lock = Cache::lock('homeLists_lock');
