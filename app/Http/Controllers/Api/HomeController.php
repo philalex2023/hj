@@ -207,6 +207,7 @@ class HomeController extends Controller
                     $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
                     $res['list'] = $topics;
                     //todo cache
+                    $redis->del($sectionKey);
                     $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
                     $redis->expire($sectionKey,3600);
                     $redis->del('homeLists_fresh');
