@@ -145,7 +145,7 @@ class TopicController extends BaseCurlController
     {
         //请除缓存 todo
         $redis = $this->redis();
-        $redis->set('homeLists_fresh',1);
+        $redis->set('homeLists_fresh_time',time());
         $redis->del('short_category');
         $this->updateTopicListByCid($model->cid);
     }

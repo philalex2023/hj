@@ -307,6 +307,7 @@ class AdController extends BaseCurlController
         $this->syncUpload($model->img);
         //广告缓存
         $this->resetAdsData($model->name);
+        $this->redis()->set('homeLists_fresh_time',time());
         //配置信息
         $this->getConfigDataFromDb(true);
     }

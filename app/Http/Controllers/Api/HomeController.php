@@ -120,9 +120,9 @@ class HomeController extends Controller
                 //二级分类列表
                 $res = $redis->get($sectionKey);
                 $res = json_decode($res,true);
-                $fresh = $redis->get('homeLists_fresh');
-
-                if(!$res || $fresh){
+                $freshTime = $redis->get('homeLists_fresh_time');
+                $ctime = $res['ctime'] ?? 0;
+                if($freshTime > $ctime){
                     $topicJson = $redis->get('topic_cid_'.$cid);
                     if(!$topicJson){
                         $lock = Cache::lock('homeLists_lock');
@@ -208,10 +208,11 @@ class HomeController extends Controller
                     //广告
                     $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
                     $res['list'] = $topics;
-                    //todo cache
+                    $res['ctime'] = time();
+                    //
                     $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
                     $redis->expire($sectionKey,3600);
-                    $redis->del('homeLists_fresh');
+
                 }
 
                 if(isset($res['list'])){
