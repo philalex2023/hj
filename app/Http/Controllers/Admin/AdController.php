@@ -73,7 +73,7 @@ class AdController extends BaseCurlController
                 'title' => '排序',
                 'sort' => 1,
                 'align' => 'center',
-                'edit' => 1
+//                'edit' => 1
             ],
             [
                 'field' => 'position',
