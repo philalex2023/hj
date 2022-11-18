@@ -49,11 +49,11 @@ class AutoUpdateData extends Command
         $bar = $this->output->createProgressBar(count($dataSource));
         $bar->start();
         foreach ($dataSource as $model){
-            //
             $this->getDataSourceIdsForVideo($model);
-
+            $save = (array)$model;
+            DataSource::query()->where('id',$model->id)->update($save);
             $dataSourceModel = DataSource::query()->findOrFail($model->id);
-            $dataSourceModel->save((array)$model);
+            //dd($dataSourceModel);
             $this->updateTopicData($dataSourceModel);
             $bar->advance();
         }
