@@ -23,10 +23,10 @@ trait TopicTrait
             ->orderBy('sort')
             ->get(['id','cid','name','show_type','contain_vids']);
         $redis = $this->redis();
-        $redis->set('topic_cid_'.$cid,json_encode($getItems,JSON_UNESCAPED_UNICODE));
         //
         foreach ($getItems as $item){
             $redis->hSet('topic_id_cid',$item->id,$item->cid);
+            $redis->expire('topic_id_cid',3600);
         }
     }
 
@@ -34,19 +34,16 @@ trait TopicTrait
     {
         $redis = $this->redis();
         $cid = $redis->hGet('topic_id_cid',$id);
-
-        $redisJson = $redis->get('topic_cid_'.$cid);
-
-        $containVidStr = '';
-        if(!$redisJson){
+        if(!$cid){
+            $cid = DB::table('topic')->where('id',$id)->value('cid');
+        }
+        $key = 'topic_cid_'.$cid;
+        $containVidStr = $redis->get($key);
+        if(!$containVidStr){
             Log::info('TopicFromDb',['is']);
             $containVidStr = DB::table('topic')->where('id',$id)->value('contain_vids');
-        }else{
-            //Log::info('testIsFromRedis',['is']);
-            $arr = json_decode($redisJson,true);
-            foreach ($arr as $item){
-                $item['id']==$id && $containVidStr = $item['contain_vids'];
-            }
+            $redis->set($key,$containVidStr);
+            $redis->expire($key,3600);
         }
         return $containVidStr;
     }

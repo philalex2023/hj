@@ -123,23 +123,15 @@ class HomeController extends Controller
                 $freshTime = $redis->get('homeLists_fresh_time')??0;
                 $ctime = $res['ctime'] ?? 0;
                 if(!$res || $freshTime > $ctime){
-                    $topicJson = $redis->get('topic_cid_'.$cid);
-                    if(!$topicJson){
-                        $lock = Cache::lock('homeLists_lock');
-                        if(!$lock->get()){
-                            Log::info('index_list',['topic_cid_'.$cid]);
-                            return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
-                        }
-                        $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
-                        $res['hasMorePages'] = $paginator->hasMorePages();
-                        $topics = $paginator->items();
-                        $lock->release();
-                    }else{
-                        $topicsArr = json_decode($topicJson,true);
-                        $offset = ($page-1)*$perPage;
-                        $topics = array_slice($topicsArr,$offset,$perPage);
-                        $res['hasMorePages'] = count($topicsArr) > $perPage*$page;
+
+                    $lock = Cache::lock('homeLists_lock');
+                    if(!$lock->get()){
+                        return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
                     }
+                    $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
+                    $res['hasMorePages'] = $paginator->hasMorePages();
+                    $topics = $paginator->items();
+                    $lock->release();
 //
                     //Log::info('index_list_topics',[$topics]);
                     foreach ($topics as &$topic){
