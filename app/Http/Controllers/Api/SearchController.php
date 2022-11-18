@@ -222,10 +222,11 @@ class SearchController extends Controller
                 $offset = ($page-1)*$perPage;
 
 //                $containVidStr = DB::table('topic')->where('id',$tid)->value('contain_vids');
-                $containVidStr = $this->getTopicVideoIdsById($tid);
-                if(!$containVidStr){
+
+                if(!$tid){
                     return response()->json(['state'=>0, 'data'=>[]]);
                 }
+                $containVidStr = $this->getTopicVideoIdsById($tid);
                 $ids = explode(',',$containVidStr);
                 //Log::info('SearchCat',[$ids]);
 

@@ -354,10 +354,10 @@ class VideoShortController extends Controller
                 $hasMorePages = false;
 
 //                $idStr = DB::table('topic')->where('id',$cateId)->value('contain_vids');
-                $containVidStr = $this->getTopicVideoIdsById($cateId);
-                if(!$containVidStr){
+                if(!$cateId){
                     return response()->json(['state'=>0, 'data'=>[]]);
                 }
+                $containVidStr = $this->getTopicVideoIdsById($cateId);
                 $ids = explode(',',$containVidStr);
 
                 $catVideoList = [];
