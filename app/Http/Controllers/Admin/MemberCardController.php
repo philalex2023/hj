@@ -91,30 +91,6 @@ class MemberCardController extends BaseCurlController
                 'title' => '活动面值',
                 'align' => 'center',
             ],
-            /*[
-                'field' => 'zfb_action_name',
-                'minWidth' => 100,
-                'title' => '支付宝充值方式',
-                'align' => 'center',
-            ],
-            [
-                'field' => 'zfb_channel',
-                'minWidth' => 100,
-                'title' => '支付宝通道',
-                'align' => 'center',
-            ],
-            [
-                'field' => 'wx_action_name',
-                'minWidth' => 100,
-                'title' => '微信充值方式',
-                'align' => 'center',
-            ],
-            [
-                'field' => 'wx_channel',
-                'minWidth' => 100,
-                'title' => '微信通道',
-                'align' => 'center',
-            ],*/
             [
                 'field' => 'rights',
                 'minWidth' => 200,
@@ -162,34 +138,6 @@ class MemberCardController extends BaseCurlController
                 'must' => 1,
                 'verify' => 'rq',
             ],
-            /*[
-                'field' => 'zfb_action_id',
-                'minWidth' => 100,
-                'name' => '支付宝充值方式',
-                'type' => 'select',
-                'data' => $this->getPayChannelData()
-            ],
-            [
-                'field' => 'zfb_channel',
-                'minWidth' => 100,
-                'name' => '支付宝渠道',
-                'type' => 'select',
-                'data' => $this->getPayTypeCode()
-            ],
-            [
-                'field' => 'wx_action_id',
-                'minWidth' => 100,
-                'name' => '微信充值方式',
-                'type' => 'select',
-                'data' => $this->getPayChannelData()
-            ],
-            [
-                'field' => 'wx_channel',
-                'minWidth' => 100,
-                'name' => '微信通道',
-                'type' => 'select',
-                'data' => $this->getPayTypeCode()
-            ],*/
             [
                 'field' => 'rights_checkbox',
                 'type' => 'checkbox',
@@ -260,12 +208,6 @@ class MemberCardController extends BaseCurlController
 
     public function setListOutputItemExtend($item)
     {
-        $rechargeData = RechargeChannel::query()
-            ->where('status',1)
-            ->pluck('remark','id')
-        ->toArray();
-        $item->wx_action_name = $rechargeData[$item->wx_action_id??1];
-        $item->zfb_action_name = $rechargeData[$item->zfb_action_id??1];
         $item->real_value == 0  && $item->real_value = '无';
         $item->status = match ($item->status){
             0 => '关闭',

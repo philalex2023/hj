@@ -54,7 +54,7 @@ class DBSController extends PayBaseController implements Pay
             $rechargeChannel = $params['type'];
             if (in_array($params['type'],['1','2'])) {
                 $oldMix = true;
-                $rechargeChannel = $this->getOwnMethod($orderInfo->type,$orderInfo->type_id,$params['type']);
+                $rechargeChannel = 1;
             }
             $mercId = $payEnv['DBS']['merchant_id'];
             $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnv['DBS']['notify_url'];

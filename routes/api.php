@@ -25,22 +25,9 @@ Route::group([
 });
 
 $payNames = [
-    'DBS',//大白鲨
-    'CJ', //长江
     'YK', //YK
-    'YKGame', //YKGame
-    'XD', //信达
     'AX', //艾希
-    'DF', //大发
-    'XF', //兴付
-    'TD', //通达
-    'SA', //SA(易付)
-    'EC', //EC
-    'HS', //火山
     'YL', //盈联
-    'HY', //汇银
-    'ZZ', //至尊
-    'YY', //优易
     'KF', //咖啡
 ];
 
@@ -103,7 +90,6 @@ Route::group([
     /// 订单相关接口
     Route::post('oderCreate', 'OrderController@create');  //订单创建接口
     Route::get('orderQuery', 'OrderController@query');  //订单查询接口
-    Route::post('orderPay', 'OrderController@orderPay');  //订单支付接口
 
     /// 社区模块
     Route::get('commCate', 'CommCateController@info');  //板块分类

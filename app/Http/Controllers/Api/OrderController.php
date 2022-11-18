@@ -107,12 +107,7 @@ class OrderController extends PayBaseController
 
         try {
             $number = self::getPayNumber($user->id);
-            /*$payMethod = $params['pay_method']??1;
-            $payNumber = '';
-            if ($params['pay_method'] == 0) {
-                $payMethod = $this->getOwnCode($params['type'],$params['goods_id'],$params['method_id']);
-                $payNumber = $this->getOwnMethod($params['type'],$params['goods_id'],$params['method_id']);
-            }*/
+
             $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : null;
             $createData = [
                 'remark' => json_encode(['id'=>$goodsInfo['id']??0,'name'=>$goodsInfo['name']??'']),
@@ -176,84 +171,4 @@ class OrderController extends PayBaseController
         }
     }
 
-    /**
-     * 得到支付单号
-     * @param Request $request
-     * @return JsonResponse
-     * @throws ValidationException
-     * @throws Exception
-     */
-    public function orderPay(Request $request): JsonResponse
-    {
-        $params = self::parse($request->params ?? '');
-        Validator::make($params, [
-            'order_id' => 'required|string',
-            'time' => 'required|string',
-            'pay_method' => [
-                'nullable',
-               // 'integer',
-              //  Rule::in([1, 2,3]),
-            ],
-            'method_id' => [
-                'nullable',
-                'string',
-                Rule::in(['1', '2']),
-            ],
-            'amount' => [
-                'nullable',
-                'integer',
-            ],
-        ])->validate();
-        Log::info('order_pay_params===',[$params]);//参数日志
-        try {
-            $orderModel = Order::query();
-            if ($params['amount']??false) {
-                $orderModel->where('id',$params['order_id'])->update(['amount'=>$params['amount']]);
-            }
-            $order = $orderModel->find($params['order_id'])?->toArray();
-
-            if (!$order) {
-                throw new Exception('订单不存在', -1);
-            }
-            if (1 == $order['status']) {
-                throw new Exception('订单已经支付', -2);
-            }
-            $payLog = PayLog::query()->orderBy('id','desc')
-                ->where([
-                    'order_id'=>$params['order_id'],
-                    'method_id' => $params['method_id']??1,
-                    'status'=>'0',
-                    ])->first()?->toArray();
-            $payMethod = $params['pay_method']??1;
-            $payNumber = '';
-            if ($params['pay_method'] == 0) {
-                $payMethod = $this->getOwnCode($order['type'],$order['type_id'],$params['method_id']);
-                $payNumber = $this->getOwnMethod($order['type'],$order['goods_id'],$params['method_id']);
-            }
-            if ($payLog) {
-                $payId = $payLog['id'];
-            } else {
-                $user = $request->user();
-                $now = date('Y-m-d H:i:s', time());
-                $payNew = PayLog::query()->create([
-                    'order_id' => $order['id'],
-                    'request_info' => json_encode($params),
-                    'goods_info' => $order['type_id'],
-                    'number' => self::getPayNumber($user->id),
-                    'uid' => $user->id,
-                    'status' => 0,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                    'pay_method' => $payMethod,
-                    'channel_code' => $payNumber,
-                    'method_id' => $params['method_id']??1,
-                ]);
-                $payId = $payNew['id'];
-            }
-            $return = $this->format(0, ['pay_id' => $payId], '取出成功');
-        } catch (Exception $e) {
-            $return = $this->format($e->getCode(), [], $e->getMessage());
-        }
-        return response()->json($return);
-    }
 }

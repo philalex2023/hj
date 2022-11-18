@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 
 
 use App\Models\RechargeChannel;
+use App\Services\UiService;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Support\Facades\Cache;
 
@@ -61,11 +62,17 @@ class RechargeChannelController extends BaseCurlController
                 'title' => '回调地址',
                 'align' => 'center'
             ],
-            [
+            /*[
                 'field' => 'query_url',
                 'minWidth' => 100,
                 'title' => '查询接口地址',
                 'align' => 'center'
+            ],*/
+            [
+                'field' => 'status',
+                'minWidth' => 100,
+                'title' => '状态',
+                'align' => 'center',
             ],
             [
                 'field' => 'other_url',
@@ -111,6 +118,12 @@ class RechargeChannelController extends BaseCurlController
             ]
         ];
         return $cols;
+    }
+
+    public function setListOutputItemExtend($item)
+    {
+        $item->status = UiService::switchTpl('status', $item,'');
+        return $item;
     }
 
     public function setOutputUiCreateEditForm($show = '')

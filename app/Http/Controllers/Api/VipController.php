@@ -41,7 +41,7 @@ class VipController extends \App\Http\Controllers\Controller
         }else{
             $build = $build->orderBy('sort');
         }
-        $memberCard = $build->get(['id','name','sort','bg_img','remark','value','rights','hours','real_value','status','name_day','remain_hours','zfb_action_id','wx_action_id'])->toArray();
+        $memberCard = $build->get(['id','name','sort','bg_img','remark','value','rights','hours','real_value','status','name_day','remain_hours'])->toArray();
         $ascItem = [];
         $registerTime = strtotime($user->created_at);
         $nowTime = time();
@@ -89,21 +89,9 @@ class VipController extends \App\Http\Controllers\Controller
 
         }
         array_unshift($memberCard,...$ascItem);
-        //Log::info('memberCard===',$ascItem);
-//        $rechargeData = $this->getRechargeChannel();
-        $baseUrl =  'http://' .$_SERVER['HTTP_HOST'];
+
         $payUrl = $this->getPayUrl();
         foreach ($memberCard as $mcKey=>$mvItem) {
-            /*if ($zfb_action_id = $rechargeData[$mvItem['zfb_action_id']]) {
-                $memberCard[$mcKey]['zfb_url'] = $baseUrl . $zfb_action_id;
-            } else {
-                $memberCard[$mcKey]['zfb_url'] = '';
-            }
-            if ($wx_action_id = $rechargeData[$mvItem['wx_action_id']]) {
-                $memberCard[$mcKey]['wx_url'] = $baseUrl . $wx_action_id;
-            } else {
-                $memberCard[$mcKey]['wx_url'] = '';
-            }*/
             $memberCard[$mcKey]['zfb_url'] = $payUrl['zfb'];
             $memberCard[$mcKey]['wx_url'] = $payUrl['wx'];
         }
@@ -120,21 +108,9 @@ class VipController extends \App\Http\Controllers\Controller
         $gold = DB::table('gold')
             ->where('status',1)
             ->orderBy('sort')
-            ->get(['id','money','remark','zfb_action_id','wx_action_id','bonus'])->toArray();
-//       $rechargeData = $this->getRechargeChannel();
-
+            ->get(['id','money','remark','bonus'])->toArray();
        $payUrl = $this->getPayUrl();
        foreach ($gold as $mvItem) {
-           /*if ($zfb_action_id = $rechargeData[$mvItem->zfb_action_id]) {
-               $mvItem->zfb_url = $baseUrl . $zfb_action_id;
-           } else {
-               $mvItem->zfb_url = '';
-           }
-           if ($wx_action_id = $rechargeData[$mvItem->wx_action_id]) {
-               $mvItem->wx_url = $baseUrl . $wx_action_id;
-           } else {
-               $mvItem->wx_url = '';
-           }*/
            $mvItem->zfb_url = $payUrl['zfb'];
            $mvItem->wx_url = $payUrl['wx'];
        }

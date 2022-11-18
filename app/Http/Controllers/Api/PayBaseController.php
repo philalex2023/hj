@@ -94,30 +94,6 @@ class PayBaseController extends Controller
         }
     }
 
-    /**
-     * 返回支付渠道
-     * @param $type
-     * @param $goodsId
-     * @param $channel
-     * @return mixed
-     */
-    protected function getOwnCode($type, $goodsId, $channel): mixed
-    {
-        if ($type == 1) {
-            $memberCardData = $this->getMemberCardData();
-            // var_dump($memberCardData[$goodsId]);
-            if ($channel == 1) {
-                return $memberCardData[$goodsId]['zfb_action_id'];
-            }
-            return $memberCardData[$goodsId]['wx_action_id'];
-        } elseif ($type == 2) {
-            $goldCardData = $this->getGoldData();
-            if ($channel == 1) {
-                return $goldCardData[$goodsId]['zfb_action_id'];
-            }
-            return $goldCardData[$goodsId]['wx_action_id'];
-        }
-    }
 
     private function getMemberCardData(): array
     {

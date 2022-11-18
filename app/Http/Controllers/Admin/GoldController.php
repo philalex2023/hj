@@ -107,34 +107,14 @@ class GoldController extends BaseCurlController
                 'must' => 1,
                 'verify' => 'rq',
             ],
-            /*[
-                'field' => 'zfb_action_id',
-                'minWidth' => 100,
-                'name' => '支付宝充值方式',
-                'type' => 'select',
-                'data' => $this->getPayChannelData()
-            ],
+            /*
             [
                 'field' => 'zfb_channel',
                 'minWidth' => 100,
                 'name' => '支付宝渠道',
                 'type' => 'select',
                 'data' => $this->getPayTypeCode()
-            ],
-            [
-                'field' => 'wx_action_id',
-                'minWidth' => 100,
-                'name' => '微信充值方式',
-                'type' => 'select',
-                'data' => $this->getPayChannelData()
-            ],
-            [
-                'field' => 'wx_channel',
-                'minWidth' => 100,
-                'name' => '微信通道',
-                'type' => 'select',
-                'data' => $this->getPayTypeCode()
-            ],*/
+            ]*/
             [
                 'field' => 'remark',
                 'type' => 'text',
@@ -180,12 +160,6 @@ class GoldController extends BaseCurlController
     public function setListOutputItemExtend($item)
     {
         $item->status = UiService::switchTpl('status', $item,'');
-        $rechargeData = RechargeChannel::query()
-            ->where('status',1)
-            ->pluck('remark','id')
-            ->toArray();
-        $item->wx_action_name = $rechargeData[$item->wx_action_id??1];
-        $item->zfb_action_name = $rechargeData[$item->zfb_action_id??1];
         return $item;
     }
 
