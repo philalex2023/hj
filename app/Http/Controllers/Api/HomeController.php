@@ -125,13 +125,13 @@ class HomeController extends Controller
                 if(!$res || $freshTime > $ctime){
 
                     $lock = Cache::lock('homeLists_lock');
-                    if(!$lock->get()){
+                    /*if(!$lock->get()){
                         return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
-                    }
+                    }*/
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
-                    $lock->release();
+//                    $lock->release();
 //
                     //Log::info('index_list_topics',[$topics]);
                     foreach ($topics as &$topic){
