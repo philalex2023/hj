@@ -123,14 +123,11 @@ class HomeController extends Controller
                 $freshTime = $redis->get('homeLists_fresh_time')??0;
                 $ctime = $res['ctime'] ?? 0;
                 if(!$res || $freshTime > $ctime){
-                    $lock = Cache::lock('homeLists_lock');
-                    if(!$lock->get()){
-                        return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
-                    }
+
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
-                    //Log::info('index_list_topics',[$topics]);
+
                     foreach ($topics as &$topic){
                         $topic = (array)$topic;
                         $topic['style'] = (string)$topic['show_type']; //android要是字符串
@@ -202,7 +199,6 @@ class HomeController extends Controller
                     $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));
                     $redis->expire($sectionKey,3600);
 
-                    $lock->release();
                 }
 
                 if(isset($res['list'])){
