@@ -17,6 +17,7 @@ use App\TraitClass\DataSourceTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\StatisticTrait;
+use App\TraitClass\TopicTrait;
 use App\TraitClass\VideoShortTrait;
 use App\TraitClass\VideoTrait;
 use App\TraitClass\VipRights;
@@ -31,7 +32,7 @@ use Illuminate\Validation\Rule;
 
 class VideoShortController extends Controller
 {
-    use VideoTrait,PHPRedisTrait,VipRights,StatisticTrait,MemberCardTrait,ApiParamsTrait,CommTrait,DataSourceTrait;
+    use VideoTrait,PHPRedisTrait,VipRights,StatisticTrait,MemberCardTrait,ApiParamsTrait,CommTrait,DataSourceTrait,TopicTrait;
 
     private array $mainCateAlias = [
         'short_hot',
@@ -351,8 +352,13 @@ class VideoShortController extends Controller
                 $perPage = 8;
                 $offset = ($page-1)*$perPage;
                 $hasMorePages = false;
-                $idStr = DB::table('topic')->where('id',$cateId)->value('contain_vids');
-                $ids = $idStr ? explode(',',$idStr) : [];
+
+//                $idStr = DB::table('topic')->where('id',$cateId)->value('contain_vids');
+                $containVidStr = $this->getTopicVideoIdsById($cateId);
+                if(!$containVidStr){
+                    return response()->json(['state'=>0, 'data'=>[]]);
+                }
+                $ids = explode(',',$containVidStr);
 
                 $catVideoList = [];
                 //Log::info('==ShortListIds==',$ids);
