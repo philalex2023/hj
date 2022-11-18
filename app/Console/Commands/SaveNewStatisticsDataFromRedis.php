@@ -15,7 +15,7 @@ class SaveNewStatisticsDataFromRedis extends Command
      *
      * @var string
      */
-    protected $signature = 'save_new_day_statistic_Data';
+    protected $signature = 'save_new_day_statistic_Data {day?}';
 
     /**
      * The console command description.
@@ -41,7 +41,7 @@ class SaveNewStatisticsDataFromRedis extends Command
      */
     public function handle(): int
     {
-        $d = 1;
+        $d = $this->argument('day')??1;
         $hashData = $this->getDayStatisticHashData($d);
         $t = strtotime('-'.$d.' day');
         $at_time = strtotime(date('Y-m-d 00:00:00',$t));
