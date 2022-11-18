@@ -45,7 +45,7 @@ trait TopicTrait
             $redis->set($key,$containVidStr);
             $redis->expire($key,3600);
         }else{
-            Log::info('TopicFromDb',['is']);
+            Log::info('TopicFromDb',['no']);
         }
         return $containVidStr;
     }
