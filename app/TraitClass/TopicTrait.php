@@ -44,6 +44,8 @@ trait TopicTrait
             $containVidStr = DB::table('topic')->where('id',$id)->value('contain_vids');
             $redis->set($key,$containVidStr);
             $redis->expire($key,3600);
+        }else{
+            Log::info('TopicFromDb',['is']);
         }
         return $containVidStr;
     }
