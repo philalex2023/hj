@@ -208,6 +208,7 @@ class StatController extends BaseCurlIndexController
                 $model = $model->where('at_time','>=',$startTime)->where('at_time','<=',$endTime);
             }
         }
+        $model = $model->orderByDesc('at_time');
         return parent::handleResultModel($model);
     }
 
