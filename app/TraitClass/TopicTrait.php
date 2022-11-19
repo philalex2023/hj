@@ -25,29 +25,24 @@ trait TopicTrait
         $redis = $this->redis();
         //
         foreach ($getItems as $item){
-            $redis->hSet('topic_id_cid',$item->id,$item->cid);
-            $redis->expire('topic_id_cid',3600);
+            $key = 'topic_id_'.$item->id;
+            $redis->set($key,$item->contain_vids);
+            $redis->expire($key,3600);
         }
     }
 
     public function getTopicVideoIdsById($id)
     {
         $redis = $this->redis();
-        $cid = $redis->hGet('topic_id_cid',$id);
-        if(!$cid){
-            $cid = DB::table('topic')->where('id',$id)->value('cid');
-        }
-        $key = 'topic_cid_'.$cid;
+        $key = 'topic_id_'.$id;
+
         $containVidStr = $redis->get($key);
         if(!$containVidStr){
-            Log::info('TopicFromDb',['is',$id,$cid]);
+            Log::info('TopicFromDb',['is',$id]);
             $containVidStr = DB::table('topic')->where('id',$id)->value('contain_vids');
             $redis->set($key,$containVidStr);
             $redis->expire($key,3600);
         }
-        /*else{
-            Log::info('TopicFromDb',['no']);
-        }*/
         return $containVidStr;
     }
 
