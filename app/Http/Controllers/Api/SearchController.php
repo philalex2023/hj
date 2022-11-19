@@ -134,7 +134,7 @@ class SearchController extends Controller
                 return response()->json([
                     'state'=>-1,
                     'msg'=>'此标签不存在或被删除',
-                    'data'=>[]
+                    'data'=>['list'=>[], 'hasMorePages'=>false]
                 ]);
             }
             $searchParams = [
