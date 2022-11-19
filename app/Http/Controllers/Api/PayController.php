@@ -55,7 +55,12 @@ class PayController extends Controller
             }
         }
         $use = rand(0, $weight -1);
-        $channelId = $channelIds[$use];
+        if(isset($channelIds[$use])){
+            $channelId = $channelIds[$use];
+        }else{
+            $return = $this->format(-1, [], '无可用充值渠道');
+            return response()->json($return);
+        }
         return $this->getRechargeChannelSelector()[$channelId];
     }
 
