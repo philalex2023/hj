@@ -358,11 +358,12 @@ class VideoShortController extends Controller
                     return response()->json(['state'=>0, 'data'=>[]]);
                 }
                 $containVidStr = $this->getTopicVideoIdsById($cateId);
+                if(!$containVidStr){
+                    Log::info('ShortListSearch',[$cateId]);
+                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+                }
                 $ids = explode(',',$containVidStr);
-
                 $catVideoList = [];
-                //Log::info('==ShortListIds==',$ids);
-//                Log::info('==ShortListSearch==',$query);
                 if(!empty($ids) || !empty($words)){
                     $idParams = [];
                     $length = count($ids);
