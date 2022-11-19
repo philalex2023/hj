@@ -339,12 +339,12 @@ class VideoShortController extends Controller
                     ],
                 ])->validated();
                 $user = $request->user();
-                $page = $params['page'] ?? 1;
-                $cateId = $params['cate_id'] ?? "";
-                $tagId = $params['tag_id'] ?? "";
+                $page = $validated['page'] ?? 1;
+                $cateId = $validated['cate_id'] ?? "";
+                $tagId = $validated['tag_id'] ?? "";
 //                $starId = $validated['start_id'] ?? '0';
                 //关键词搜索
-                $words = $params['keyword'] ?? '';
+                $words = $validated['keyword'] ?? '';
 
                 $tagId!="" && $cateId = $this->cateMapAlias[$tagId];
 
@@ -454,8 +454,7 @@ class VideoShortController extends Controller
                 }
 
                 return response()->json(['state'=>0, 'data'=>$res??[]]);
-                //$res = $this->items($page, $user, $starId, $cateId, $tagId, $words);
-                //return response()->json(['state' => 0, 'data' => $res]);
+
             }
             return response()->json(['state'=>-1, 'msg'=>'参数错误']);
         } catch (Exception $exception) {
