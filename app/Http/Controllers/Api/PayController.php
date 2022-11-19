@@ -163,7 +163,7 @@ class PayController extends Controller
             } else {
                 Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
                 $return = $this->format($resJson['code'], [], $response);
-                $this->RobotSendMsg('YK通道异常未拉起');
+                $this->RobotSendMsg('YK通道'.$channelNo.' 未拉起异常');
             }
         } catch (\Exception $e) {
             $return = $this->format($e->getCode(), [], $e->getMessage());
@@ -206,7 +206,7 @@ class PayController extends Controller
             $this->pullPayEvent($prePayData);
             $return = $this->format($resJson['result_code'], ['url' => $resJson['pay_info']??''], $resJson['message']??'');
         }else{
-            $this->RobotSendMsg('通道'.$channelNo.'异常:'.($resJson['err_msg']??''));
+            $this->RobotSendMsg($payName.'通道'.$channelNo.' 未拉起异常:'.($resJson['err_msg']??''));
             $return = $this->format($resJson['result_code'], $resJson, $resJson['err_msg']??'');
         }
         return response()->json($return);
@@ -259,7 +259,7 @@ class PayController extends Controller
         } else {
             Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
             $return = $this->format(-1, $resJson, $resJson['message']??'');
-            $this->RobotSendMsg($payName.'通道异常未拉起');
+            $this->RobotSendMsg($payName.'通道'.$channelNo.' 未拉起异常:'.($resJson['message']??''));
         }
         return response()->json($return);
     }
@@ -307,7 +307,7 @@ class PayController extends Controller
             } else {
                 Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
                 $return = $this->format(-1, [], $resJson['error']);
-                $this->RobotSendMsg('AX通道异常未拉起');
+                $this->RobotSendMsg('AX通道'.$channelNo.' 未拉起异常:'.($resJson['error']??''));
             }
         } catch (\Exception $e) {
             $return = $this->format($e->getCode(), [], $e->getMessage());
