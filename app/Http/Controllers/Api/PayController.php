@@ -202,10 +202,11 @@ class PayController extends Controller
         Log::info($payName.'_third_response', [$response]);//三方响应日志
 //        exit();
         $resJson = json_decode($response, true);
-        if($resJson['status']==0){
+        if($resJson['status']==0 && $resJson['result_code']==0){
             $this->pullPayEvent($prePayData);
             $return = $this->format($resJson['result_code'], ['url' => $resJson['pay_info']??''], $resJson['message']??'');
         }else{
+            $this->RobotSendMsg('通道'.$channelNo.'异常:'.($resJson['err_msg']??''));
             $return = $this->format($resJson['result_code'], $resJson, $resJson['err_msg']??'');
         }
         return response()->json($return);
