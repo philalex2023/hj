@@ -227,13 +227,12 @@ class SearchController extends Controller
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
                 $containVidStr = $this->getTopicVideoIdsById($tid);
-                $ids = explode(',',$containVidStr);
-                if(empty($ids)){
-                    Log::info('SearchCat',[$tid,$ids]);
+                if(!$containVidStr){
+                    Log::info('SearchCat',[$tid]);
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
                 //Log::info('SearchCat',[$ids]);
-
+                $ids = explode(',',$containVidStr);
                 $idParams = [];
                 $length = count($ids);
                 foreach ($ids as $key => $id) {
