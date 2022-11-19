@@ -224,10 +224,14 @@ class SearchController extends Controller
 //                $containVidStr = DB::table('topic')->where('id',$tid)->value('contain_vids');
 
                 if(!$tid){
-                    return response()->json(['state'=>0, 'data'=>[]]);
+                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
                 $containVidStr = $this->getTopicVideoIdsById($tid);
                 $ids = explode(',',$containVidStr);
+                if(empty($ids)){
+                    Log::info('SearchCat',[$tid,$ids]);
+                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+                }
                 //Log::info('SearchCat',[$ids]);
 
                 $idParams = [];
