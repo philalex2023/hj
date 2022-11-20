@@ -177,7 +177,7 @@ trait PayTrait
         );
 
         Cache::forget("cachedUser.".$uid);
-        Log::info('pay_gold_update===', ['用户'.$uid.'新增金额:'.$info['money'].',金币第'.$id.'档-比例:'.$proportion.' 赠送金币:'.$bonus]);
+        Log::info('pay_gold_update===', ['用户'.$uid.'新增金额:'.$info['money'].',金币第'.$id.'档-比例:'.$proportion.',赠送金币:'.$bonus.',增加赠送观影券:'.$info['tickets']]);
         return [];
     }
 
@@ -228,7 +228,8 @@ trait PayTrait
             'member_card_type' => $updateMember,
             'vip'=>$vip,
             'vip_start_last' => time(), // 最后vip开通时间
-            'vip_expired' => $vipExpired
+            'vip_expired' => $vipExpired,
+            'tickets' => $cardInfo->tickets,
         ],$r]);//vip更新日志
         //队列执行
         /*if($cardInfo->expired_hours >= 0) {
