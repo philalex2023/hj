@@ -245,7 +245,7 @@ trait PayTrait
             'verify' => false,
         ];
 //        $isProxy && $clientParams['proxy'] = ['https'  => 'tcp://www.runoob.com:80'];
-        $clientParams['proxy'] = ['https'  => 'tcp://www.runoob.com:80'];
+//        $clientParams['proxy'] = ['https'  => 'tcp://www.runoob.com:80'];
         !empty($headers) && $clientParams['headers'] = $headers;
         $curl = (new Client($clientParams))->post($url, $params);
         return $curl->getBody();
