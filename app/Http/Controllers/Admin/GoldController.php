@@ -125,12 +125,18 @@ class GoldController extends BaseCurlController
                 'type' => 'text',
                 'name' => '额外赠送',
             ],
+            [
+                'field' => 'tickets',
+                'type' => 'number',
+                'name' => '观影券',
+                'must' => 0,
+            ],
             /*[
                 'field' => 'proportion',
                 'type' => 'text',
                 'name' => '充值比例',
             ],*/
-            [
+            /*[
                 'field' => 'user_type',
                 'type' => 'select',
                 'name' => '用户类型',
@@ -139,7 +145,7 @@ class GoldController extends BaseCurlController
                     1 => ['id'=>1,'name'=>'vip用户'],
                     2 => ['id'=>2,'name'=>'金币用户'],
                 ]
-            ],
+            ],*/
             [
                 'field' => 'sort',
                 'type' => 'number',

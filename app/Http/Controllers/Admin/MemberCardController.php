@@ -85,12 +85,12 @@ class MemberCardController extends BaseCurlController
                 'title' => '展示面值',
                 'align' => 'center',
             ],
-            [
+            /*[
                 'field' => 'real_value',
                 'minWidth' => 100,
                 'title' => '活动面值',
                 'align' => 'center',
-            ],
+            ],*/
             [
                 'field' => 'rights',
                 'minWidth' => 200,
@@ -148,6 +148,12 @@ class MemberCardController extends BaseCurlController
                 'data' => $this->cardRights
             ],
             [
+                'field' => 'tickets',
+                'type' => 'number',
+                'name' => '观影券',
+                'must' => 0,
+            ],
+            /*[
                 'field' => 'expired_hours',
                 'type' => 'text',
                 'name' => '过期时间周期(小时):不填或填0为永久',
@@ -173,19 +179,19 @@ class MemberCardController extends BaseCurlController
                 'type' => 'number',
                 'name' => '优惠活动面值',
                 'must' => 0,
-            ],
+            ],*/
             [
                 'field' => 'sort',
                 'type' => 'number',
                 'name' => '排序',
                 'must' => 0,
             ],
-            [
+            /*[
                 'field' => 'bg_img',
                 'type' => 'number',
                 'name' => '背景',
                 'must' => 0,
-            ],
+            ],*/
             [
                 'field' => 'status',
                 'type' => 'radio',
