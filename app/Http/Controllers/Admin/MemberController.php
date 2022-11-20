@@ -213,9 +213,6 @@ class MemberController extends BaseCurlController
 
     public function setOutputSearchFormTpl($shareData)
     {
-        $date = date('Y-m-d');
-        $startDate = $date . ' 00:00:00';
-        $endDate = $date . ' 23:59:59';
         $data = [
             /*[
                 'field' => 'query_channel_id',
@@ -336,7 +333,8 @@ class MemberController extends BaseCurlController
 //                'attr' => 'data-range=true',
                 'attr' => 'data-range=~',//需要特殊分割
                 'name' => '时间范围',
-                'default' => $startDate . ' ~ ' . $endDate,
+                'tips' => '默认当天',
+//                'default' => $startDate . ' ~ ' . $endDate,
             ],
         ];
         //赋值到ui数组里面必须是`search`的key值
@@ -472,13 +470,15 @@ class MemberController extends BaseCurlController
         $reqDeviceSystem = $this->rq->input('query_device_system', null);
         $findPhoneNumber = $this->rq->input('find_phone_number', null);
         $reqChannelPrincipal = $this->rq->input('query_channel_principal', null);
-        /*$query_created_at = $this->rq->input('query_created_at', null);
+
+        $query_created_at = $this->rq->input('query_created_at', null);
         if(!$query_created_at){
             $date = date('Y-m-d');
             $model = $model
                 ->where('created_at','>=',$date.' 00:00:00')
                 ->where('created_at','<=',$date.' 23:59:59');
-        }*/
+        }
+
         if($findPhoneNumber!==null){
             $model = $model->where('phone_number',$findPhoneNumber);
         }
