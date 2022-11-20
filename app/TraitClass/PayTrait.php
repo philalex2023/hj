@@ -184,9 +184,6 @@ trait PayTrait
     private function pullPayEvent($prePayData): void
     {
         $orderInfo = $prePayData['order_info'];
-//        $payMethod = $prePayData['pay_method'];
-//        $payType = $prePayData['pay_type'];
-
         //首页统计拉起
         $redis = Redis::connection()->client();
         $dayData = date('Ymd');
