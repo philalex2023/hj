@@ -75,7 +75,7 @@ trait LoginTrait
         /*$ids = Live::query()->where('status',1)->pluck('id')->all();
         $this->redis()->sAddArray('fakeLiveIdsCollection',$ids);*/
         $didArr = User::query()->pluck('did')->all();
-        $this->redis('account')->sAddArray('account_did',$didArr);
+        $this->redis('login')->sAddArray('account_did',$didArr);
         return User::query()->where('did',$did)->exists();
     }
 
