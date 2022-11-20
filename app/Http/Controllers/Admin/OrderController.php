@@ -105,13 +105,13 @@ class OrderController extends BaseCurlController
             ],
             [
                 'field' => 'pay_method_name',
-                'minWidth' => 80,
+                'minWidth' => 120,
                 'title' => '充值渠道',
                 'align' => 'center',
             ],
             [
                 'field' => 'pay_channel_code',
-                'minWidth' => 80,
+                'minWidth' => 100,
                 'title' => '通道码',
                 'align' => 'center',
             ],

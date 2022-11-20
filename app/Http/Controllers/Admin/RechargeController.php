@@ -182,7 +182,7 @@ class RechargeController extends BaseCurlIndexController
             [
                 'field' => 'pay_method_name',
                 'minWidth' => 100,
-                'title' => '充值类型',
+                'title' => '充值渠道',
                 'align' => 'center'
             ],
             [
