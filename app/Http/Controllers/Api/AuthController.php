@@ -47,7 +47,7 @@ class AuthController extends Controller
         ], 201);
     }
 
-    public function reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$accountRedis,$login_info){
+    public function reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$loginRedis,$login_info){
         //创建新用户
         $user = new User();
         $user->did = $validated['did'];
@@ -70,7 +70,7 @@ class AuthController extends Controller
         //
         $nickNames = $this->createNickNames;
         $randNickName = $this->createNickNames[array_rand($nickNames)];
-        $getAccountV = $accountRedis->get('account_v');
+        $getAccountV = $loginRedis->get('account_v');
         $accountV = !$getAccountV ? 1 : $getAccountV;
         $user->account = 'AD-'.$accountV;
         $user->promotion_code = Str::random(2).$accountV.Str::random(2);
@@ -83,8 +83,8 @@ class AuthController extends Controller
         $user->channel_pid = $bindInfo['channel_pid'];
         $user->save();
 
-        $accountRedis->sAdd('account_did',$validated['did']);
-        $accountRedis->incr('account_v');
+        $loginRedis->sAdd('account_did',$validated['did']);
+        $loginRedis->incr('account_v');
         return $user;
     }
     /**
@@ -128,16 +128,7 @@ class AuthController extends Controller
 
         $test = $validated['test'] ?? false;
 
-        $accountRedis = $this->redis('account');
-        if(!$loginRedis->exists('account_did')){
-            $loginRedis->sAddArray('account_did',$accountRedis->sMembers('account_did'));
-        }
-        if(!$loginRedis->exists('account_v')){
-            $loginRedis->set('account_v',$accountRedis->get('account_v'));
-        }
-        $accountRedis = $loginRedis;
-
-        $hasDid = !$accountRedis->exists('account_did') ? $this->getDidFromDb($validated['did']) : $accountRedis->sIsMember('account_did',$validated['did']);
+        $hasDid = !$loginRedis->exists('account_did') ? $this->getDidFromDb($validated['did']) : $loginRedis->sIsMember('account_did',$validated['did']);
         $loginType = !$hasDid ? 1 : 2;
 
         $login_info = ['device_system'=>$deviceSystem,'clipboard'=>$validated['clipboard']??'','ip'=>$ip];
@@ -147,12 +138,12 @@ class AuthController extends Controller
                 Log::info('reg_lock',[$ip,$validated]);
                 return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
             }
-            $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$accountRedis,$login_info);
+            $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$loginRedis,$login_info);
             $loginRedis->del('reg_lock');
         }else{ //第二次及以后登录
             $user = User::query()->where('did',$validated['did'])->first($this->loginUserFields);
             if(!$user){ //重新注册
-                $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$accountRedis,$login_info);
+                $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$loginRedis,$login_info);
             }else{
                 if($user->status!=1){
                     Log::info('status',[$user->status]);
