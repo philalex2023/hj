@@ -131,7 +131,6 @@ class AuthController extends Controller
         $loginType = !$hasDid ? 1 : 2;
 
         $login_info = ['device_system'=>$deviceSystem,'clipboard'=>$validated['clipboard']??'','ip'=>$ip];
-        //$deviceSystem!=2 && Log::info('login_info',$login_info);
 
         if($loginType===1){ //注册登录
 //            $regLock = Cache::lock('reg_lock');
@@ -147,8 +146,6 @@ class AuthController extends Controller
             $user = User::query()->where('did',$validated['did'])->first($this->loginUserFields);
             if(!$user){ //重新注册
                 $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$accountRedis,$login_info);
-//                Log::info('Login',['login_type:'.$loginType,'did:'.$validated['did']]);
-//                return response()->json(['state' => -1, 'msg' => '用户不存在!']);
             }else{
                 if($user->status!=1){
                     Log::info('status',[$user->status]);
