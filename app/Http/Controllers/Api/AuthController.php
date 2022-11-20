@@ -25,15 +25,7 @@ use Laravel\Passport\Token;
 class AuthController extends Controller
 {
     use LoginTrait, IpTrait, ApiParamsTrait;
-    /**
-     * Create user
-     *
-     * @param  [string] name
-     * @param  [string] email
-     * @param  [string] password
-     * @param  [string] password_confirmation
-     * @return [string] message
-     */
+
     public function signup(Request $request)
     {
         /*$request->validate([

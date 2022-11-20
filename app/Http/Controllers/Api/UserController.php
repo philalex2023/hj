@@ -33,7 +33,7 @@ class UserController extends Controller
     {
         if(isset($request->params)){
             $params = self::parse($request->params);
-            $onlyFields = ['nickname','email','sex','phone_number','avatar'];
+            $onlyFields = ['nickname','sex','phone_number','avatar'];
             $setData = [];
             foreach ($params as $key=>$value){
                 if(in_array($key,$onlyFields)){
