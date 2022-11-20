@@ -57,6 +57,12 @@ class GoldController extends BaseCurlController
                 'align' => 'center',
 //                'edit' => 1
             ],
+            [
+                'field' => 'tickets',
+                'minWidth' => 100,
+                'title' => '观影券',
+                'align' => 'center',
+            ],
             /*[
                 'field' => 'zfb_action_name',
                 'minWidth' => 100,

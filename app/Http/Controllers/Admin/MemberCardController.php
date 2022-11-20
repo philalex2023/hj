@@ -85,6 +85,12 @@ class MemberCardController extends BaseCurlController
                 'title' => '展示面值',
                 'align' => 'center',
             ],
+            [
+                'field' => 'tickets',
+                'minWidth' => 100,
+                'title' => '观影券',
+                'align' => 'center',
+            ],
             /*[
                 'field' => 'real_value',
                 'minWidth' => 100,
