@@ -157,17 +157,6 @@ trait PayTrait
     }
 
     /**
-     * 处理视频购买
-     * @param $goodsId
-     * @return Model|Collection|Builder|array|null
-     */
-    private function buyVideo($goodsId): Model|Collection|Builder|array|null
-    {
-        // return Video::query()->find($goodsId)?->toArray();
-        return [];
-    }
-
-    /**
      * 处理金币购买
      * @param $id
      * @param $uid
@@ -286,7 +275,6 @@ trait PayTrait
         $method = match ($orderInfo->type) {
             1 => 'buyVip',
             2 => 'buyGold',
-            3 => 'buyVideo',
         };
         $biz = $this->$method($orderInfo->type_id??0,$orderInfo->uid);
 
