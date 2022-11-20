@@ -59,7 +59,6 @@ class AuthController extends Controller
         //创建新用户
         $user = new User();
         $user->did = $validated['did'];
-        $user->last_did = $validated['did'];
         $user->create_ip = $ip;
         $user->last_ip = $ip;
         $user->gold = 0;
