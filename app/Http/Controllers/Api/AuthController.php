@@ -127,7 +127,15 @@ class AuthController extends Controller
         }
 
         $test = $validated['test'] ?? false;
+
         $accountRedis = $this->redis('account');
+        if(!$loginRedis->exists('account_did')){
+            $loginRedis->sAddArray('account_did',$accountRedis->sMembers('account_did'));
+        }
+        if(!$loginRedis->exists('account_v')){
+            $loginRedis->set('account_v',$accountRedis->get('account_v'));
+        }
+        $accountRedis = $loginRedis;
 
         $hasDid = !$accountRedis->exists('account_did') ? $this->getDidFromDb($validated['did']) : $accountRedis->sIsMember('account_did',$validated['did']);
         $loginType = !$hasDid ? 1 : 2;
