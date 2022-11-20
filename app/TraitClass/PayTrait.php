@@ -248,14 +248,12 @@ trait PayTrait
         ];
     }
 
-    public function reqPostPayUrl($url,$params,$headers=[])
+    public function reqPostPayUrl($url,$params,$headers=[],$isProxy=false)
     {
         $clientParams = [
             'verify' => false,
-            /*'proxy' => [
-                'https'  => 'tcp://www.runoob.com:80'
-            ]*/
         ];
+        $isProxy && $clientParams['proxy'] = ['https'  => 'tcp://www.runoob.com:80'];
         !empty($headers) && $clientParams['headers'] = $headers;
         $curl = (new Client($clientParams))->post($url, $params);
         return $curl->getBody();
