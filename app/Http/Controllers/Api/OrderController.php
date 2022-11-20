@@ -123,8 +123,6 @@ class OrderController extends PayBaseController
                 'vid' => $params['vid'] ?? 0,
                 'created_at' => $now,
                 'updated_at' => $now,
-//                'pay_channel_code' => $payNumber, //
-//                'pay_method' => $payMethod, //
                 'device_system' => $user->device_system, //
                 'channel_name' => !$channelInfo ? '官方' : $channelInfo->name, //
 
