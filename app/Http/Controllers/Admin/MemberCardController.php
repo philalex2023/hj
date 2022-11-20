@@ -43,17 +43,17 @@ class MemberCardController extends BaseCurlController
                 'field' => 'sort',
                 'minWidth' => 80,
                 'title' => '排序',
-                'edit' => 1,
+//                'edit' => 1,
                 'sort' => 1,
                 'align' => 'center',
             ],
-            [
+            /*[
                 'field' => 'bg_img',
                 'minWidth' => 80,
                 'edit' => 1,
                 'title' => '背景',
                 'align' => 'center',
-            ],
+            ],*/
             [
                 'field' => 'status',
                 'minWidth' => 100,

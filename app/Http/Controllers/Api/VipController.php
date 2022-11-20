@@ -131,9 +131,4 @@ class VipController extends \App\Http\Controllers\Controller
        ];
     }
 
-    private function getRechargeChannel(): array
-    {
-        $cacheData = self::rechargeChannelCache();
-        return array_column($cacheData->toArray(),'action_url','id');
-    }
 }
