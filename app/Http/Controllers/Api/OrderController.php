@@ -130,7 +130,7 @@ class OrderController extends PayBaseController
 
                 'channel_principal' => $channelInfo->principal??'', //
                 'reg_at' => $user->created_at??'', //
-                'user_type' => time()-strtotime($user->created_at)>=24*3600 ? 1 : 0
+                'user_type' => $user->created_at < date('Y-m-d'.' 00:00:00') ? 1 : 0
             ];
             Log::info('order_create_Data===',[$createData]);//参数日志
 
