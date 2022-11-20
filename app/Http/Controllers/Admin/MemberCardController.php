@@ -159,13 +159,14 @@ class MemberCardController extends BaseCurlController
                 'name' => '观影券',
                 'must' => 0,
             ],
-            /*[
+            [
                 'field' => 'expired_hours',
                 'type' => 'text',
                 'name' => '过期时间周期(小时):不填或填0为永久',
                 'must' => 0,
                 'tips' => '单位(小时)',
             ],
+            /*
             [
                 'field' => 'remain_hours',
                 'type' => 'text',

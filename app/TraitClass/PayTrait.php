@@ -170,9 +170,13 @@ trait PayTrait
         $info['money'] = $info['money'] * $proportion;
         $info['money'] += $bonus;
         User::query()->find($uid)->update(
-            ['gold' =>DB::raw("gold + {$info['money']}") ]
+            [
+                'gold' =>DB::raw("gold + {$info['money']}"),
+                'movie_ticket' =>DB::raw("movie_ticket + {$info['tickets']}"),
+            ]
         );
-        Cache::forget("cachedUser.{$uid}");
+
+        Cache::forget("cachedUser.".$uid);
         Log::info('pay_gold_update===', ['用户'.$uid.'新增金额:'.$info['money'].',金币第'.$id.'档-比例:'.$proportion.' 赠送金币:'.$bonus]);
         return [];
     }
@@ -200,8 +204,7 @@ trait PayTrait
      */
     private function buyVip($goodsId,$uid): Model|Collection|Builder|array|null
     {
-        $cardInfo = MemberCard::query()
-            ->find($goodsId,['id','value','real_value','expired_hours']);
+        $cardInfo = MemberCard::query()->find($goodsId);
         if($cardInfo->expired_hours > 0) {
             $expiredTime = $cardInfo->expired_hours * 3600 + time();
             $expiredAt = date('Y-m-d H:i:s',$expiredTime);
@@ -214,6 +217,7 @@ trait PayTrait
 
         $vipExpired = MemberCard::query()->select(DB::raw('SUM(IF(expired_hours>0,expired_hours,10*365*24)) as expired_hours'))->whereIn('id',$member_card_type)->value('expired_hours') *3600;
         $r = User::query()->where('id',$uid)->update([
+            'movie_ticket' =>DB::raw("movie_ticket + {$cardInfo->tickets}"),
             'member_card_type' => $updateMember,
             'vip'=>$vip,
             'vip_start_last' => time(), // 最后vip开通时间
@@ -231,7 +235,7 @@ trait PayTrait
             $job = new ProcessMemberCard($user->id,$cardInfo->id,($cardInfo->expired_hours?:10*365*34)*60*60);
             app(Dispatcher::class)->dispatchNow($job);
         }*/
-        Cache::forget("cachedUser.{$user->id}");
+        Cache::forget("cachedUser.".$user->id);
         return [
             'expired_at' => $expiredAt??false
         ];
