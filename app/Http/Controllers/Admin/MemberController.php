@@ -462,6 +462,7 @@ class MemberController extends BaseCurlController
 
     public function handleResultModel($model): array
     {
+        $query_created_at = $this->rq->input('query_created_at', null);
         $memberCard = $this->rq->input('query_member_card_type', null);
         $viewTimes = $this->rq->input('query_long_vedio_times', null);
         $reqGolds = $this->rq->input('query_gold', null);
@@ -469,6 +470,12 @@ class MemberController extends BaseCurlController
         $reqDeviceSystem = $this->rq->input('query_device_system', null);
         $findPhoneNumber = $this->rq->input('find_phone_number', null);
         $reqChannelPrincipal = $this->rq->input('query_channel_principal', null);
+        if(!$query_created_at){
+            $date = date('Y-m-d');
+            $model = $model
+                ->where('created_at','>=',$date.' 00:00:00')
+                ->where('created_at','<=',$date.' 23:59:59');
+        }
         if($findPhoneNumber!==null){
             $model = $model->where('phone_number',$findPhoneNumber);
         }
