@@ -25,7 +25,7 @@ class CommOperationController extends Controller
      */
     public function foucs(Request $request)
     {
-        if (isset($request->params)) {
+        /*if (isset($request->params)) {
             $params = self::parse($request->params);
             //Log::info('===Foucs===',[$params]);
             Validator::make($params, [
@@ -69,7 +69,7 @@ class CommOperationController extends Controller
                 'msg' => '操作失败'
             ]);
 
-        }
+        }*/
         return [];
     }
 
