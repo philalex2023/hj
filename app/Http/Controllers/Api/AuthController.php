@@ -115,10 +115,12 @@ class AuthController extends Controller
         $deviceSystem = $this->getDeviceSystem($deviceInfo);
 
         $appInfo = !is_string($validated['env']) ? json_encode($validated['env']) : $validated['env'] ;
+
+        $loginRedis = $this->redis('login');
         // 暂时放开轻量版
         if(!strpos($deviceInfo.'', 'ios')){
-            $lock = Cache::lock($key,10);
-            if(!$lock->get()){
+            $loginRedis->setex($key,10,1);
+            if(!$loginRedis->get($key)){
                 Log::debug('repeat_register_did===',[$validated['did'],'ip:'.$ip]);//参数日志
                 return response()->json(['state' => -1, 'msg' => '请勿重复提交否则会作封禁处理']);
             }
@@ -133,15 +135,12 @@ class AuthController extends Controller
         $login_info = ['device_system'=>$deviceSystem,'clipboard'=>$validated['clipboard']??'','ip'=>$ip];
 
         if($loginType===1){ //注册登录
-//            $regLock = Cache::lock('reg_lock');
-            $loginRedis = $this->redis('login');
             if(!$loginRedis->setnx('reg_lock',1)){
                 Log::info('reg_lock',[$ip,$validated]);
                 return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
             }
             $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$accountRedis,$login_info);
             $loginRedis->del('reg_lock');
-//            $regLock->release();
         }else{ //第二次及以后登录
             $user = User::query()->where('did',$validated['did'])->first($this->loginUserFields);
             if(!$user){ //重新注册
