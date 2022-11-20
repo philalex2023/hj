@@ -138,7 +138,6 @@ class OrderController extends PayBaseController
             //
             $redis->zAdd($unpaidKey,time(),$number);
             $redis->expire($unpaidKey,3600);
-//            $return = $this->format(0, ['pay_id' => $pay->id,'order_id'=>$order->id], '取出成功');
             $return = $this->format(0, ['pay_id' => $order->id,'order_id'=>$order->id], '取出成功');
         } catch (Exception $e) {
             DB::rollBack();
