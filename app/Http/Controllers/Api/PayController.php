@@ -151,7 +151,7 @@ class PayController extends Controller
                 'pay_bankcode' => $channelNo,            //支付通道编码
                 'pay_notifyurl' => $notifyUrl,              //异步返回地址
                 'pay_callbackurl' => 'https://dl.yinlian66.com',     //同步返回地址
-                'pay_attach' => 'HJ订单',
+                'pay_attach' => '网购订单',
                 'pay_productname' => $orderInfo->id,              //订单金额,单位元保留两位小数
             ];
             //生成签名 请求参数按照Ascii编码排序
@@ -336,7 +336,6 @@ class PayController extends Controller
             $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
             Log::info('ax_third_response', [$response]);//三方响应日志
             $resJson = json_decode($response, true);
-            Log::info('ax_third_response', [$resJson]);//三方响应日志
             if ($resJson['status'] == 1) {
                 $this->pullPayEvent($prePayData);
                 $return = $this->format(0, ['url' => $resJson['payurl']], '取出成功');
