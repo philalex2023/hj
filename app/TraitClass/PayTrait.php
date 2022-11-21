@@ -278,10 +278,8 @@ trait PayTrait
             1 => 'buyVip',
             2 => 'buyGold',
         };
-        $biz = $this->$method($orderInfo->type_id??0,$orderInfo->uid);
-
-        $userInfo = CacheUser::user($orderInfo->uid);
-        $userType = strtotime($nowData)-strtotime($userInfo->created_at)>=24*3600 ? 1 : 0;
+        $this->$method($orderInfo->type_id??0,$orderInfo->uid);
+        $userType = $orderInfo->user_type;
         //########渠道CPS日统计########
         ProcessStatisticsChannelByDay::dispatchAfterResponse($orderInfo,$userType);
         //#############################
