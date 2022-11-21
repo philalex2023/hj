@@ -241,7 +241,7 @@ class PayController extends Controller
         $signFun = 'sign'.$prePayData['payName'];
         $input['sign'] = $this->$signFun($input, $secret);
 
-        $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
+        $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input],[],['https'  => 'tcp://www.runoob.com:80']);
         Log::info($payName.'_pull_req', [$input]);//拉起请求三方日志
         Log::info($payName.'_third_response', [$response]);//三方响应日志
 //        exit();
