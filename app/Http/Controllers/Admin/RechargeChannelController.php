@@ -74,12 +74,12 @@ class RechargeChannelController extends BaseCurlController
                 'title' => '状态',
                 'align' => 'center',
             ],
-            [
+            /*[
                 'field' => 'other_url',
                 'minWidth' => 100,
                 'title' => '其它地址',
                 'align' => 'center'
-            ],
+            ],*/
             [
                 'field' => 'whitelist',
                 'minWidth' => 100,
