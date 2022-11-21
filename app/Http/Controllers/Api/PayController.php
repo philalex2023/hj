@@ -72,7 +72,7 @@ class PayController extends Controller
     {
         $recharge_channels = $this->getRechargeChannelsByCache($payChannelType,$amount);
         $weight = 0;
-        $channelIds = array ();
+        $channelIds = [];
         foreach ($recharge_channels as $pay_channel => $weights){
             $weight += $weights;
             for ($i=0;$i < $weights; ++$i){
