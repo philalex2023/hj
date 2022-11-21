@@ -150,7 +150,7 @@ class HomeController extends Controller
                             $searchParams = [
                                 'index' => 'video_index',
                                 'body' => [
-                                    'track_total_hits' => true,
+//                                    'track_total_hits' => true,
                                     'size' => $size,
                                     '_source' => $source,
 //                                '_source' => false,
