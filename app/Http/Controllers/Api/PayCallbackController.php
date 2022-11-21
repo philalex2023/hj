@@ -29,7 +29,8 @@ class PayCallbackController extends Controller
         try {
             $payEnv = self::getPayEnv();
             $secret = $payEnv[$payName]['secret'];
-            $signPass = $this->verify($postResp, $secret, $postResp['sign']);
+            $verify = 'verify'.$payName;
+            $signPass = $this->$verify($postResp, $secret, $postResp['sign']);
             if (!$signPass) {
                 // 签名验证不通过
                 Log::info($payName.'_pay_callback_res===', ['签名验证不通过']);
