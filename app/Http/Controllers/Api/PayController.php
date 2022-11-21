@@ -26,13 +26,13 @@ class PayController extends Controller
 {
     use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait,RobotTrait;
 
-    public function getRechargeChannelsByCache($payChannelType)
+    /*public function getRechargeChannelsByAllFromCache($payChannelType)
     {
         $key = 'recharge_channels_Z_'.$payChannelType;
         $redis = $this->redis();
         $cacheData = $redis->zRange($key,0,-1,true);
         if(!$cacheData){
-            $items = RechargeChannels::query()->where('status',1)->where('pay_type',$payChannelType)->get(['pay_channel','weights']);
+            $items = RechargeChannels::query()->where('status',1)->where('pay_type',$payChannelType)->get(['pay_channel','weights','match_amount']);
             $zData = [];
             foreach ($items as $item){
                 $zData[$item->pay_channel] = $item->weights;
@@ -41,11 +41,36 @@ class PayController extends Controller
             return $zData;
         }
         return $cacheData;
+    }*/
+
+    public function getRechargeChannelsByCache($payChannelType,$amount)
+    {
+        $key = 'recharge_channels_Z_'.$payChannelType;
+        $redis = $this->redis();
+        $cacheData = $redis->zRange($key,0,-1,true);
+        if(!$cacheData){
+            $items = RechargeChannels::query()->where('status',1)->where('pay_type',$payChannelType)->get(['pay_channel','weights','match_amount']);
+            $zData = [];
+            $amountIdArr = array_column($this->getRechargeAmountColums(),'id','name');
+            foreach ($items as $item){
+                if(!empty($item->match_amount)){
+                    $amountArr = (array)json_decode($item->match_amount,true);
+                    $amountIndex = $amountIdArr[$amount];
+                    if(in_array($amountIndex,$amountArr)){
+                        $zData[$item->pay_channel] = $item->weights;
+                        $redis->zAdd($key,$item->weights,$item->pay_channel);
+                        $redis->expire($key,3600);
+                    }
+                }
+            }
+            return $zData;
+        }
+        return $cacheData;
     }
 
-    public function getRechargeChannelByWeight($payChannelType)
+    public function getRechargeChannelByWeight($payChannelType,$amount)
     {
-        $recharge_channels = $this->getRechargeChannelsByCache($payChannelType);
+        $recharge_channels = $this->getRechargeChannelsByCache($payChannelType,$amount);
         $weight = 0;
         $channelIds = array ();
         foreach ($recharge_channels as $pay_channel => $weights){
@@ -72,11 +97,12 @@ class PayController extends Controller
 
     public function getPayParams($validated)
     {
-        $payChannelType = (int)$validated['type'];
-        $payEnvInfo = $this->getRechargeChannelByWeight($payChannelType);
 
-        $payName = $payEnvInfo['name'];
         $orderInfo = DB::connection('master_mysql')->table('orders')->find($validated['pay_id']);
+        $payChannelType = (int)$validated['type'];
+
+        $payEnvInfo = $this->getRechargeChannelByWeight($payChannelType,$orderInfo->amount);
+        $payName = $payEnvInfo['name'];
 
         if (!$orderInfo) {
             Log::error($payName.'_pay_exception===', [$validated]);
@@ -190,16 +216,9 @@ class PayController extends Controller
             $signFun = 'sign'.$prePayData['payName'];
             $input['sign'] = $this->$signFun($input, $secret);
             Log::info($prePayData['payName'].'_third_params===', [$input]);//三方参数日志
-            /*$curl = (new Client([
-                'headers' => ['Content-Type' => 'application/json'],
-                'verify' => false,
-            ]))->post($payUrl, [
-                'body' => json_encode($input)
-            ]);*/
-//            $response = $curl->getBody();
+
             $response = $this->reqPostPayUrl($payUrl, ['body' => json_encode($input)], ['Content-Type' => 'application/json']);
             Log::info('YK_third_response===', [$response]);//三方响应日志
-//            Log::info('Yk_order_info===', [$orderInfo]);
             $resJson = json_decode($response, true);
             if ($resJson['code'] == 1) {
                 $this->pullPayEvent($prePayData);
@@ -280,11 +299,6 @@ class PayController extends Controller
 
         $signFun = 'sign'.$prePayData['payName'];
         $input['sign'] = $this->$signFun($input, $secret);
-
-        /*$curl = (new Client([
-            'verify' => false,
-        ]))->post($payUrl, ['form_params' => $input]);
-        $response = $curl->getBody();*/
         $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
         Log::info($payName.'_third_response', [$response]);//三方响应日志
 
@@ -335,12 +349,6 @@ class PayController extends Controller
             $signFun = 'sign'.$prePayData['payName'];
             $input['fxsign'] = $this->$signFun($input, $secret);
             Log::info('ax_third_params===', [$input]);//三方参数日志
-            /*$curl = (new Client([
-                //  'headers' => ['Content-Type' => 'application/x-www-form-urlencoded'],
-                'verify' => false,
-            ]))->post($payUrl, ['form_params' => $input]);
-
-            $response = $curl->getBody();*/
             $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
             Log::info('ax_third_response', [$response]);//三方响应日志
             $resJson = json_decode($response, true);

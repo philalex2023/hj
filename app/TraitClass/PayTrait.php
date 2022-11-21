@@ -32,6 +32,19 @@ trait PayTrait
 {
     use ChannelTrait,CacheTableTrait;
 
+    public function getRechargeAmountColums()
+    {
+        return [
+            1=>['id'=>1,'name'=>'30'],
+            2=>['id'=>2,'name'=>'50'],
+            3=>['id'=>3,'name'=>'100'],
+            4=>['id'=>4,'name'=>'200'],
+            5=>['id'=>5,'name'=>'300'],
+            6=>['id'=>6,'name'=>'500'],
+            7=>['id'=>7,'name'=>'1000'],
+        ];
+    }
+
     public function getOrderStatus(): array
     {
         return [

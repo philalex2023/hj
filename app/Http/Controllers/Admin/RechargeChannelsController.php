@@ -8,27 +8,20 @@ use App\Models\Order;
 use App\Models\RechargeChannel;
 use App\Models\RechargeChannels;
 use App\TraitClass\ChannelTrait;
+use App\TraitClass\PayTrait;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Support\Facades\Cache;
 
 class RechargeChannelsController extends BaseCurlController
 {
-    use PHPRedisTrait,ChannelTrait;
+    use PHPRedisTrait,ChannelTrait,PayTrait;
     public $pageName = "充值通道";
     public array $payChannel = [];
     public array $pay_type = [
         1=>['id'=>1,'name'=>'支付宝'],
         2=>['id'=>2,'name'=>'微信'],
     ];
-    public array $match_amount = [
-        1=>['id'=>1,'name'=>'30'],
-        2=>['id'=>2,'name'=>'50'],
-        3=>['id'=>3,'name'=>'100'],
-        4=>['id'=>4,'name'=>'200'],
-        5=>['id'=>5,'name'=>'300'],
-        6=>['id'=>6,'name'=>'500'],
-        7=>['id'=>7,'name'=>'1000'],
-    ];
+    public array $match_amount = [];
 
     private array $payChannelCode=[];
 
@@ -58,6 +51,7 @@ class RechargeChannelsController extends BaseCurlController
 
     public function setModel(): RechargeChannels
     {
+        $this->match_amount = $this->getRechargeAmountColums();
         $this->payChannel = $this->getPayChannels();
         $this->payChannelCode = $this->getPayChannels(true);
         return $this->model = new RechargeChannels();
