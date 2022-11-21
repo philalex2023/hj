@@ -124,7 +124,7 @@ class VipController extends \App\Http\Controllers\Controller
     {
        $zfb = DB::table('recharge_channels')->where('status',1)->where('pay_type',1)->exists();
        $wx = DB::table('recharge_channels')->where('status',1)->where('pay_type',2)->exists();
-       $baseUrl =  'https://' .$_SERVER['HTTP_HOST'];
+       $baseUrl =  env('PAY_DOMAIN','https://' .$_SERVER['HTTP_HOST']);
        return [
            'zfb' => $zfb ? $baseUrl.$this->payUrl : '',
            'wx' => $wx ? $baseUrl.$this->payUrl : '',

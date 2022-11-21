@@ -26,23 +26,6 @@ class PayController extends Controller
 {
     use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait,RobotTrait;
 
-    /*public function getRechargeChannelsByAllFromCache($payChannelType)
-    {
-        $key = 'recharge_channels_Z_'.$payChannelType;
-        $redis = $this->redis();
-        $cacheData = $redis->zRange($key,0,-1,true);
-        if(!$cacheData){
-            $items = RechargeChannels::query()->where('status',1)->where('pay_type',$payChannelType)->get(['pay_channel','weights','match_amount']);
-            $zData = [];
-            foreach ($items as $item){
-                $zData[$item->pay_channel] = $item->weights;
-                $redis->zAdd($key,$item->weights,$item->pay_channel);
-            }
-            return $zData;
-        }
-        return $cacheData;
-    }*/
-
     public function getRechargeChannelsByCache($payChannelType,$amount)
     {
         $key = 'recharge_channels_Z_'.$payChannelType;
@@ -112,7 +95,8 @@ class PayController extends Controller
 
         $secret = $payEnvInfo['secret'];
         $mercId = $payEnvInfo['merchant_id'];
-        $notifyUrl = 'https://' .$_SERVER['HTTP_HOST'] . $payEnvInfo['notify_url'];
+        $domain = env('PAY_DOMAIN','https://' .$_SERVER['HTTP_HOST']);
+        $notifyUrl = $domain . $payEnvInfo['notify_url'];
         $channelNo = match ($payChannelType){
             1 => $payEnvInfo['zfb_code'],
             2 => $payEnvInfo['wx_code'],
