@@ -21,6 +21,36 @@ class PayCallbackController extends Controller
 {
     use PaySignVerifyTrait,PayTrait,IpTrait;
 
+    public function callbackNY(Request $request): string
+    {
+        $payName = 'NY';
+        $postResp = $request->except('s');
+        Log::info($payName.'_pay_callback===', [$postResp]);//三方返回参数日志
+        try {
+            $payEnv = self::getPayEnv();
+            $secret = $payEnv[$payName]['secret'];
+            $signPass = $this->verify($postResp, $secret, $postResp['sign']);
+            if (!$signPass) {
+                // 签名验证不通过
+                Log::info($payName.'_pay_callback_res===', ['签名验证不通过']);
+            }
+            if ($postResp['returncode'] == '00') {
+                // 记录支付信息
+                DB::beginTransaction();
+                $this->orderUpdate($postResp['orderid'], $postResp);
+                DB::commit();
+            }
+            $return = 'OK';
+        } catch (\Exception $e) {
+            Order::query()->where('number',$postResp['orderid'])->update(['status'=>3]);
+            Log::info($payName.'_error_callback===', ['code' => $e->getCode(), 'msg' => $e->getMessage()]);//三方返回参数日志
+            DB::rollBack();
+            $return = 'no';
+        }
+        Log::info($payName.'_pay_callback_res===', [$return]);
+        return response($return);
+    }
+
     public function callbackKF(Request $request): string
     {
         $postResp = $request->post();

@@ -92,12 +92,12 @@ class RechargeChannelController extends BaseCurlController
                 'title' => '支付名称',
                 'align' => 'center'
             ],
-            [
+            /*[
                 'field' => 'action_url',
                 'minWidth' => 100,
                 'title' => '支付接口地址',
                 'align' => 'center'
-            ],
+            ],*/
             /*[
                 'field' => 'type',
                 'minWidth' => 100,
@@ -186,12 +186,12 @@ class RechargeChannelController extends BaseCurlController
                 'name' => '支付名称',
                 'must' => 0,
             ],
-            [
+            /*[
                 'field' => 'action_url',
                 'type' => 'text',
                 'name' => '支付接口地址',
                 'must' => 0,
-            ],
+            ],*/
             [
                 'field' => 'wx_code',
                 'type' => 'text',

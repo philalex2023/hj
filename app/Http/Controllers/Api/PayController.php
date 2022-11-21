@@ -128,6 +128,49 @@ class PayController extends Controller
         return $this->$payName($prePayData);
     }
 
+    public function NY($prePayData){
+        try {
+            $payName = $prePayData['payName'];
+            $orderInfo = $prePayData['order_info'];
+            $notifyUrl = $prePayData['notifyUrl'];
+            $mercId = $prePayData['merchId'];
+            $channelNo = $prePayData['channelNo'];
+            $secret = $prePayData['secret'];
+            $payUrl = $prePayData['pay_url'];
+            $input = [
+                'pay_memberid' => $mercId,               //商户号
+                'pay_orderid' => strval($orderInfo->number),           //订单号，值允许英文数字
+                'pay_amount' => intval($orderInfo->amount ?? 0),              //订单金额,单位元保留两位小数
+                'pay_applydate' => date('Y-m-d H:i:s'),
+                'pay_bankcode' => $channelNo,            //支付通道编码
+                'pay_notifyurl' => $notifyUrl,              //异步返回地址
+                'pay_callbackurl' => 'https://dl.yinlian66.com',     //同步返回地址
+                'pay_attach' => 'saol订单',           //订单号，值允许英文数字
+                'pay_productname' => $orderInfo->id,              //订单金额,单位元保留两位小数
+            ];
+            //生成签名 请求参数按照Ascii编码排序
+            //私钥签名
+            $signFun = 'sign'.$payName;
+            $input['pay_md5sign'] = $this->$signFun($input, $secret);
+            Log::info($payName.'_third_params===', [$input]);//三方参数日志
+            $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
+            Log::info($payName.'_third_response===', [$response]);//三方响应日志
+            $resJson = json_decode($response, true);
+            //Log::info($this->flag.'_test_response===', [$resJson]);
+            if ($resJson['status'] == 'success') {
+                $this->pullPayEvent($prePayData);
+                $return = $this->format(0, ['url' => $resJson['data']['pay_url']], '取出成功');
+            } else {
+                Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
+                $return = $this->format(-1, [], $response);
+                $this->RobotSendMsg($payName.'通道'.$channelNo.' 未拉起异常');
+            }
+        } catch (\Exception $e) {
+            $return = $this->format((int)$e->getCode(), [], $e->getMessage());
+        }
+        return response()->json($return);
+    }
+
     public function YK($prePayData){
         $orderInfo = $prePayData['order_info'];
         $notifyUrl = $prePayData['notifyUrl'];

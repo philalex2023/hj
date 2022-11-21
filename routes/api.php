@@ -29,6 +29,7 @@ $payNames = [
     'AX', //艾希
     'YL', //盈联
     'KF', //咖啡
+    'NY', //能源
 ];
 
 Route::group([
