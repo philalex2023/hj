@@ -149,7 +149,7 @@ class PayController extends Controller
             $signFun = 'sign'.$payName;
             $input['pay_md5sign'] = $this->$signFun($input, $secret);
             Log::info($payName.'_third_params===', [$input]);//三方参数日志
-            $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input]);
+            $response = $this->reqPostPayUrl($payUrl, ['form_params' => $input],[],['http'  => 'tcp://119.23.236.28:888']);
             Log::info($payName.'_third_response===', [$response]);//三方响应日志
             $resJson = json_decode($response, true);
             //Log::info($this->flag.'_test_response===', [$resJson]);
