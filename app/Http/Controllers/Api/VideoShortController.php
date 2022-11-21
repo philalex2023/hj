@@ -168,134 +168,6 @@ class VideoShortController extends Controller
     }
 
     /**
-     * 读取数据
-     * @param $page
-     * @param $user
-     * @param $startId
-     * @param $cateId
-     * @param $tagId
-     * @param $words
-     * @return array
-     */
-    private function items($page, $user, $startId,$cateId,$tagId,$words): array
-    {
-        $redis = $this->redis();
-        $ShortVideoIds = $this->getShortVideoIds($cateId??0);
-        $newShortVideoByUidKey = 'shortVideoForUser_'.$cateId.'_'.$user->id;
-        if(!$redis->exists($newShortVideoByUidKey) || $page==1){
-//            shuffle($ShortVideoIds);
-            $shortSortIds = [];
-            $shortRangeIds = [];
-            foreach ($ShortVideoIds as $value=>$score){
-                $score>0 ? $shortSortIds[]=$value : $shortRangeIds[]=$value;
-                $redis->zAdd($newShortVideoByUidKey,$score,$value);
-            }
-            $redis->expire($newShortVideoByUidKey,3600);
-            shuffle($shortRangeIds);
-            $ShortVideoIds = [...$shortSortIds,...$shortRangeIds];
-        }else{
-            $ShortVideoIds = $redis->zRevRange($newShortVideoByUidKey,0,-1) ?? [];
-        }
-        $perPage = 8;
-        $model = VideoShort::search("*")->where('status',1);
-
-        if ($tagId) {
-            $tagInfo = Tag::query()->where(['mask'=>$this->cateMapAlias[$tagId]])->firstOrFail()?->toArray();
-            if(!empty($tagInfo)){
-                $model = VideoShort::search('"'.$tagInfo['id'].'"')->where('status',1);
-            }
-        }else{
-            if ($cateId) {
-                $model = VideoShort::search('"'.$cateId.'"')->where('status',1);
-            }
-        }
-        /*if ($startId) {
-            $model = $model->where('id','<=',$startId)->orderBy('id','desc');
-        }*/
-
-        $items = [];
-        if(!empty($words)){
-            $model = VideoShort::search($words)->where('status', 1);
-            $paginator =$model->simplePaginate($perPage, 'searchPage', $page);
-            $items = $paginator->items();
-            $more = $paginator->hasMorePages();
-        }else {
-            if (!empty($ShortVideoIds) && (!$tagId) && (!$startId)) {
-                //$cacheIds = explode(',', $newIds);
-                $start = $perPage * ($page - 1);
-                $ids = array_slice($ShortVideoIds, $start, $perPage);
-                foreach ($ids as $id) {
-                    $mapNum = $id % 300;
-                    $cacheKey = "short_video_$mapNum";
-                    $raw = $this->redis()->hGet($cacheKey, $id);
-                    if (!$raw) {
-                        $model = DB::table('video')->where('id', $id)->first();
-                        $items[] = $this->resetRedisVideoShort($model);
-                    }else{
-                        $items[] = json_decode($raw, true);
-                    }
-                }
-                $more = false;
-                if (count($ids) == $perPage) {
-                    $more = true;
-                }
-            } else {
-                $paginator = $model->simplePaginate($perPage, 'shortLists', $page);
-                $items = $paginator->items();
-                $more = $paginator->hasMorePages();
-            }
-        }
-
-        $data = [];
-        $_v = date('Ymd');
-        if(!empty($items)){
-//            $vipValue = $this->getVipValue($user);
-            $rights = $this->getUserAllRights($user);
-            if($startId>0){
-                $items[key($items)] = (array)DB::table('video')->where('id',$startId)->first();
-            }
-            foreach ($items as $one) {
-                $one['limit'] = 0;
-                if ($one['restricted'] == 1  && (!isset($rights[1]))) {
-                    $one['limit'] = 1;
-                }
-                if ($one['restricted'] == 2) {
-                    if(!isset($rights[4])){ //如果没有免费观看金币视频的权益
-                        $buy = $this->isBuyShortVideo($one,$user);
-                        !$buy && $one['limit'] = 2;
-                    }
-                }
-                $videoRedis = $this->redis('video');
-                $one['is_love'] = $videoRedis->sIsMember('shortLove_'.$user->id,$one['id']) ? 1 : 0;
-                $sync = $one['sync'] ?? 2;
-                $sync = $sync>0 ? $sync : 2;
-                $resourceDomain = self::getDomain($sync);
-                //统计在线
-                /*$videoRedis->sAdd('onlineUser_'.date('Ymd'),$user->id);
-                $videoRedis->expire('onlineUser',3600*24);*/
-                $dayData = date('Ymd');
-                $redis->zAdd('online_user_'.$dayData,time(),$user->id);
-                $redis->expire('online_user_'.$dayData,3600*24*7);
-
-                //是否收藏
-                $one['is_collect'] = $videoRedis->zScore('shortCollects_'.$user->id, $one['id']) ? 1 : 0;
-                $one['url'] = $resourceDomain  .$one['url'];
-                $one['dash_url'] = $resourceDomain  .$one['dash_url'];
-                $one['cover_img'] = $this->transferImgOut($one['cover_img'],$resourceDomain,$_v);
-                //hls处理
-                $one['hls_url'] = $resourceDomain .$this->transferHlsUrl($one['hls_url'],$one['id'],$_v);
-                //标签
-                isset($one['tag_kv']) && $one['tag_kv'] = json_decode($one['tag_kv'],true);
-                $data[] = $one;
-            }
-        }
-        return [
-            'list' => $data,
-            'hasMorePages' => $more,
-        ];
-    }
-
-    /**
      * 观看限制判断
      * @param $one
      * @param $user
@@ -328,6 +200,7 @@ class VideoShortController extends Controller
                 $params = self::parse($request->params);
                 $validated = Validator::make($params, [
                     'start_id' => 'nullable',
+                    'page' => 'required|integer',
                     'keyword' => 'nullable',
                     'cate_id' => 'nullable',
                     'tag_id' => 'nullable',
@@ -351,76 +224,78 @@ class VideoShortController extends Controller
                 $total = 0;
                 $perPage = 8;
                 $offset = ($page-1)*$perPage;
-                $hasMorePages = false;
 
-//                $idStr = DB::table('topic')->where('id',$cateId)->value('contain_vids');
-                if(!$cateId){
-                    return response()->json(['state'=>0, 'data'=>[]]);
-                }
-                $containVidStr = $this->getTopicVideoIdsById($cateId);
-                if(!$containVidStr){
-                    Log::info('ShortListSearch',[$cateId]);
-                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
-                }
-                $ids = explode(',',$containVidStr);
                 $catVideoList = [];
-                if(!empty($ids) || !empty($words)){
-                    $idParams = [];
-                    $length = count($ids);
-                    foreach ($ids as $key => $id) {
-                        $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
-                    }
+                if (!empty($words)) {
                     $query = [
-                        'function_score' => [
-                            'query' => [
-                                'bool'=>[
-                                    'must' => [
-                                        ['terms' => ['id'=>$ids]],
-                                    ]
-                                ]
-                            ],
-                            'script_score' => [
-                                'script' => [
-                                    'params' => [
-                                        'scoring' => $idParams
-                                    ],
-                                    'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
-                                ]
+                        'bool'=>[
+                            'must' => [
+                                ['match'=> ['name' => $words],],
+                                ['term' => ['dev_type'=>1]],
                             ]
                         ]
                     ];
-                    if (!empty($words)) {
+                }else{
+                    if(!$cateId){
+                        return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+                    }
+                    $containVidStr = $this->getTopicVideoIdsById($cateId);
+                    if(!$containVidStr){
+                        return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+                    }
+                    $ids = explode(',',$containVidStr);
+                    if(!empty($ids)){
+                        $idParams = [];
+                        $length = count($ids);
+                        foreach ($ids as $key => $id) {
+                            $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+                        }
                         $query = [
-                            'bool'=>[
-                                'must' => [
-                                    ['match'=> ['name' => $words],],
-                                    ['term' => ['dev_type'=>1]],
+                            'function_score' => [
+                                'query' => [
+                                    'bool'=>[
+                                        'must' => [
+                                            ['terms' => ['id'=>$ids]],
+                                        ]
+                                    ]
+                                ],
+                                'script_score' => [
+                                    'script' => [
+                                        'params' => [
+                                            'scoring' => $idParams
+                                        ],
+                                        'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                    ]
                                 ]
                             ]
                         ];
+
                     }
-                    $searchParams = [
-                        'index' => 'video_index',
-                        'body' => [
-                            'track_total_hits' => true,
-                            'size' => $perPage,
-                            'from' => $offset,
-                            '_source' => $this->videoFields,
-                            'query' => $query,
-                        ],
-                    ];
-                    $es = $this->esClient();
-                    $response = $es->search($searchParams);
-                    //Log::info('==ShortResponse==',[$response]);
-                    if(isset($response['hits']) && isset($response['hits']['hits'])){
-                        $total = $response['hits']['total']['value'];
-                        foreach ($response['hits']['hits'] as $item) {
-                            $catVideoList[] = $item['_source'];
-                        }
-                    }
-                    $res['total'] = $total;
-                    $hasMorePages = $total >= $perPage*$page;
                 }
+
+                if(!isset($query)){
+                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+                }
+                $searchParams = [
+                    'index' => 'video_index',
+                    'body' => [
+                        'track_total_hits' => true,
+                        'size' => $perPage,
+                        'from' => $offset,
+                        '_source' => $this->videoFields,
+                        'query' => $query,
+                    ],
+                ];
+                $es = $this->esClient();
+                $response = $es->search($searchParams);
+                if(isset($response['hits']) && isset($response['hits']['hits'])){
+                    $total = $response['hits']['total']['value'];
+                    foreach ($response['hits']['hits'] as $item) {
+                        $catVideoList[] = $item['_source'];
+                    }
+                }
+                $res['total'] = $total;
+                $hasMorePages = $total >= $perPage*$page;
 
                 //Log::info('==ShortList==',$catVideoList);
                 if(!empty($catVideoList)){
@@ -445,9 +320,7 @@ class VideoShortController extends Controller
                         }
 
                     }
-                    //广告
-                    //$res['list'] = $this->insertAds($res['list'],'short_video',true, $page, $perPage);
-                    //Log::info('==CatList==',$res['list']);
+
                     $res['hasMorePages'] = $hasMorePages;
                 }else{
                     $res['list'] = [];
