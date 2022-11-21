@@ -167,7 +167,7 @@ class PayController extends Controller
                 'pay_bankcode' => $channelNo,            //支付通道编码
                 'pay_notifyurl' => $notifyUrl,              //异步返回地址
                 'pay_callbackurl' => 'https://dl.yinlian66.com',     //同步返回地址
-                'pay_attach' => 'saol订单',           //订单号，值允许英文数字
+                'pay_attach' => 'HJ订单',
                 'pay_productname' => $orderInfo->id,              //订单金额,单位元保留两位小数
             ];
             //生成签名 请求参数按照Ascii编码排序
