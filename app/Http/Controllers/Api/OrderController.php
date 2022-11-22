@@ -108,10 +108,10 @@ class OrderController extends PayBaseController
 
         try {
             $number = self::getPayNumber($user->id); //订单号
-
+            $method_id = (int)$params['method_id'];
             $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : null;
-            $payEnvInfo = $this->getRechargeChannelByWeight($params['method_id'],$amount);
-            $channelNo = match ($params['method_id']){
+            $payEnvInfo = $this->getRechargeChannelByWeight($method_id,$amount);
+            $channelNo = match ($method_id){
                 1 => $payEnvInfo['zfb_code'],
                 2 => $payEnvInfo['wx_code'],
             };
