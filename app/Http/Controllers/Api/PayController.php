@@ -26,52 +26,6 @@ class PayController extends Controller
 {
     use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait,RobotTrait;
 
-    public function getRechargeChannelsByCache($payChannelType,$amount)
-    {
-        $key = 'recharge_channels_Z_'.$payChannelType;
-        $redis = $this->redis();
-        $cacheData = $redis->zRange($key,0,-1,true);
-        if(!$cacheData){
-            $items = RechargeChannels::query()->where('status',1)->where('pay_type',$payChannelType)->get(['pay_channel','weights','match_amount']);
-            $zData = [];
-            $amountIdArr = array_column($this->getRechargeAmountColums(),'id','name');
-            foreach ($items as $item){
-                if(!empty($item->match_amount)){
-                    $amountArr = (array)json_decode($item->match_amount,true);
-                    $amountIndex = $amountIdArr[$amount];
-                    if(in_array($amountIndex,$amountArr)){
-                        $zData[$item->pay_channel] = $item->weights;
-                        $redis->zAdd($key,$item->weights,$item->pay_channel);
-                        $redis->expire($key,3600);
-                    }
-                }
-            }
-            return $zData;
-        }
-        return $cacheData;
-    }
-
-    public function getRechargeChannelByWeight($payChannelType,$amount)
-    {
-        $recharge_channels = $this->getRechargeChannelsByCache($payChannelType,$amount);
-        $weight = 0;
-        $channelIds = [];
-        foreach ($recharge_channels as $pay_channel => $weights){
-            $weight += $weights;
-            for ($i=0;$i < $weights; ++$i){
-                $channelIds[] = $pay_channel;
-            }
-        }
-        $use = rand(0, $weight -1);
-        if(isset($channelIds[$use])){
-            $channelId = $channelIds[$use];
-        }else{
-            $return = $this->format(-1, [], '无可用充值渠道');
-            return response()->json($return);
-        }
-        return $this->getRechargeChannelSelector()[$channelId];
-    }
-
     private function getRechargeChannelSelector(): array
     {
         $cacheData = self::rechargeChannelCache();
@@ -84,7 +38,7 @@ class PayController extends Controller
         $orderInfo = DB::connection('master_mysql')->table('orders')->find($validated['pay_id']);
         $payChannelType = (int)$validated['type'];
 
-        $payEnvInfo = $this->getRechargeChannelByWeight($payChannelType,$orderInfo->amount);
+        $payEnvInfo = $this->getRechargeChannelById($orderInfo->pay_method);
         $payName = $payEnvInfo['name'];
 
         if (!$orderInfo) {
@@ -97,12 +51,7 @@ class PayController extends Controller
         $mercId = $payEnvInfo['merchant_id'];
         $domain = env('PAY_DOMAIN','https://' .$_SERVER['HTTP_HOST']);
         $notifyUrl = $domain . $payEnvInfo['notify_url'];
-        $channelNo = match ($payChannelType){
-            1 => $payEnvInfo['zfb_code'],
-            2 => $payEnvInfo['wx_code'],
-        };
         Log::info($payName.'_pay_url===', [$payEnvInfo['pay_url']]);//三方参数日志
-        Order::query()->where('id',$orderInfo->id)->update(['pay_channel_code'=>$channelNo,'pay_method'=>$payEnvInfo['id']]);
 
         return [
             'payName' => $payName,
@@ -110,7 +59,7 @@ class PayController extends Controller
             'order_info' => $orderInfo,
             'notifyUrl' => $notifyUrl,
             'merchId' => $mercId,
-            'channelNo' => $channelNo,
+            'channelNo' => $orderInfo->pay_channel_code,
             'pay_url' => $payEnvInfo['pay_url'],
             'pay_type' => $payChannelType,
             'pay_method' => $payEnvInfo['id'],

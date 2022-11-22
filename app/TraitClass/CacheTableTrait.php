@@ -8,6 +8,19 @@ use Illuminate\Support\Facades\Cache;
 
 trait CacheTableTrait
 {
+    public function getRechargeChannelById($id): array
+    {
+        $key = 'recharge_channel_'.$id;
+        $redis = $this->redis();
+        $cacheData = $redis->hGetAll($key);
+        if(!$cacheData){
+            $cacheData = (array)RechargeChannel::query()->where('id',$id)->first();
+            $redis->hMSet($key,$cacheData);
+            $redis->expire($key,3600);
+        }
+        return $cacheData;
+    }
+
     public static function rechargeChannelCache()
     {
         $key = 'recharge_channel';

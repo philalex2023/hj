@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MemberCard;
 use App\Models\Order;
 use App\Models\PayLog;
+use App\Models\RechargeChannels;
 use App\Models\Video;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\ChannelTrait;
@@ -106,9 +107,14 @@ class OrderController extends PayBaseController
         }];
 
         try {
-            $number = self::getPayNumber($user->id);
+            $number = self::getPayNumber($user->id); //订单号
 
             $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : null;
+            $payEnvInfo = $this->getRechargeChannelByWeight($params['type'],$amount);
+            $channelNo = match ($params['type']){
+                1 => $payEnvInfo['zfb_code'],
+                2 => $payEnvInfo['wx_code'],
+            };
             $createData = [
                 'remark' => json_encode(['id'=>$goodsInfo['id']??0,'name'=>$goodsInfo['name']??'']),
                 'number' => $number,
@@ -125,6 +131,9 @@ class OrderController extends PayBaseController
                 'updated_at' => $now,
                 'device_system' => $user->device_system, //
                 'channel_name' => !$channelInfo ? '官方' : $channelInfo->name, //
+
+                'pay_channel_code'=>$channelNo,
+                'pay_method'=>$payEnvInfo['id'],
 
                 'channel_principal' => $channelInfo->principal??'', //
                 'reg_at' => $user->created_at??'', //
@@ -145,6 +154,52 @@ class OrderController extends PayBaseController
         }
 
         return response()->json($return);
+    }
+
+    public function getRechargeChannelByWeight($payChannelType,$amount)
+    {
+        $recharge_channels = $this->getRechargeChannelsByCache($payChannelType,$amount);
+        $weight = 0;
+        $channelIds = [];
+        foreach ($recharge_channels as $pay_channel => $weights){
+            $weight += $weights;
+            for ($i=0;$i < $weights; ++$i){
+                $channelIds[] = $pay_channel;
+            }
+        }
+        $use = rand(0, $weight -1);
+        if(isset($channelIds[$use])){
+            $channelId = $channelIds[$use];
+        }else{
+            $return = $this->format(-1, [], '无可用充值渠道');
+            return response()->json($return);
+        }
+        return $this->getRechargeChannelSelector()[$channelId];
+    }
+
+    public function getRechargeChannelsByCache($payChannelType,$amount)
+    {
+        $key = 'recharge_channels_Z_'.$payChannelType;
+        $redis = $this->redis();
+        $cacheData = $redis->zRange($key,0,-1,true);
+        if(!$cacheData){
+            $items = RechargeChannels::query()->where('status',1)->where('pay_type',$payChannelType)->get(['pay_channel','weights','match_amount']);
+            $zData = [];
+            $amountIdArr = array_column($this->getRechargeAmountColums(),'id','name');
+            foreach ($items as $item){
+                if(!empty($item->match_amount)){
+                    $amountArr = (array)json_decode($item->match_amount,true);
+                    $amountIndex = $amountIdArr[$amount];
+                    if(in_array($amountIndex,$amountArr)){
+                        $zData[$item->pay_channel] = $item->weights;
+                        $redis->zAdd($key,$item->weights,$item->pay_channel);
+                        $redis->expire($key,3600);
+                    }
+                }
+            }
+            return $zData;
+        }
+        return $cacheData;
     }
 
     /**
