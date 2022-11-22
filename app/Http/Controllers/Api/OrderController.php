@@ -202,6 +202,12 @@ class OrderController extends PayBaseController
         return $cacheData;
     }
 
+    private function getRechargeChannelSelector(): array
+    {
+        $cacheData = self::rechargeChannelCache();
+        return array_column($cacheData->toArray(),null,'id');
+    }
+
     /**
      * 订单查询接口
      * @param Request $request

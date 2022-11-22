@@ -26,12 +26,6 @@ class PayController extends Controller
 {
     use PayTrait,ApiParamsTrait,IpTrait,PaySignVerifyTrait,RobotTrait;
 
-    private function getRechargeChannelSelector(): array
-    {
-        $cacheData = self::rechargeChannelCache();
-        return array_column($cacheData->toArray(),null,'id');
-    }
-
     public function getPayParams($validated)
     {
 
