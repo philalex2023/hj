@@ -193,7 +193,7 @@ class OrderController extends PayBaseController
                     if(in_array($amountIndex,$amountArr)){
                         $zData[$item->pay_channel] = $item->weights;
                         $redis->zAdd($key,$item->weights,$item->pay_channel);
-                        $redis->expire($key,3600);
+                        $redis->expire($key,14400);
                     }
                 }
             }
