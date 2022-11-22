@@ -44,7 +44,7 @@ class OrderController extends PayBaseController
             return response()->json(['state' => -1, 'msg' => '当前用户较多,请稍候重试']);
         }
         //一小时10次拉起未付的用户,一小时后才能发起订单 todo
-        $redis = $this->redis();
+        $redis = $this->redis('login');
         $unpaidKey = 'unpaid_user_'.$user->id;
         $hourAgo = strtotime('-1 hour');
         $nowTime = time();
