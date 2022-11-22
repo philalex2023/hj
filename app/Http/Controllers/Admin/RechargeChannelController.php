@@ -238,8 +238,9 @@ class RechargeChannelController extends BaseCurlController
      */
     protected function afterSaveSuccessEvent($model, $id = ''): mixed
     {
-        //设置缓存
+        //清除缓存
         Cache::forget('recharge_channel');
+        $this->redis()->del('recharge_channel_'.$id);
         return $model;
     }
 }
