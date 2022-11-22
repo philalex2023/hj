@@ -28,7 +28,7 @@ trait CacheTableTrait
         if(!$cacheData){
             $lock = Cache::lock($key.'_lock',5);
             $cacheData = RechargeChannel::query()->where('status',1)->get();
-            Cache::put($key,$cacheData,3600) && $lock->release();
+            Cache::put($key,$cacheData,14400) && $lock->release();
         }
         return $cacheData;
     }

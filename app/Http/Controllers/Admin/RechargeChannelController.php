@@ -239,8 +239,7 @@ class RechargeChannelController extends BaseCurlController
     protected function afterSaveSuccessEvent($model, $id = ''): mixed
     {
         //设置缓存
-        $cacheData = RechargeChannel::query()->where('status',1)->get();
-        Cache::forever('recharge_channel',$cacheData);
+        Cache::forget('recharge_channel');
         return $model;
     }
 }
