@@ -16,7 +16,7 @@ trait CacheTableTrait
         if(!$cacheData){
             $cacheData = RechargeChannel::query()->where('id',$id)->first()->toArray();
             $redis->hMSet($key,$cacheData);
-            $redis->expire($key,3600);
+            $redis->expire($key,14400);
         }
         return $cacheData;
     }
