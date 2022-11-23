@@ -264,6 +264,12 @@ class CommContentController extends Controller
             $communityBbsList = $redis->hGetAll($bbsItemKey)??[];
             if(!$communityBbsList){
                 $model = DB::table('community_bbs')->where('id',$id)->first();
+                if(!$model){
+                    return response()->json([
+                        'state' => 0,
+                        'data' => ['list'=>[],'hasMorePages'=>false]
+                    ]);
+                }
                 $this->resetBBSItem($model);
                 //$communityBbsList = $redis->hGetAll($bbsItemKey)??[];
                 $communityBbsList = $model->toArray();

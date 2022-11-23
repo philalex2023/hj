@@ -22,6 +22,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 
 class SearchController extends Controller
@@ -421,11 +422,14 @@ class SearchController extends Controller
                 }
             }
 
-            foreach ($videoTag as $k => $t){
-                $item = ['id'=>(int)$k,'name'=>$t];
-                $tags[] = $item;
-                $redis->zAdd($key,1,json_encode($item,JSON_UNESCAPED_UNICODE));
-            }
+            Redis::pipeline(function ($pipe) use ($videoTag,$key,&$tags) {
+                foreach ($videoTag as $k => $t){
+                    $item = ['id'=>(int)$k,'name'=>$t];
+                    $tags[] = $item;
+                    $pipe->zAdd($key,1,json_encode($item,JSON_UNESCAPED_UNICODE));
+                }
+            });
+
             //$redis->expire($key,24*3600);
             $redis->del($freshKey);
         }else{
