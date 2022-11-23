@@ -606,11 +606,7 @@ class MemberController extends BaseCurlController
 
     /*public function deleteGetData($model, array $ids)
     {
-        $didArr = $model->whereIn('id',$ids)->pluck('did');
-        $accountRedis = $this->redis('account');
-        foreach ($didArr as $did) {
-            $accountRedis->sRem('account_did',$did);
-        }
+
     }*/
 
     //弹窗大小
