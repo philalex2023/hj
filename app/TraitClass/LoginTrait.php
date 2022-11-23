@@ -70,12 +70,17 @@ trait LoginTrait
         return $test_ds;
     }
 
-    public function getDidFromDb($did)
+    public function getDidFromDb($did,$loginRedis)
     {
+        //$this->redis()->exists();
         /*$ids = Live::query()->where('status',1)->pluck('id')->all();
         $this->redis()->sAddArray('fakeLiveIdsCollection',$ids);*/
-        $didArr = User::query()->pluck('did')->all();
-        $this->redis('login')->sAddArray('account_did',$didArr);
+//        $didArr = User::query()->pluck('did')->all();
+//        $this->redis('login')->sAddArray('account_did',$didArr);
+        $has = $loginRedis->exists('login_did_'.$did);
+        if($has){
+            return $has;
+        }
         return User::query()->where('did',$did)->exists();
     }
 
