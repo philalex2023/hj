@@ -129,6 +129,7 @@ class AuthController extends Controller
         $test = $validated['test'] ?? false;
 
         $hasDid = !$loginRedis->exists('account_did') ? $this->getDidFromDb($validated['did']) : $loginRedis->sIsMember('account_did',$validated['did']);
+        Log::info('reg_test',[$hasDid]);
         $loginType = !$hasDid ? 1 : 2;
 
         $login_info = ['device_system'=>$deviceSystem,'clipboard'=>$validated['clipboard']??'','ip'=>$ip];
