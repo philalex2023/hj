@@ -121,8 +121,6 @@ class ProcessStatisticsChannelByDay implements ShouldQueue
         }
 
         //首页统计
-//        $dayData = date('Ymd');
-//        $nowTime = time();
         Redis::pipeline(function ($redis){
             $nowTime = strtotime($this->orderInfo->created_at);
             $dayData = date('Ymd',$nowTime);

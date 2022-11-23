@@ -198,12 +198,12 @@ trait PayTrait
     {
         $orderInfo = $prePayData['order_info'];
         //首页统计拉起
-        $redis = Redis::connection()->client();
-        $dayData = date('Ymd');
-        $nowTime = time();
-        $redis->zAdd('day_pull_order_'.$dayData,$nowTime,$orderInfo->id);
-        $redis->expire('day_pull_order_'.$dayData,3600*24*7);
-
+        Redis::pipeline(function ($redis) use ($orderInfo){
+            $dayData = date('Ymd');
+            $nowTime = time();
+            $redis->zAdd('day_pull_order_'.$dayData,$nowTime,$orderInfo->id);
+            $redis->expire('day_pull_order_'.$dayData,3600*24*7);
+        });
     }
 
     /**
