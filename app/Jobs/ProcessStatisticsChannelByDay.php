@@ -11,6 +11,7 @@ use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Redis;
 
 class ProcessStatisticsChannelByDay implements ShouldQueue
 {
@@ -122,39 +123,41 @@ class ProcessStatisticsChannelByDay implements ShouldQueue
         //首页统计
 //        $dayData = date('Ymd');
 //        $nowTime = time();
-        $nowTime = strtotime($this->orderInfo->created_at);
-        $dayData = date('Ymd',$nowTime);
-        if($this->orderInfo->type==1){ //VIP
-            $redis->zAdd('vip_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-            $redis->expire('vip_recharge_'.$dayData,3600*24*7);
-        } else { //金币
-            $redis->zAdd('gold_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-            $redis->expire('gold_recharge_'.$dayData,3600*24*7);
-        }
+        Redis::pipeline(function ($redis){
+            $nowTime = strtotime($this->orderInfo->created_at);
+            $dayData = date('Ymd',$nowTime);
+            if($this->orderInfo->type==1){ //VIP
+                $redis->zAdd('vip_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+                $redis->expire('vip_recharge_'.$dayData,3600*24*7);
+            } else { //金币
+                $redis->zAdd('gold_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+                $redis->expire('gold_recharge_'.$dayData,3600*24*7);
+            }
 
-        if($this->new_old_user==1){
-            $redis->zAdd('old_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-            $redis->expire('old_user_recharge_'.$dayData,3600*24*7);
-        }else{
-            $redis->zAdd('new_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-            $redis->expire('new_user_recharge_'.$dayData,3600*24*7);
-        }
+            if($this->new_old_user==1){
+                $redis->zAdd('old_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+                $redis->expire('old_user_recharge_'.$dayData,3600*24*7);
+            }else{
+                $redis->zAdd('new_user_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+                $redis->expire('new_user_recharge_'.$dayData,3600*24*7);
+            }
 
 
-        switch ($this->orderInfo->device_system){
-            case 1:
-            case 3:
-                $redis->zAdd('ios_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-                $redis->expire('ios_recharge_'.$dayData,3600*24*7);
-                break;
-            case 2:
-                $redis->zAdd('android_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-                $redis->expire('android_recharge_'.$dayData,3600*24*7);
-                break;
-        }
+            switch ($this->orderInfo->device_system){
+                case 1:
+                case 3:
+                    $redis->zAdd('ios_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+                    $redis->expire('ios_recharge_'.$dayData,3600*24*7);
+                    break;
+                case 2:
+                    $redis->zAdd('android_recharge_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+                    $redis->expire('android_recharge_'.$dayData,3600*24*7);
+                    break;
+            }
 
-        $redis->zAdd('day_inc_rec_user_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
-        $redis->expire('day_inc_rec_user_'.$dayData,3600*24*7);
+            $redis->zAdd('day_inc_rec_user_'.$dayData,$nowTime,$this->orderInfo->id.','.$this->orderInfo->amount);
+            $redis->expire('day_inc_rec_user_'.$dayData,3600*24*7);
+        });
 
     }
 }
