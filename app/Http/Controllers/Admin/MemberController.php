@@ -333,7 +333,7 @@ class MemberController extends BaseCurlController
 //                'attr' => 'data-range=true',
                 'attr' => 'data-range=~',//需要特殊分割
                 'name' => '时间范围',
-                'tips' => '默认当天',
+//                'tips' => '默认当天',
 //                'default' => $startDate . ' ~ ' . $endDate,
             ],
         ];
@@ -471,13 +471,13 @@ class MemberController extends BaseCurlController
         $findPhoneNumber = $this->rq->input('find_phone_number', null);
         $reqChannelPrincipal = $this->rq->input('query_channel_principal', null);
 
-        $query_created_at = $this->rq->input('query_created_at', null);
+        /*$query_created_at = $this->rq->input('query_created_at', null);
         if(!$query_created_at){
             $date = date('Y-m-d');
             $model = $model
                 ->where('created_at','>=',$date.' 00:00:00')
                 ->where('created_at','<=',$date.' 23:59:59');
-        }
+        }*/
 
         if($findPhoneNumber!==null){
             $model = $model->where('phone_number',$findPhoneNumber);
