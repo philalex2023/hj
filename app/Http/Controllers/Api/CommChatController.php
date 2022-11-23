@@ -19,8 +19,11 @@ class CommChatController extends Controller
     use PHPRedisTrait, ApiParamsTrait;
     public function post(Request $request)
     {
-
-        if (isset($request->params)) {
+        return response()->json([
+            'state' => -1,
+            'msg' => '暂未开放'
+        ]);
+        /*if (isset($request->params)) {
             $params = self::parse($request->params);
             Validator::make($params, [
                 'to_user_id' => 'required|integer',
@@ -86,7 +89,7 @@ class CommChatController extends Controller
             ]);
 
         }
-        return [];
+        return [];*/
     }
 
     /**
@@ -97,7 +100,11 @@ class CommChatController extends Controller
      */
     public function lists(Request $request)
     {
-        if (isset($request->params)) {
+        return response()->json([
+            'state' => 0,
+            'data' => ['list'=>[],'hasMorePages'=>false]
+        ]);
+        /*if (isset($request->params)) {
             $params = self::parse($request->params);
             //Log::info('===CommChat===',[$params]);
             Validator::make($params, [
@@ -159,6 +166,6 @@ class CommChatController extends Controller
                 'data' => $res
             ]);
         }
-        return [];
+        return [];*/
     }
 }
