@@ -441,7 +441,6 @@ class VideoController extends BaseCurlController
     protected function afterSaveSuccessEvent($model, $id = '')
     {
         Cache::forget('cachedVideoById.'.$model->id);
-        $this->redis()->set('freshTag_'.$model->type,1);
         return $model;
     }
 
@@ -875,9 +874,7 @@ class VideoController extends BaseCurlController
                     $buildQueryVideo = Video::query()->whereIn($id, $id_arr);
                     $tagPluck = DB::table('tag')->whereIn('id',$value_arr)->pluck('name','id');
                     $buildQueryVideo->update(['tag'=>json_encode($value_arr),'tag_kv'=>json_encode($tagPluck)]);
-                    /*$redis = $this->redis();
-                    $redis->set('freshTag_1',1);
-                    $redis->set('freshTag_3',1);*/
+
                     $r=true;
                     break;
                 case 'batch_topic':

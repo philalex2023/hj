@@ -409,7 +409,7 @@ class SearchController extends Controller
         $redis = $this->redis();
         $tagFromRedis = (array) $redis->zRevRangeByScore($key,0,-1);
         $tags = [];
-        if($redis->get($freshKey)==1 || empty($tagFromRedis)){
+        if(!$redis->get($freshKey) || empty($tagFromRedis)){
             $videoAll = DB::table('video')->where('status',1)->where('dev_type',$project)->get(['tag_kv']);
             $tagAll = DB::table('tag')->pluck('name','id')->all();
             $videoTag = [];
@@ -422,16 +422,16 @@ class SearchController extends Controller
                 }
             }
 
-            Redis::pipeline(function ($pipe) use ($videoTag,$key,&$tags) {
+            Redis::pipeline(function ($pipe) use ($videoTag,$key,&$tags,$freshKey) {
                 foreach ($videoTag as $k => $t){
                     $item = ['id'=>(int)$k,'name'=>$t];
                     $tags[] = $item;
                     $pipe->zAdd($key,1,json_encode($item,JSON_UNESCAPED_UNICODE));
                 }
+                $pipe->set($freshKey,1);
+                $pipe->expire($freshKey,3600);
             });
 
-            //$redis->expire($key,24*3600);
-            $redis->del($freshKey);
         }else{
             $tagFromRedisKeys = array_keys($tagFromRedis);
             foreach ($tagFromRedisKeys as $r){
