@@ -72,14 +72,14 @@ trait LoginTrait
 
     public function getDidFromDb($did,$loginRedis)
     {
-        if(!$loginRedis->setnx('reg_lock_test',1)){
+        if(!$loginRedis->setnx('lock_login_did',1)){
             return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
         }
         /*$ids = Live::query()->where('status',1)->pluck('id')->all();
         $this->redis()->sAddArray('fakeLiveIdsCollection',$ids);*/
         $didArr = User::query()->pluck('did')->all();
         $loginRedis->sAddArray('account_did',$didArr);
-        $loginRedis->del('reg_lock');
+        $loginRedis->del('lock_login_did');
         return User::query()->where('did',$did)->exists();
     }
 
