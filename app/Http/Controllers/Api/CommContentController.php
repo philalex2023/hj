@@ -272,7 +272,7 @@ class CommContentController extends Controller
                 }
                 $this->resetBBSItem($model);
                 //$communityBbsList = $redis->hGetAll($bbsItemKey)??[];
-                $communityBbsList = $model->toArray();
+                $communityBbsList = (array)$model;
             }
             $communityBbsList['category_id'] = (int)($communityBbsList['category_id'] ?? 0);
             $communityBbsList['likes'] = (int)$communityBbsList['likes'];
