@@ -83,7 +83,6 @@ class AuthController extends Controller
         $user->channel_pid = $bindInfo['channel_pid'];
         $user->save();
 
-        //$loginRedis->sAdd('account_did',$validated['did']);
         $loginRedis->set('login_did_'.$validated['did'],1);
         $loginRedis->expire('login_did_'.$validated['did'],600);
         $loginRedis->incr('account_v');
@@ -130,7 +129,6 @@ class AuthController extends Controller
 
         $test = $validated['test'] ?? false;
 
-//        $hasDid = !$loginRedis->exists('account_did') ? $this->getDidFromDb($validated['did']) : $loginRedis->sIsMember('account_did',$validated['did']);
         $hasDid = $this->getDidFromDb($validated['did'],$loginRedis);
         $loginType = !$hasDid ? 1 : 2;
 
