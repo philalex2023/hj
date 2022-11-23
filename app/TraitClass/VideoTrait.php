@@ -211,49 +211,6 @@ AV-海角伙伴
 
     }
 
-    public function resetRedisCatVideo($cats,$vid)
-    {
-        $redis = $this->redis();
-        $allCats = $this->getCats();
-        foreach ($allCats as $allCat){
-            $redis->sRem('catForVideo:'.$allCat['id'],$vid);
-        }
-        foreach ($cats as $cat)
-        {
-            $redis->sAdd('catForVideo:'.$cat,$vid);
-        }
-    }
-
-    /*public function resetRedisTagVideo($tags,$vid)
-    {
-        $redis = $this->redis();
-        $allTags = $this->getTagData();
-        foreach ($allTags as $allTag){
-            $redis->sRem('tagForVideo:'.$allTag['id'],$vid);
-        }
-        foreach ($tags as $tag)
-        {
-            $redis->sAdd('tagForVideo:'.$tag,$vid);
-        }
-    }*/
-
-    public function syncMiddleSectionTable()
-    {
-        try {
-            $Video = DB::table('video')->where('status',1)->get(['id','cat']);
-            foreach ($Video as $item)
-            {
-                $catArr = $item->cat ? @json_decode($item->cat) : [];
-                if(!empty($catArr)){
-                    $this->resetRedisCatVideo($catArr,$item->id);
-                }
-            }
-        }catch (Exception $e){
-            Log::error('syncMiddleSectionTable==='.$e->getMessage());
-        }
-
-    }
-
     public function syncMiddleTagTable()
     {
 //        DB::beginTransaction();

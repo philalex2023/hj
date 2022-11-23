@@ -2,7 +2,6 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Jobs\ProcessSyncMiddleSectionTable;
 use App\Models\AdminVideo;
 use App\Models\DataSource;
 use App\Models\Topic;
@@ -869,8 +868,6 @@ class VideoController extends BaseCurlController
                     $value_arr = explode(',',$value);
                     $buildQueryVideo = Video::query()->whereIn($id, $id_arr);
                     $buildQueryVideo->update(['cat'=>json_encode($value_arr),'is_top'=>0]);
-                    //队列执行更新版块中间表
-                    ProcessSyncMiddleSectionTable::dispatchAfterResponse();
                     $r=true;
                     break;
                 case 'tag':
