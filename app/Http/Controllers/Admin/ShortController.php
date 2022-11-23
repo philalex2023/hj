@@ -1,16 +1,11 @@
 <?php
 namespace App\Http\Controllers\Admin;
 
-use App\Jobs\ProcessResetRedisShortVideo;
-use App\Jobs\ProcessShort;
-use App\Jobs\ProcessSyncMiddleTagTable;
-use App\Jobs\ProcessVideoShort;
 use App\Jobs\ProcessVideoShortMod;
 use App\Models\AdminVideo;
 use App\Models\AdminVideoShort;
 use App\Models\Category;
 use App\Models\Video;
-use App\Models\VideoShort;
 use App\Services\UiService;
 use App\TraitClass\CatTrait;
 use App\TraitClass\GoldTrait;
@@ -302,29 +297,6 @@ class ShortController extends BaseCurlController
         $item->type = UiService::switchTpl('type', $item,'','长|短');
         $item->restricted = $this->restrictedType[$item->restricted]['name'];
         return $item;
-    }
-
-    protected function afterSaveSuccessEvent($model, $id = '')
-    {
-        // 更新redis
-
-        /*$isVideo = ($_REQUEST['callback_upload']??0);
-        if($isVideo){
-            $job = new ProcessVideoShort($model);
-            $this->dispatch($job->onQueue('high'));
-        }else{
-            $redisJob =  new ProcessResetRedisShortVideo($model);
-            $this->dispatch($redisJob->onQueue('high'));
-        }
-        $this->resetRedisVideoShort($model,true);
-        $redis = $this->redis();
-        foreach ($redis->keys('*shortVideoIdsCollections*') as $key){
-            $redis->del($key);
-        }
-        foreach ($redis->keys('*shortVideoForUser*') as $k){
-            $redis->del($k);
-        }*/
-        return $model;
     }
 
     public function beforeSaveEvent($model, $id = '')
