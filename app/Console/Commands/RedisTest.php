@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Models\User;
 use App\TraitClass\CurlTrait;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Console\Command;
@@ -43,7 +44,7 @@ class RedisTest extends Command
      */
     public function handle(): int
     {
-        Redis::pipeline(function ($pipe) {
+        /*Redis::pipeline(function ($pipe) {
             $pipe->select(7);
             for ($i = 0; $i < 2; $i++) {
                 $pipe->set("testKey1:$i", $i);
@@ -52,8 +53,9 @@ class RedisTest extends Command
             for ($i = 0; $i < 2; $i++) {
                 $pipe->set("testKey2:$i", $i);
             }
-        });
-
+        });*/
+        $didArr = User::query()->pluck('did')->all();
+        $this->redis('login')->sAddArray('account_did',$didArr);
         return 0;
     }
 }
