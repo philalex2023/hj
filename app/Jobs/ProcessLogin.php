@@ -85,9 +85,10 @@ class ProcessLogin implements ShouldQueue
             $pipe->select(2);
             $pipe->zAdd($keepUidKey, $time, $date);
             $pipe->expire($keepUidKey,10*3600*24);
-            $keepUser = $pipe->zRange($keepUidKey,0,-1,true);
-//            $redis = $this->redis();
-            $pipe->select(0);
+        });
+
+        $keepUser = $this->redis('user')->zRange($keepUidKey,0,-1,true);
+        Redis::pipeline(function ($pipe) use ($keepUser,$statistic_day_key,$dayData,$uid){
             for ($i=1;$i<11;++$i){
                 $keyDate = date('Y-m-d',strtotime('-'.$i.' day'));
                 if(isset($keepUser[$keyDate])){
@@ -129,7 +130,6 @@ class ProcessLogin implements ShouldQueue
                 DB::table('users')->where('id',$uid)->increment('login_numbers');
             }
         });
-
 
         //记录登录日志
         /*$this->loginLogData['area'] = $areaJson;
