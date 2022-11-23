@@ -263,7 +263,7 @@ class CommContentController extends Controller
             $bbsItemKey = 'communityBbsItem:'.$id;
             $communityBbsList = $redis->hGetAll($bbsItemKey)??[];
             if(!$communityBbsList){
-                $model = DB::table('community_bbs')->find($id);
+                $model = CommBbs::query()->where('id',$id)->first();
                 if(!$model){
                     return response()->json([
                         'state' => 0,
@@ -271,7 +271,7 @@ class CommContentController extends Controller
                     ]);
                 }
                 $this->resetBBSItem($model);
-                $communityBbsList = $model;
+                $communityBbsList = $model->toArray();
             }
             $communityBbsList['category_id'] = (int)($communityBbsList['category_id'] ?? 0);
             $communityBbsList['likes'] = (int)$communityBbsList['likes'];
