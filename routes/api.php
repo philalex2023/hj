@@ -108,8 +108,6 @@ Route::group([
     Route::post('commChatPost', 'CommChatController@post');  //私聊-发送消息
     Route::post('commRes', 'CommMiscController@res');  //发送资源
     Route::post('commBbs', 'CommContentController@post');  //发贴
-    Route::post('commBbsBuyGame', 'CommContentController@buy');  //购买游戏
-    Route::get('commBbsGameDetail', 'CommContentController@bbsGameDetail');  //购买游戏
 
     /// 小视频模块
     Route::get('shortCate', 'VideoShortController@cate');  //视频分类

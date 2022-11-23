@@ -112,8 +112,7 @@ class ProcessLogin implements ShouldQueue
 //        LoginLog::query()->create($this->loginLogData);
         //首页统计
         $nowTime = time();
-        /*$redis->sAdd('active_user_'.$dayData,$uid);
-        $redis->expire('active_user_'.$dayData,3600*24*7);*/
+
         $redis->zAdd('at_user_'.$dayData,$nowTime,$uid);
         $redis->expire('at_user_'.$dayData,3600*24*7);
 

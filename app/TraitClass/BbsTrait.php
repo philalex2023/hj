@@ -157,5 +157,6 @@ trait BbsTrait
             'vipLevel'=>$model->author_vip,
             'member_card_type'=>$model->author_member_card_type,
         ]);
+        $redis->expire($listKey,14400);
     }
 }

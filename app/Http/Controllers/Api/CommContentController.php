@@ -178,41 +178,6 @@ class CommContentController extends Controller
     /**
      * @throws \Illuminate\Validation\ValidationException
      */
-    public function bbsGameDetail(Request $request): JsonResponse
-    {
-        if(!isset($request->params)){
-            return response()->json([]);
-        }
-        $validated = Validator::make(self::parse($request->params), [
-            'id' => 'integer',
-        ])->validated();
-        $hashValue = $this->redis()->hGetAll('communityBbsItem:'.$validated['id']);
-        $user = $request->user();
-
-        $queryParam = http_build_query([
-            'account' => $user->account,
-            'nickname' => $user->nickname,
-            'id' =>  $user->id
-        ]);
-        $res = [
-            'down' => [
-                [
-                    'download_url'=>$hashValue['wy_download_url']??'',
-                    'get_code'=>$hashValue['wy_get_code']??'',
-                ],
-                [
-                    'download_url'=>$hashValue['ali_download_url']??'',
-                    'get_code'=>$hashValue['ali_get_code']??'',
-                ],
-            ],
-            'kf_url'=>'https://vm.daneviolda.com/1wyai8j871j3z054rryao48w7g?'.$queryParam
-        ];
-        return response()->json(['state' => 0, 'data' =>$res]);
-    }
-
-    /**
-     * @throws \Illuminate\Validation\ValidationException
-     */
     public function buy(Request $request): JsonResponse
     {
         if(!isset($request->params)){
@@ -238,6 +203,11 @@ class CommContentController extends Controller
         }
 
         $hashValue = $redis->hGetAll('communityBbsItem:'.$validated['id']);
+        if(!$hashValue){
+            $model = DB::table('community_bbs')->where('id',$validated['id'])->first();
+            $this->resetBBSItem($model);
+            $hashValue = $model->toArray();
+        }
         $gameGold = $validated['id']==0 ? $this->getAllGameNeedGold() : $hashValue['game_gold'];
         $userGold = $user->gold;
         if($userGold<$gameGold){
@@ -295,7 +265,8 @@ class CommContentController extends Controller
             if(!$communityBbsList){
                 $model = DB::table('community_bbs')->where('id',$id)->first();
                 $this->resetBBSItem($model);
-                $communityBbsList = $redis->hGetAll($bbsItemKey)??[];
+                //$communityBbsList = $redis->hGetAll($bbsItemKey)??[];
+                $communityBbsList = $model->toArray();
             }
             $communityBbsList['category_id'] = (int)($communityBbsList['category_id'] ?? 0);
             $communityBbsList['likes'] = (int)$communityBbsList['likes'];
@@ -317,9 +288,6 @@ class CommContentController extends Controller
             $result['category_id'] = $communityBbsList['category_id'];
             $result['user_id'] = $communityBbsList['user_id'] ?? 0;
             //统计在线
-            $videoRedis = $this->redis('video');
-            /*$videoRedis->sAdd('onlineUser_'.date('Ymd'),$uid);
-            $videoRedis->expire('onlineUser',3600*24);*/
             $dayData = date('Ymd');
 
             $redis->zAdd('online_user_'.$dayData,time(),$uid);
