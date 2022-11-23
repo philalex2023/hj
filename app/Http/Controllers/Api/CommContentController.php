@@ -278,14 +278,13 @@ class CommContentController extends Controller
             $communityBbsList['comments'] = (int)$communityBbsList['comments'];
             $communityBbsList['rewards'] = (int)$communityBbsList['rewards'];
             $communityBbsList['game_gold'] = (int)$communityBbsList['game_gold'];
-            $communityBbsList['user_id'] = (int)$communityBbsList['user_id'];
+            $communityBbsList['user_id'] = (int)$communityBbsList['author_id'];
+            $communityBbsList['uid'] = (int)$communityBbsList['author_id'];
             $communityBbsList['is_office'] = (int)$communityBbsList['is_office'];
             $communityBbsList['official_type'] = (int)($communityBbsList['official_type']??0);
             $communityBbsList['sex'] = (int)$communityBbsList['sex'];
             $communityBbsList['level'] = (int)$communityBbsList['level'];
             $communityBbsList['vipLevel'] = (int)$communityBbsList['vipLevel'];
-            $communityBbsList['user_id'] = (int)$communityBbsList['user_id'];
-            $communityBbsList['uid'] = $communityBbsList['user_id'];
 
             $help = $this->redis()->hGet('common_cate_help', 'c_'.$communityBbsList['category_id']);
             $handleResult = $this->proProcessData($uid, [0=>$communityBbsList], $help, true);
