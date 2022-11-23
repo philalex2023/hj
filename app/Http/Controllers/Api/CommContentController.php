@@ -270,16 +270,15 @@ class CommContentController extends Controller
                         'data' => ['list'=>[],'hasMorePages'=>false]
                     ]);
                 }
-                $this->resetBBSItem($model);
-                $communityBbsList = $model->toArray();
+                $communityBbsList = $this->resetBBSItem($model,true);
             }
             $communityBbsList['category_id'] = (int)($communityBbsList['category_id'] ?? 0);
             $communityBbsList['likes'] = (int)$communityBbsList['likes'];
             $communityBbsList['comments'] = (int)$communityBbsList['comments'];
             $communityBbsList['rewards'] = (int)$communityBbsList['rewards'];
             $communityBbsList['game_gold'] = (int)$communityBbsList['game_gold'];
-            $communityBbsList['user_id'] = (int)$communityBbsList['author_id'];
-            $communityBbsList['uid'] = (int)$communityBbsList['author_id'];
+            $communityBbsList['user_id'] = (int)$communityBbsList['user_id'];
+            $communityBbsList['uid'] = (int)$communityBbsList['user_id'];
             $communityBbsList['is_office'] = (int)$communityBbsList['is_office'];
             $communityBbsList['official_type'] = (int)($communityBbsList['official_type']??0);
             $communityBbsList['sex'] = (int)$communityBbsList['sex'];

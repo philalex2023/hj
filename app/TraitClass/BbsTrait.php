@@ -125,11 +125,11 @@ trait BbsTrait
         return $list;
     }
 
-    public function resetBBSItem($model)
+    public function resetBBSItem($model,$return=false)
     {
         $redis = $this->redis();
         $listKey = 'communityBbsItem:'.$model->id;
-        $redis->hMSet($listKey,[
+        $data = [
             'id'=>$model->id,
             'category_id'=>$model->category_id,
             'content'=>$model->content,
@@ -156,7 +156,11 @@ trait BbsTrait
             'level'=>$model->author_level,
             'vipLevel'=>$model->author_vip,
             'member_card_type'=>$model->author_member_card_type,
-        ]);
+        ];
+        $redis->hMSet($listKey,$data);
         $redis->expire($listKey,14400);
+        if($return){
+            return $data;
+        }
     }
 }
