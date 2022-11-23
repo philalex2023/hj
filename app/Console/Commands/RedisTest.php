@@ -43,8 +43,8 @@ class RedisTest extends Command
      */
     public function handle(): int
     {
-        Redis::connection('test');
         Redis::pipeline(function ($pipe) {
+            $pipe->select(7);
             for ($i = 0; $i < 10; $i++) {
                 $pipe->set("testKey:$i", $i);
             }
