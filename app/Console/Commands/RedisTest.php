@@ -56,6 +56,7 @@ class RedisTest extends Command
         });*/
         $didArr = User::query()->pluck('did')->all();
         $this->redis('login')->sAddArray('account_did',$didArr);
+        $this->info('total:'.count($didArr));
         return 0;
     }
 }
