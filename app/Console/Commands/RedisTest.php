@@ -43,18 +43,17 @@ class RedisTest extends Command
      */
     public function handle(): int
     {
-        /*Redis::pipeline(function ($pipe) {
+        Redis::pipeline(function ($pipe) {
             $pipe->select(7);
-            for ($i = 0; $i < 10; $i++) {
-                $pipe->set("testKey:$i", $i);
+            for ($i = 0; $i < 2; $i++) {
+                $pipe->set("testKey1:$i", $i);
             }
-        });*/
-        $redis = $this->redis('test');
-        $redis->pipeline()->multi();
-        for ($i = 0; $i < 3; $i++) {
-            $redis->set("testKey1:$i", $i);
-        }
-        $redis->exec();
+            $pipe->select(8);
+            for ($i = 0; $i < 2; $i++) {
+                $pipe->set("testKey2:$i", $i);
+            }
+        });
+
         return 0;
     }
 }
