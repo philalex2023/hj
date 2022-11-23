@@ -79,7 +79,7 @@ trait LoginTrait
         /*$ids = Live::query()->where('status',1)->pluck('id')->all();
         $this->redis()->sAddArray('fakeLiveIdsCollection',$ids);*/
         $didArr = User::query()->pluck('did')->all();
-        Log::info('==BindChannelUserClipboard==',[count($didArr)]);
+        Log::info('==getDidFromDb==',[count($didArr)]);
         $loginRedis->sAddArray('account_did',$didArr);
         $loginRedis->del('lock_login_did');
         return User::query()->where('did',$did)->exists();
