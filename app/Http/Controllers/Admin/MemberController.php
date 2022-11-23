@@ -471,13 +471,14 @@ class MemberController extends BaseCurlController
         $findPhoneNumber = $this->rq->input('find_phone_number', null);
         $reqChannelPrincipal = $this->rq->input('query_channel_principal', null);
 
-        /*$query_created_at = $this->rq->input('query_created_at', null);
+        $query_created_at = $this->rq->input('query_created_at', null);
         if(!$query_created_at){
-            $date = date('Y-m-d');
-            $model = $model
+            /* $date = date('Y-m-d');
+             $model = $model
                 ->where('created_at','>=',$date.' 00:00:00')
-                ->where('created_at','<=',$date.' 23:59:59');
-        }*/
+                ->where('created_at','<=',$date.' 23:59:59');*/
+            $model = $model->where('created_at','>=','2022-09-07 00:00:00');
+        }
 
         if($findPhoneNumber!==null){
             $model = $model->where('phone_number',$findPhoneNumber);
