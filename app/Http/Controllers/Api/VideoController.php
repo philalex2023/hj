@@ -20,6 +20,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
@@ -31,11 +32,11 @@ class VideoController extends Controller
     {
         $vid = $video['id'];
         $uid = $user->id;
-        $videoRedis = $this->redis('video');
+        //$videoRedis = $this->redis('video');
         $view_history_key = 'view_history_'.$uid;
-        DB::table('video')->where('id',$vid)->increment('views'); //增加该视频播放次数
+        $video['limit'] == 0 && DB::table('video')->where('id',$vid)->increment('views'); //增加该视频播放次数
         //up主统计
-        if($video['type'] == 4){
+        if($video['limit'] == 0 && $video['type'] == 4){
             $time = time();
             $upIncomeBuild = DB::table('up_play_day')->where('uid',$video['uid'])->where('at_time',$time);
             if(!$upIncomeBuild->exists()){
@@ -50,17 +51,19 @@ class VideoController extends Controller
             }
 
         }
-        //统计在线
-        $dayData = date('Ymd');
-        $videoRedis->zAdd('online_user_'.$dayData,time(),$uid);
-        $videoRedis->expire('online_user_'.$dayData,3600*24*7);
-        $redis = $this->redis();
-        $redis->zAdd('online_user_'.$dayData,time(),$uid);
-        $redis->expire('online_user_'.$dayData,3600*24*7);
 
-        //插入历史记录
-        $videoRedis->zAdd($view_history_key,time(),$vid);
-        $videoRedis->expire($view_history_key,7*24*3600);
+        Redis::pipeline(function ($pipe) use ($uid,$vid,$view_history_key){
+            //统计在线
+            $dayData = date('Ymd');
+            $pipe->zAdd('online_user_'.$dayData,time(),$uid);
+            $pipe->expire('online_user_'.$dayData,3600*24*7);
+
+            //插入历史记录
+            $pipe->select(3);
+            $pipe->zAdd($view_history_key,time(),$vid);
+            $pipe->expire($view_history_key,7*24*3600);
+        });
+
         if($user->long_vedio_times>0){//统计激活
             $configData = config_cache('app');
             $setTimes = $configData['free_view_long_video_times'] ?? 0;
