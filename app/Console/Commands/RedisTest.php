@@ -56,12 +56,12 @@ class RedisTest extends Command
         });*/
         $didArr = User::query()->pluck('did')->all();
         $redis = $this->redis('login');
-//        $redis->pipeline();
+        $redis->pipeline();
         foreach ($didArr as $did){
-            /*$redis->ping();
-            $redis->multi();*/
+            $redis->ping();
+            $redis->multi();
             $redis->sAdd('account_did',$did);
-//            $redis->exec();
+            $redis->exec();
         }
 //        $this->redis('login')->sAddArray('account_did',$didArr);
         $this->info('total:'.count($didArr));
