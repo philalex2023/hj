@@ -466,7 +466,7 @@ class SearchController extends Controller
                     $pipe->zAdd($key,1,json_encode($item,JSON_UNESCAPED_UNICODE));
                 }
                 $pipe->set($freshKey,1);
-                $pipe->expire($freshKey,3600);
+                $pipe->expire($freshKey,14400);
             });
 
         }else{
