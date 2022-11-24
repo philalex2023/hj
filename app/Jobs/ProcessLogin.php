@@ -75,8 +75,10 @@ class ProcessLogin implements ShouldQueue
         $this->saveStatisticByDay('active_users',$this->loginLogData['channel_id'],$this->device_system);
 
 //        $userRedis = $this->redis('user');
-        $date = date('Y-m-d');
-        $dayData = date('Ymd');
+
+//        $dayData = date('Ymd');
+
+        /*$date = date('Y-m-d');
         $time = strtotime($date);
         $keepUidKey = 'keep_'.$uid;
         $statistic_day_key = 'statistic_day:'.$this->loginLogData['channel_id'].':'.$this->device_system.':'.$time;
@@ -85,12 +87,12 @@ class ProcessLogin implements ShouldQueue
             $pipe->select(2);
             $pipe->zAdd($keepUidKey, $time, $date);
             $pipe->expire($keepUidKey,10*3600*24);
-        });
+        });*/
 
-        $keepUser = $this->redis('user')->zRange($keepUidKey,0,-1,true);
-        Redis::pipeline(function ($pipe) use ($keepUser,$statistic_day_key,$dayData,$uid){
+//        $keepUser = $this->redis('user')->zRange($keepUidKey,0,-1,true);
+        Redis::pipeline(function ($pipe) use ($uid){
             $pipe->select(0);
-            for ($i=1;$i<11;++$i){
+            /*for ($i=1;$i<11;++$i){
                 $keyDate = date('Y-m-d',strtotime('-'.$i.' day'));
                 if(isset($keepUser[$keyDate])){
                     $pipe->hIncrBy($statistic_day_key,'keep_'.$i,1);
@@ -98,10 +100,10 @@ class ProcessLogin implements ShouldQueue
                     //$i==1 && $redis->incr('total_keep_1_'.$dayData) && $redis->expire('total_keep_1_'.$dayData,86400);
                     $i==1 && $pipe->zAdd('hj_keep_1_'.$dayData,time(),$uid) && $pipe->expire('hj_keep_1_'.$dayData,3600*24*7);
                 }
-            }
+            }*/
             //首页统计
             $nowTime = time();
-
+            $dayData = date('Ymd');
             $pipe->zAdd('at_user_'.$dayData,$nowTime,$uid);
             $pipe->expire('at_user_'.$dayData,3600*24*7);
 
