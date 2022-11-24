@@ -97,7 +97,7 @@ class SearchController extends Controller
                             if(!$pipe->exists($tagKey)){
                                 $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
                                 $pipe->hMset($tagKey,$nameIdArr);
-                                $pipe->expire();
+                                $pipe->expire($tagKey,14400);
                                 $id = $nameIdArr[$words] ?? 0;
                             }else{
                                 $id = $pipe->hGet($tagKey,$words);
