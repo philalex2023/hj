@@ -4,6 +4,7 @@ namespace App\TraitClass;
 
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 trait StatisticTrait
 {
@@ -101,22 +102,27 @@ trait StatisticTrait
                             }
                         }
                     }
-                    if($stepValue>0){
-                        $redis->hIncrBy($channel_day_statistics_key,'install',$stepValue);
-                        //首页-扣量后新增
-                        $dayData = date('Ymd');
-                        $incV = $stepValue*0.01;
-                        $redis->zAdd('ch_deduct_inc_user_'.$dayData,time(),$uid.','.$incV);
-                        $redis->expire('ch_deduct_inc_user_'.$dayData,3600*24*7);
-                    }
-                    $redis->hIncrBy($channel_day_statistics_key,'install_real',1);
+                    Redis::pipeline(function ($pipe) use ($stepValue,$channel_day_statistics_key,$uid){
+                        if($stepValue>0){
+                            $pipe->hIncrBy($channel_day_statistics_key,'install',$stepValue);
+                            //首页-扣量后新增
+                            $dayData = date('Ymd');
+                            $incV = $stepValue*0.01;
+                            $pipe->zAdd('ch_deduct_inc_user_'.$dayData,time(),$uid.','.$incV);
+                            $pipe->expire('ch_deduct_inc_user_'.$dayData,3600*24*7);
+                        }
+                        $pipe->hIncrBy($channel_day_statistics_key,'install_real',1);
+                    });
+
                 }else{
                     $redis->hIncrBy($channel_day_statistics_key,$field,1);
                 }
             }
             //将key写入集合
-            $redis->sAdd('channel_day_statistics_collection',$channel_day_statistics_key);
-            $redis->expire($channel_day_statistics_key,172800);
+            Redis::pipeline(function ($pipe) use ($channel_day_statistics_key) {
+                $pipe->sAdd('channel_day_statistics_collection',$channel_day_statistics_key);
+                $pipe->expire($channel_day_statistics_key,172800);
+            });
         }
 
     }
