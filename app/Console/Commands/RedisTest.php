@@ -54,7 +54,7 @@ class RedisTest extends Command
                 $pipe->set("testKey2:$i", $i);
             }
         });*/
-        $didArr = User::query()->pluck('did')->all();
+        /*$didArr = User::query()->pluck('did')->all();
         $redis = $this->redis('login');
         $redis->pipeline();
         foreach ($didArr as $did){
@@ -63,8 +63,14 @@ class RedisTest extends Command
             $redis->sAdd('account_did',$did);
             $redis->exec();
         }
-//        $this->redis('login')->sAddArray('account_did',$didArr);
-        $this->info('total:'.count($didArr));
+        $this->info('total:'.count($didArr));*/
+        $redis = $this->redis('test');
+        $iterator = 0;
+        while (false !== ($keys = $redis->scan($iterator,'channel_day_statistics:*',1000))){
+            foreach($keys as $key) {
+                echo $key . PHP_EOL;
+            }
+        }
         return 0;
     }
 }
