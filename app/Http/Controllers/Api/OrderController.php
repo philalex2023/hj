@@ -76,7 +76,7 @@ class OrderController extends PayBaseController
                // Rule::in([1, 2,3]),
             ],
         ])->validate();
-        Log::info('order_create_get_lock_params===',[$params]);//参数日志
+//        Log::info('order_create_get_lock_params===',[$params]);//参数日志
         $goodsMethod = match ($params['type']) {
             '1' => 'getVipInfo',
             '2' => 'getGoldInfo',
@@ -139,7 +139,7 @@ class OrderController extends PayBaseController
                 'reg_at' => $user->created_at??'', //
                 'user_type' => $user->created_at < date('Y-m-d'.' 00:00:00') ? 1 : 0
             ];
-            Log::info('order_create_Data===',[$createData]);//参数日志
+//            Log::info('order_create_Data===',[$createData]);//参数日志
 
             // 创建订单
             $order = Order::query()->create($createData);
