@@ -89,11 +89,16 @@ class SearchController extends Controller
             $res['hasMorePages'] = $hasMorePages;
             if ($words && $words!='') {
                 //增加标签权重
+                $key = 'projectTag_'.$project;
+                    $redis = $this->redis();
+                    Log::info('TEST',[$redis->exists($key)]);
+                    
                 Redis::pipeline(function($pipe) use ($project,$words) {
                     $key = 'projectTag_'.$project;
+                    /* 
                     $redis = $this->redis();
-                    Log::info('TEST',[$redis->exists($key),$pipe->exists($key)]);
-                    if($redis->exists($key)){
+                    Log::info('TEST',[$redis->exists($key),$pipe->exists($key)]); */
+                    if($pipe->exists($key)){
                         /* $tagKey = 'tag_names';
                         if(!$redis->exists($tagKey)){
                             $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
