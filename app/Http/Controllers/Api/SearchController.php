@@ -96,7 +96,7 @@ class SearchController extends Controller
                 $hasTagNames = $redis->exists($tagKey);    
                 $cacheId = $redis->hGet($tagKey,$words);    
                 Redis::pipeline(function($pipe) use ($hasProjectTag,$hasTagNames,$tagKey,$key,$words,$cacheId) {
-                    if($pipe->exists($hasProjectTag)){
+                    if($hasProjectTag){
                         if(!$hasTagNames){
                             $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
                             $pipe->hMset($tagKey,$nameIdArr);
