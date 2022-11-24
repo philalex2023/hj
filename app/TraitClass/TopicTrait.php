@@ -5,6 +5,7 @@ namespace App\TraitClass;
 use App\Models\Topic;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 
 trait TopicTrait
 {
@@ -22,13 +23,13 @@ trait TopicTrait
             ->where('status',1)
             ->orderBy('sort')
             ->get(['id','cid','name','show_type','contain_vids']);
-        $redis = $this->redis();
-        //
-        foreach ($getItems as $item){
-            $key = 'topic_id_'.$item->id;
-            $redis->set($key,$item->contain_vids);
-            $redis->expire($key,3600);
-        }
+        Redis::pipeline(function ($pipe) use ($getItems){
+            foreach ($getItems as $item){
+                $key = 'topic_id_'.$item->id;
+                $pipe->set($key,$item->contain_vids);
+                $pipe->expire($key,7200);
+            }
+        });
     }
 
     public function getTopicVideoIdsById($id)
