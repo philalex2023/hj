@@ -32,11 +32,12 @@ trait DayStatisticTrait
 
         $hashData['online_user'] = $redis->zCount('online_user_'.$dayData,$starTime,$dayEndTime);
 
-//        $hashData['keep_1'] = $redis->get('hj_keep_1_'.$dayData);
-        $hashData['keep_1'] = $redis->zCount('hj_keep_1_'.$dayData,$starTime,$dayEndTime);
+//        $hashData['keep_1'] = $redis->zCount('hj_keep_1_'.$dayData,$starTime,$dayEndTime);
 
         $hashData['hour_inc_user'] = $redis->zCount('new_increase_'.$dayData,$hourAgo,$nowTime);
         $hashData['day_inc_user'] = $redis->zCount('new_increase_'.$dayData,$starTime,$dayEndTime);
+
+        $hashData['keep_1'] = $hashData['active_user']-$hashData['day_inc_user'];
 
         $hashData['hour_inc_android_user'] = $redis->zCount('new_inc_android_'.$dayData,$hourAgo,$dayEndTime);
         $hashData['hour_inc_ios_user'] = $redis->zCount('new_inc_ios_'.$dayData,$hourAgo,$dayEndTime);
