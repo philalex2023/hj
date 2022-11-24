@@ -64,7 +64,7 @@ class RedisTest extends Command
             $redis->exec();
         }
         $this->info('total:'.count($didArr));*/
-        $redis = $this->redis();
+        /*$redis = $this->redis();
 
         $iterator = null;
 // 遍历前缀
@@ -84,7 +84,7 @@ class RedisTest extends Command
         }
 
         var_dump($total);
-        echo count($total).PHP_EOL;
+        echo count($total).PHP_EOL;*/
         return 0;
     }
 }
