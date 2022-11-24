@@ -68,7 +68,7 @@ class RedisTest extends Command
         $iterator = 0;
         while (false !== ($keys = $redis->scan($iterator,'channel_day_statistics:*',1000))){
             foreach($keys as $key) {
-                echo $key . PHP_EOL;
+                $this->info($key . PHP_EOL);
             }
         }
         return 0;
