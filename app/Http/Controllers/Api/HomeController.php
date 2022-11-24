@@ -127,7 +127,7 @@ class HomeController extends Controller
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
-
+                    Log::info('fresh_list',[$cid]);
                     foreach ($topics as &$topic){
                         $topic = (array)$topic;
                         $topic['style'] = (string)$topic['show_type']; //android要是字符串
@@ -136,8 +136,6 @@ class HomeController extends Controller
                             //获取专题数据
                             $topic['title'] = '';
                             $ids = explode(',',$topic['contain_vids']);
-                            //$ids = array_slice($ids,0,3);
-                            //
                             $idParams = [];
                             $length = count($ids);
                             foreach ($ids as $key => $id) {
