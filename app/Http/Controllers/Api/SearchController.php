@@ -90,17 +90,14 @@ class SearchController extends Controller
             if ($words && $words!='') {
                 //增加标签权重
                 $key = 'projectTag_'.$project;
-                    $redis = $this->redis();
-                    Log::info('TEST',[$redis->exists($key)]);
+                $tagKey = 'tag_names';
+                $redis = $this->redis();
+                $hasProjectTag = $redis->exists($key);
+                $hasTagNames = $redis->exists($tagKey);    
                     
-                Redis::pipeline(function($pipe) use ($project,$words) {
-                    $key = 'projectTag_'.$project;
-                    /* 
-                    $redis = $this->redis();
-                    Log::info('TEST',[$redis->exists($key),$pipe->exists($key)]); */
-                    if($pipe->exists($key)){
-                        /* $tagKey = 'tag_names';
-                        if(!$redis->exists($tagKey)){
+                Redis::pipeline(function($pipe) use ($hasProjectTag,$hasTagNames,$tagKey,$key,$words) {
+                    if($pipe->exists($hasProjectTag)){
+                        if(!$hasTagNames){
                             $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
                             $pipe->hMset($tagKey,$nameIdArr);
                             $pipe->expire($tagKey,14400);
@@ -108,8 +105,7 @@ class SearchController extends Controller
                         }else{
                             $id = $pipe->hGet($tagKey,$words);
                         }
-                        Log::info('TEST',[$pipe->exists($tagKey),$id]); */
-                        // $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
+                        $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
                     }
                 });
                 
