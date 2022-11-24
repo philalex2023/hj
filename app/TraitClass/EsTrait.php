@@ -27,7 +27,7 @@ Trait EsTrait
     public function getVideoByRandomForEs($limit,$source): array
     {
         $body = [
-            'track_total_hits' => true,
+//            'track_total_hits' => true,
             'size' => $limit,
             '_source' => $source,
             'sort' => [
@@ -53,7 +53,7 @@ Trait EsTrait
     {
         $offset = ($page-1)*$size;
         $body = [
-            'track_total_hits' => true,
+//            'track_total_hits' => true,
             'size' => $size,
             'from' => $offset,
             '_source' => $source,
