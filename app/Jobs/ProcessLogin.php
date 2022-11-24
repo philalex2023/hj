@@ -91,7 +91,7 @@ class ProcessLogin implements ShouldQueue
 
 //        $keepUser = $this->redis('user')->zRange($keepUidKey,0,-1,true);
         Redis::pipeline(function ($pipe) use ($uid){
-            $pipe->select(0);
+            //$pipe->select(0);
             /*for ($i=1;$i<11;++$i){
                 $keyDate = date('Y-m-d',strtotime('-'.$i.' day'));
                 if(isset($keepUser[$keyDate])){
