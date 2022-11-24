@@ -90,12 +90,20 @@ class SearchController extends Controller
                 $res['hasMorePages'] = $hasMorePages;
                 if ($words && $words!='') {
                     //增加标签权重
-                    $key = 'projectTag_'.$project;
-                    $redis = $this->redis();
-                    if($redis->exists($key)){
-                        $id = DB::table('tag')->where('name',$words)->value('id');
-                        $id && $redis->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
-                    }
+                    Redis::pipeline(function($pipe) use ($project,$words) {
+                        $key = 'projectTag_'.$project;
+                        if($pipe->exists($key)){
+                            if(!$pipe->exists('tag_names')){
+                                $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
+                                $pipe->hMset('tag_names',$nameIdArr);
+                                $id = $nameIdArr[$words] ?? 0;
+                            }else{
+                                $id = $pipe->hGet('tag_names',$words);
+                            }
+                            $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
+                        }
+                    });
+                    
                 }
 
                 return response()->json([

@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\Tag;
+use App\TraitClass\PHPRedisTrait;
 
 class TagController extends BaseCurlController
 {
+    use PHPRedisTrait;
 
     public $pageName = '标签';
 
@@ -14,9 +16,9 @@ class TagController extends BaseCurlController
         return $this->model = new Tag();
     }
 
-    public function indexCols()
+    public function indexCols(): array
     {
-        $cols = [
+        return [
             [
                 'type' => 'checkbox'
             ],
@@ -68,8 +70,6 @@ class TagController extends BaseCurlController
             ]
         ];
 
-        return $cols;
-
     }
 
     public function setOutputUiCreateEditForm($show = '')
@@ -119,9 +119,18 @@ class TagController extends BaseCurlController
             'name'=>'标签名称',
         ];
     }
+
     public function setListOutputItemExtend($item)
     {
         $item->usageName = ($item->usage==1)?"长视频":"小视频";
         return $item;
     }
+
+    /*public function afterSaveSuccessEvent($model, $id = '')
+    {
+        //请除缓存
+        $redis = $this->redis();
+        $redis->set('tag_fresh',1);
+        $redis->expire('tag_fresh',3600*24);
+    }*/
 }
