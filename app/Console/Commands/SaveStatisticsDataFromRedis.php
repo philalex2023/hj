@@ -41,7 +41,9 @@ class SaveStatisticsDataFromRedis extends Command
     public function handle(): int
     {
         $redis = $this->redis();
-        $statistic_day_collection_key = 'statistic_day_collection';
+        $yesterdayTime = strtotime(date('Y-m-d',strtotime('-1 day')));
+
+        /*$statistic_day_collection_key = 'statistic_day_collection';
         if(!$redis->exists($statistic_day_collection_key)){
             $statistic_day_keys = $redis->keys('*statistic_day:*');
             foreach ($statistic_day_keys as $day_key){
@@ -50,7 +52,7 @@ class SaveStatisticsDataFromRedis extends Command
         }else{
             $statistic_day_keys = $redis->sMembers($statistic_day_collection_key);
         }
-        $yesterdayTime = strtotime(date('Y-m-d',strtotime('-1 day')));
+
         foreach ($statistic_day_keys as $statistic_day_key){
             $channelStatisticItem = $redis->hGetAll($statistic_day_key);
             $channel_id = $channelStatisticItem['channel_id'] ?? 0;
@@ -61,13 +63,13 @@ class SaveStatisticsDataFromRedis extends Command
                     ->where('channel_id',$channel_id)
                     ->where('device_system',$device_system)
                     ->where('at_time',$at_time)
-                    ->updateOrInsert(['channel_id'=>$channel_id,'device_system'=>$device_system,'at_time'=>$at_time],$channelStatisticItem);   
+                    ->updateOrInsert(['channel_id'=>$channel_id,'device_system'=>$device_system,'at_time'=>$at_time],$channelStatisticItem);
             }
             if($at_time<=$yesterdayTime){
                 $redis->del($statistic_day_key);
                 $redis->sRem($statistic_day_collection_key,$statistic_day_key);
             }    
-        }
+        }*/
 
         //
         $channel_day_statistics_collection_key = 'channel_day_statistics_collection';
