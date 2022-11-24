@@ -266,10 +266,9 @@ class SearchController extends Controller
                 }
                 $containVidStr = $this->getTopicVideoIdsById($tid);
                 if(!$containVidStr){
-                    Log::info('SearchCat',[$tid]);
+                    Log::info('SearchNoCat',[$tid]);
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
-                //Log::info('SearchCat',[$ids]);
                 $ids = explode(',',$containVidStr);
                 $idParams = [];
                 $length = count($ids);
