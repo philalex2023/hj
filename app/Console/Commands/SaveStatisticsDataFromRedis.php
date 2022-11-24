@@ -74,7 +74,7 @@ class SaveStatisticsDataFromRedis extends Command
         //
         $channel_day_statistics_collection_key = 'channel_day_statistics_collection';
         if(!$redis->exists($channel_day_statistics_collection_key)){
-            $channel_day_statistics_keys = $redis->keys('*channel_day_statistics:*');
+            $channel_day_statistics_keys = $redis->keys('channel_day_statistics:*');
             $addData = [];
             foreach ($channel_day_statistics_keys as $channel_day_key){
                 $addData[] = $channel_day_key;
