@@ -88,27 +88,7 @@ class SearchController extends Controller
 
             $res['hasMorePages'] = $hasMorePages;
             if ($words && $words!='') {
-                //增加标签权重
-                $key = 'projectTag_'.$project;
-                $tagKey = 'tag_names';
-                $redis = $this->redis();
-                $hasProjectTag = $redis->exists($key);
-                $hasTagNames = $redis->exists($tagKey);    
-                $cacheId = $redis->hGet($tagKey,$words);    
-                Redis::pipeline(function($pipe) use ($hasProjectTag,$hasTagNames,$tagKey,$key,$words,$cacheId) {
-                    if($hasProjectTag){
-                        if(!$hasTagNames){
-                            $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
-                            $pipe->hMset($tagKey,$nameIdArr);
-                            $pipe->expire($tagKey,14400);
-                            $id = $nameIdArr[$words] ?? 0;
-                        }else{
-                            $id = $cacheId;
-                        }
-                        $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
-                    }
-                });
-                
+                $this->incrTagWeightsByWords($project,$words);
             }
 
             return response()->json([
@@ -117,12 +97,59 @@ class SearchController extends Controller
             ]);
         }
         return response()->json([]);
-        /* try {
+        /*try {
             
         } catch (\Exception $exception){
             return $this->returnExceptionContent($exception->getMessage());
-        } */
+        }*/
 
+    }
+
+    public function incrTagWeightsByTag($project,$id)
+    {
+        $key = 'projectTag_'.$project;
+        $tagKey = 'tagIdName';
+        $redis = $this->redis();
+        $hasProjectTag = $redis->exists($key);
+        $hasTagNames = $redis->exists($tagKey);
+        $cacheName = $redis->hGet($tagKey,$id);
+        Redis::pipeline(function($pipe) use ($hasProjectTag,$hasTagNames,$tagKey,$key,$id,$cacheName) {
+            if($hasProjectTag){
+                if(!$hasTagNames){
+                    $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'name','id');
+                    $pipe->hMset($tagKey,$nameIdArr);
+                    $pipe->expire($tagKey,14400);
+                    $name = $nameIdArr[$id] ?? 0;
+                }else{
+                    $name = $cacheName;
+                }
+                $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$name],JSON_UNESCAPED_UNICODE));
+            }
+        });
+    }
+
+    public function incrTagWeightsByWords($project,$words,$isTag=false)
+    {
+        //增加标签权重
+        $key = 'projectTag_'.$project;
+        $tagKey = 'tag_names';
+        $redis = $this->redis();
+        $hasProjectTag = $redis->exists($key);
+        $hasTagNames = $redis->exists($tagKey);
+        $cacheId = $redis->hGet($tagKey,$words);
+        Redis::pipeline(function($pipe) use ($hasProjectTag,$hasTagNames,$tagKey,$key,$words,$cacheId) {
+            if($hasProjectTag){
+                if(!$hasTagNames){
+                    $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
+                    $pipe->hMset($tagKey,$nameIdArr);
+                    $pipe->expire($tagKey,14400);
+                    $id = $nameIdArr[$words] ?? 0;
+                }else{
+                    $id = $cacheId;
+                }
+                $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
+            }
+        });
     }
 
     //标签
@@ -200,14 +227,9 @@ class SearchController extends Controller
                     }
                 }
             }
-            //增加标签权重
-            $key = 'projectTag_'.$project;
-            $redis = $this->redis();
-            if($id>0 && $redis->exists($key)){
-                $tagName = DB::table('tag')->where('id',$id)->value('name');
-                $tagName && $redis->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$tagName],JSON_UNESCAPED_UNICODE));
-            }
-//            DB::table('tag')->where('id',$id)->increment('hits');
+
+            $this->incrTagWeightsByTag($project,$id);
+
             return response()->json([
                 'state'=>0,
                 'data'=>$res??[]
