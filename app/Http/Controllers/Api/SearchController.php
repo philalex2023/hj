@@ -101,7 +101,7 @@ class SearchController extends Controller
                         }else{
                             $id = $pipe->hGet($tagKey,$words);
                         }
-                        dd($id);
+                        Log::info('TEST',[$pipe->exists($tagKey),$id]);
                         // $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
                     }
                 });
