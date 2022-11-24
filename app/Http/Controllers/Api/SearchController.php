@@ -95,7 +95,7 @@ class SearchController extends Controller
                 $hasProjectTag = $redis->exists($key);
                 $hasTagNames = $redis->exists($tagKey);    
                     
-                Redis::pipeline(function($pipe) use ($hasProjectTag,$hasTagNames,$tagKey,$key,$words) {
+                Redis::pipeline(function($pipe) use ($hasProjectTag,$hasTagNames,$tagKey,$key,$words,$redis) {
                     if($pipe->exists($hasProjectTag)){
                         if(!$hasTagNames){
                             $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
@@ -103,7 +103,8 @@ class SearchController extends Controller
                             $pipe->expire($tagKey,14400);
                             $id = $nameIdArr[$words] ?? 0;
                         }else{
-                            $id = $pipe->hGet($tagKey,$words);
+                            $id = $redis->hGet($tagKey,$words);
+                            Log::info('TEST',[$id]);
                         }
                         $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
                     }
