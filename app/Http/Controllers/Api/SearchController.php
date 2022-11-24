@@ -91,18 +91,18 @@ class SearchController extends Controller
                 //增加标签权重
                 Redis::pipeline(function($pipe) use ($project,$words) {
                     $key = 'projectTag_'.$project;
-                    if($pipe->exists($key)){
+                    $redis = $this->redis();
+                    if($redis->exists($key)){
                         $tagKey = 'tag_names';
-                        if(!$pipe->exists($tagKey)){
+                        if(!$redis->exists($tagKey)){
                             $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
                             $pipe->hMset($tagKey,$nameIdArr);
                             $pipe->expire($tagKey,14400);
                             $id = $nameIdArr[$words] ?? 0;
                         }else{
-                            $id = $pipe->hGet($tagKey,$words);
+                            $id = $redis->hGet($tagKey,$words);
                         }
-                        Log::info('TEST',[$pipe->exists($tagKey),$id]);
-                        // $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
+                        $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
                     }
                 });
                 
