@@ -64,13 +64,27 @@ class RedisTest extends Command
             $redis->exec();
         }
         $this->info('total:'.count($didArr));*/
-        $redis = $this->redis('test');
-        $iterator = 0;
-        while (false !== ($keys = $redis->scan($iterator,'channel_day_statistics:*',1000))){
-            foreach($keys as $key) {
-                $this->info($key . PHP_EOL);
-            }
+        $redis = $this->redis();
+
+        $iterator = null;
+// 遍历前缀
+        $pattern = 'channel_day_statistics:*';
+        $count = 15;
+// 务必设置，如果没扫描到，继续扫描，而不是返回空，否则while直接退出，遍历就会不准确
+        $redis->setOption(\Redis::OPT_SCAN, \Redis::SCAN_RETRY);
+        $total = [];
+        $i = 0;
+
+// $count可以不设置，非必需参数
+        while($arr = $redis->scan($iterator, $pattern, $count)) {
+            $arrVal = $redis->mget($arr);
+            $ret = array_combine($arr, $arrVal);
+            $total = array_merge($total, $ret);
+            $i++;
         }
+
+        var_dump($total);
+        echo count($total).PHP_EOL;
         return 0;
     }
 }
