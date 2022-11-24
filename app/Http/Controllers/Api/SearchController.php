@@ -95,6 +95,7 @@ class SearchController extends Controller
                         $tagKey = 'tag_names';
                         if(!$pipe->exists($tagKey)){
                             $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
+                            dd($nameIdArr);
                             /* $pipe->hMset($tagKey,$nameIdArr);
                             $pipe->expire($tagKey,14400); */
                             $id = $nameIdArr[$words] ?? 0;
