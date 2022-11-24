@@ -22,9 +22,9 @@ trait StatisticTrait
     {
         $dateArr = $date ?? $this->getDateArr();
         $redis = $this->redis();
-        $statistic_day_key = 'statistic_day:'.$channel_id.':'.$device_system.':'.$dateArr['day_time'];
+        //$statistic_day_key = 'statistic_day:'.$channel_id.':'.$device_system.':'.$dateArr['day_time'];
 
-        if(!$redis->exists($statistic_day_key)){
+        /*if(!$redis->exists($statistic_day_key)){
             $queryBuild = DB::table('statistic_day')
                 ->where('channel_id',$channel_id)
                 ->where('device_system',$device_system)
@@ -40,21 +40,17 @@ trait StatisticTrait
                     'device_system' => $device_system,
                     'at_time' => $dateArr['day_time'],
                 ];
-                //DB::table('statistic_day')->insert($insertData);
                 $redis->hMSet($statistic_day_key,$insertData);
             }else{
                 $one = (array)$one;
                 $redis->hMSet($statistic_day_key,$one);
             }
-            /*else{
-                $queryBuild->increment($field);
-            }*/
         }else{
             $redis->hIncrBy($statistic_day_key,$field,1);
         }
         //将key写入集合
         $redis->sAdd('statistic_day_collection',$statistic_day_key);
-        $redis->expire($statistic_day_key,172800);
+        $redis->expire($statistic_day_key,172800);*/
 
         //总统计
         //$channelInfo = DB::table('channels')->find($channel_id);
