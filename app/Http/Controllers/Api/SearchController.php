@@ -35,88 +35,89 @@ class SearchController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        try {
-            if (isset($request->params)) {
-                $params = self::parse($request->params);
-                $validated = Validator::make($params, [
-                    'words' => 'nullable',
-                    'page' => 'required|integer',
-                    "tag" => 'array', // 标签
-                    "type" => 'nullable', // 类型
-                    "sort" => 'nullable', // 排序
-                    "project" => 'nullable', // 项目
-                ])->validate();
-                $perPage = 16;
-                $page = $validated['page'];
-                $offset = ($page-1)*$perPage;
+        if (isset($request->params)) {
+            $params = self::parse($request->params);
+            $validated = Validator::make($params, [
+                'words' => 'nullable',
+                'page' => 'required|integer',
+                "tag" => 'array', // 标签
+                "type" => 'nullable', // 类型
+                "sort" => 'nullable', // 排序
+                "project" => 'nullable', // 项目
+            ])->validate();
+            $perPage = 16;
+            $page = $validated['page'];
+            $offset = ($page-1)*$perPage;
 
-                $words = $validated['words']??false;
-                $project = intval($validated['project'] ?? 1);
-                $project = $project>0 ? $project : 1;
+            $words = $validated['words']??false;
+            $project = intval($validated['project'] ?? 1);
+            $project = $project>0 ? $project : 1;
 
-                $es = $this->esClient();
-                $searchParams = [
-                    'index' => 'video_index',
-                    'body' => [
+            $es = $this->esClient();
+            $searchParams = [
+                'index' => 'video_index',
+                'body' => [
 //                        'track_total_hits' => true,
-                        'size' => $perPage,
-                        'from' => $offset,
-                        '_source' => $this->videoFields,
-                        'query' => [
-                            'match_phrase'=>[
-                                'name' => ['query' => $words?:"*",'slop'=>50]
-                            ]
-                        ],
-                        'sort' => [
-                            'id' => ['order'=>'desc']
+                    'size' => $perPage,
+                    'from' => $offset,
+                    '_source' => $this->videoFields,
+                    'query' => [
+                        'match_phrase'=>[
+                            'name' => ['query' => $words?:"*",'slop'=>50]
                         ]
                     ],
-                ];
+                    'sort' => [
+                        'id' => ['order'=>'desc']
+                    ]
+                ],
+            ];
 
-                //Log::info('ES_keyword_params',[json_encode($searchParams)]);
-                $response = $es->search($searchParams);
-                $videoList = [];
-                if(isset($response['hits']) && isset($response['hits']['hits'])){
-                    $total = $response['hits']['total']['value'];
-                    foreach ($response['hits']['hits'] as $item) {
-                        $videoList[] = $item['_source'];
-                    }
+            //Log::info('ES_keyword_params',[json_encode($searchParams)]);
+            $response = $es->search($searchParams);
+            $videoList = [];
+            if(isset($response['hits']) && isset($response['hits']['hits'])){
+                $total = $response['hits']['total']['value'];
+                foreach ($response['hits']['hits'] as $item) {
+                    $videoList[] = $item['_source'];
                 }
-                $res['total'] = $total ?? 0;
-                $hasMorePages = $res['total'] >= $perPage*$page;
-
-                $res['list'] = $this->handleVideoItems($videoList,false,$request->user()->id);
-
-                $res['hasMorePages'] = $hasMorePages;
-                if ($words && $words!='') {
-                    //增加标签权重
-                    Redis::pipeline(function($pipe) use ($project,$words) {
-                        $key = 'projectTag_'.$project;
-                        if($pipe->exists($key)){
-                            $tagKey = 'tag_names';
-                            if(!$pipe->exists($tagKey)){
-                                $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
-                                $pipe->hMset($tagKey,$nameIdArr);
-                                $pipe->expire($tagKey,14400);
-                                $id = $nameIdArr[$words] ?? 0;
-                            }else{
-                                $id = $pipe->hGet($tagKey,$words);
-                            }
-                            $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE));
-                        }
-                    });
-                    
-                }
-
-                return response()->json([
-                    'state' => 0,
-                    'data' => $res
-                ]);
             }
-            return response()->json([]);
+            $res['total'] = $total ?? 0;
+            $hasMorePages = $res['total'] >= $perPage*$page;
+
+            $res['list'] = $this->handleVideoItems($videoList,false,$request->user()->id);
+
+            $res['hasMorePages'] = $hasMorePages;
+            if ($words && $words!='') {
+                //增加标签权重
+                Redis::pipeline(function($pipe) use ($project,$words) {
+                    $key = 'projectTag_'.$project;
+                    if($pipe->exists($key)){
+                        /* $tagKey = 'tag_names';
+                        if(!$pipe->exists($tagKey)){
+                            $nameIdArr = array_column(Tag::query()->get(['id','name'])->all(),'id','name');
+                            $pipe->hMset($tagKey,$nameIdArr);
+                            $pipe->expire($tagKey,14400);
+                            $id = $nameIdArr[$words] ?? 0;
+                        }else{
+                            $id = $pipe->hGet($tagKey,$words);
+                        }
+                        $id && $pipe->zIncrBy($key,1,json_encode(['id'=>(int)$id,'name'=>$words],JSON_UNESCAPED_UNICODE)); */
+                    }
+                });
+                
+            }
+
+            return response()->json([
+                'state' => 0,
+                'data' => $res
+            ]);
+        }
+        return response()->json([]);
+        /* try {
+            
         } catch (\Exception $exception){
             return $this->returnExceptionContent($exception->getMessage());
-        }
+        } */
 
     }
 
