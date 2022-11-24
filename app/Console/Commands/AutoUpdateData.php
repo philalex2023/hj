@@ -80,16 +80,10 @@ class AutoUpdateData extends Command
             if($model->show_num > 0){
                 $firstIds = $this->getDataSourceSortArr($model->sort_vids);
                 krsort($firstIds);
-                //更新数据源
-                /*$updateIds = array_unique([...$firstIds,...$sourceIds]);
-                $updateIdStr = implode(',',$updateIds);
-                DataSource::query()->where('id',$model->id)->update(['contain_vids'=>$updateIdStr,'video_num'=>count($updateIds)]);*/
             }
             $mergerArr = [...$firstIds,...$tagVideoIds,...$sIds];
             $ids = array_unique($mergerArr);
-            //Log::info('testDataSourceHandleTopic',[$firstIds,$tagVideoIds,$sourceIds]);
             $idStr = implode(',',$ids);
-//            Log::info('update data num',[count($ids)]);
             Topic::query()->where('id',$topic->id)->update(['contain_vids'=>$idStr]);
 //            Log::info('update topic id',[$topic->id]);
             $this->updateTopicListByCid($topic->cid);
