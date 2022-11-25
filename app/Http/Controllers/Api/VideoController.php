@@ -313,7 +313,7 @@ class VideoController extends Controller
             $goldIncome = $percentage * $one['gold'] * 100;
             $time = strtotime(date('Y-m-d'));
             Log::info('use_gold',['up_uid:'.$one['uid'],$goldIncome]);
-            $upIncomeBuild = DB::table('up_income_day')->where('uid',$one['uid'])->where('at_time',$time);
+            $upIncomeBuild = DB::table('income_day')->where('uid',$one['uid'])->where('at_time',$time);
             if(!$upIncomeBuild->exists()){
                 $insertData = [
                     'uid' => $one['uid'],

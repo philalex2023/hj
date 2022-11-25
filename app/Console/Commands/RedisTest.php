@@ -7,6 +7,7 @@ use App\TraitClass\CurlTrait;
 use App\TraitClass\PHPRedisTrait;
 use Illuminate\Console\Command;
 use Illuminate\Foundation\Bus\DispatchesJobs;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Facades\Storage;
 
@@ -85,6 +86,11 @@ class RedisTest extends Command
 
         var_dump($total);
         echo count($total).PHP_EOL;*/
+        $items = DB::table('up_income_day')->where('id','<=',7828)->get();
+        foreach($items as $item){
+            $at_time = strtotime(date('Y-m-d',$item->at_time));
+            DB::table('up_income_day')->where('id',$item->id)->update(['at_time'=>$at_time]);
+        }
         return 0;
     }
 }
