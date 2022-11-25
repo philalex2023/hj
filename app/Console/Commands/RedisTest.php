@@ -86,11 +86,23 @@ class RedisTest extends Command
 
         var_dump($total);
         echo count($total).PHP_EOL;*/
-        $items = DB::table('up_income_day')->where('id','<=',7828)->get();
+        /*$items = DB::table('up_income_day')->get();
+        $bar = $this->output->createProgressBar(count($items));
+        $bar->start();
         foreach($items as $item){
-            $at_time = strtotime(date('Y-m-d',$item->at_time));
-            DB::table('up_income_day')->where('id',$item->id)->update(['at_time'=>$at_time]);
+            $one = DB::table('income_day')->where('at_time',$item->at_time)->where('uid',$item->uid)->first();
+            if(!$one){
+                DB::table('income_day')->insert([
+                    'uid'=>$item->uid,
+                    'at_time'=>$item->at_time,
+                    'gold'=>$item->gold,
+                ]);
+            }else{
+                DB::table('income_day')->where('at_time',$item->at_time)->where('uid',$item->uid)->increment('gold',$item->gold);
+            }
+            $bar->advance();
         }
+        $bar->finish();*/
         return 0;
     }
 }
