@@ -388,8 +388,6 @@ class UserController extends Controller
             $vidArr = $videoRedis->zRevRange($view_history_key,0,-1,true);
             $videoIds = $vidArr ? array_keys($vidArr) : [];
 
-            $offset = ($page-1)*$perPage;
-            $video = DB::table('video')->whereIn('id',$videoIds)->get($this->videoFields)->toArray();
             $video = $this->getVideoByIdsForEs($videoIds,$this->videoFields);
 
             foreach ($video as &$r){
@@ -403,8 +401,8 @@ class UserController extends Controller
             $vidArrShort = $videoRedis->zRevRange($view_history_key_short,0,-1,true);
             //Log::info('test==',$vidArrShort);
             $videoShortIds = $vidArrShort ? array_keys($vidArrShort) : [];
-            $videoShort = DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray();
-            $videoShort = !empty($videoShortIds) ? DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray() : [];
+            //$videoShort = !empty($videoShortIds) ? DB::table('video')->whereIn('id',$videoShortIds)->get($this->videoFields)->toArray() : [];
+            $videoShort = $this->getVideoByIdsForEs($videoShortIds,$this->videoFields);
             foreach ($videoShort as &$sr){
                 $sr = (array)$sr;
                 $sr['usage'] = 2;
@@ -417,9 +415,7 @@ class UserController extends Controller
             $offset = ($page-1)*$perPage;
             $pageLists = array_slice($result,$offset,$perPage);
             if(!isset($result[0])){
-                $pageLists = DB::table('video')->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
                 $pageLists = $this->getVideoByRandomForEs(6,$this->videoFields);
-//                    $pageLists = DB::table('video')->inRandomOrder()->limit(6)->get($this->videoFields)->toArray();
             }
             //路径处理
             $res['list'] = $this->handleVideoItems($pageLists,true, $user->id);
