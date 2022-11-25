@@ -36,7 +36,7 @@ class VideoController extends Controller
         $view_history_key = 'view_history_'.$uid;
         $video['limit'] == 0 && DB::table('video')->where('id',$vid)->increment('views'); //增加该视频播放次数
         //up主统计
-        /*if($video['limit'] == 0 && $video['type'] == 4){
+        if($video['limit'] == 0 && $video['type'] == 4){
             $time = strtotime(date('Y-m-d'));
             $upIncomeBuild = DB::table('up_play_day')->where('uid',$video['uid'])->where('at_time',$time);
             if(!$upIncomeBuild->exists()){
@@ -50,7 +50,7 @@ class VideoController extends Controller
                 $upIncomeBuild->increment('play_times');
             }
 
-        }*/
+        }
 
         Redis::pipeline(function ($pipe) use ($uid,$vid,$view_history_key){
             //统计在线
