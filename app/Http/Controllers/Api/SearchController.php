@@ -381,6 +381,13 @@ class SearchController extends Controller
                                     ]
                                 ]
                             ],
+                            'sort' => [
+                                '_script'=>[
+                                    'script' => 'Math.random()',
+                                    'type' => 'number',
+                                    'order' => 'asc',
+                                ]
+                            ]
                         ],
                     ];
                     $es = $this->esClient();
