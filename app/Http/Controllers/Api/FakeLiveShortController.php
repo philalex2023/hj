@@ -24,15 +24,7 @@ class FakeLiveShortController extends Controller
 
     public function getLiveIdsCollection(): array
     {
-        $redis = $this->redis();
-        $key = 'fakeLiveIdsCollection';
-        if(!$redis->exists($key)){
-            $ids = Live::query()->where('status',1)->pluck('id')->all();
-            $redis->sAddArray($key,$ids);
-        }else{
-            $ids = (array) $redis->sMembers($key);
-        }
-        return $ids;
+        return [];
     }
 
     /**

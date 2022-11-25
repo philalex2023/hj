@@ -42,35 +42,6 @@ class SaveStatisticsDataFromRedis extends Command
     {
         $redis = $this->redis();
         $yesterdayTime = strtotime(date('Y-m-d',strtotime('-1 day')));
-
-        /*$statistic_day_collection_key = 'statistic_day_collection';
-        if(!$redis->exists($statistic_day_collection_key)){
-            $statistic_day_keys = $redis->keys('*statistic_day:*');
-            foreach ($statistic_day_keys as $day_key){
-                $redis->sAdd($statistic_day_collection_key,$day_key);
-            }
-        }else{
-            $statistic_day_keys = $redis->sMembers($statistic_day_collection_key);
-        }
-
-        foreach ($statistic_day_keys as $statistic_day_key){
-            $channelStatisticItem = $redis->hGetAll($statistic_day_key);
-            $channel_id = $channelStatisticItem['channel_id'] ?? 0;
-            $device_system = $channelStatisticItem['device_system'] ?? 0;
-            $at_time = $channelStatisticItem['at_time'] ?? 0;
-            if($at_time>0 && $device_system>0){
-                DB::table('statistic_day')
-                    ->where('channel_id',$channel_id)
-                    ->where('device_system',$device_system)
-                    ->where('at_time',$at_time)
-                    ->updateOrInsert(['channel_id'=>$channel_id,'device_system'=>$device_system,'at_time'=>$at_time],$channelStatisticItem);
-            }
-            if($at_time<=$yesterdayTime){
-                $redis->del($statistic_day_key);
-                $redis->sRem($statistic_day_collection_key,$statistic_day_key);
-            }    
-        }*/
-
         //
         $channel_day_statistics_collection_key = 'channel_day_statistics_collection';
         if(!$redis->exists($channel_day_statistics_collection_key)){
@@ -81,6 +52,7 @@ class SaveStatisticsDataFromRedis extends Command
             }
             !empty($addData) && $redis->sAddArray($channel_day_statistics_collection_key,$addData);
         }else{
+
             $channel_day_statistics_keys = $redis->sMembers($channel_day_statistics_collection_key);
         }
 
