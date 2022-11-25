@@ -103,7 +103,6 @@ class VideoController extends Controller
                 if (!empty($one)) {
                     $one = $this->handleVideoItems([$one], true,$user->id,['cid'=>$one['cid'],'device_system'=>$user->device_system])[0];
                     $one['limit'] = 0;
-                    $this->processViewVideo($user, $one);
                     //观看限制
                     if (($viewLongVideoTimes<=0 && $one['restricted'] > 0) || ($viewLongVideoTimes>0 && $one['restricted']==2)) {
                         //是否有观看次数
@@ -115,6 +114,7 @@ class VideoController extends Controller
                             $buy && ($one['limit'] = 0);
                         }
                     }
+                    $this->processViewVideo($user, $one);
                 }
                 Cache::forget('cachedUser.'.$user->id);
                 return response()->json(['state' => 0, 'data' => $one]);
