@@ -276,7 +276,7 @@ trait PayTrait
     {
         if(!Cache::lock('payCallback_'.$tradeNo,10)->get()){
             Log::debug('==payCallbackOrderUpdate=',['订单:'.$tradeNo.'重复在回调']);//参数日志
-            exit('failed');
+            exit('Repeat callback');
         }
         $nowData = date('Y-m-d H:i:s');
         $orderModel = DB::connection('master_mysql')->table('orders')->where('number',$tradeNo);
