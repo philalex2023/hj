@@ -272,7 +272,7 @@ trait PayTrait
      * @param $userInfo
      * @throws Exception
      */
-    private function orderUpdate($tradeNo,$jsonResp = []): void
+    private function orderUpdate($tradeNo, array $jsonResp = []): void
     {
         if(!Cache::lock('payCallback_'.$tradeNo,10)->get()){
             Log::debug('==payCallbackOrderUpdate=',['订单:'.$tradeNo.'重复在回调']);//参数日志
