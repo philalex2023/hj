@@ -64,7 +64,7 @@ class VideoController extends Controller
             $pipe->expire($view_history_key,7*24*3600);
         });
 
-        if($user->long_vedio_times>0){//统计激活
+        if($user->long_vedio_times>0){
             $configData = config_cache('app');
             $setTimes = $configData['free_view_long_video_times'] ?? 0;
             if(($user->long_vedio_times==$setTimes) && (date('Y-m-d')==date('Y-m-d',strtotime($user->created_at)))){
