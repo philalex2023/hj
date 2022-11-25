@@ -37,7 +37,7 @@ class VideoController extends Controller
         $video['limit'] == 0 && DB::table('video')->where('id',$vid)->increment('views'); //增加该视频播放次数
         //up主统计
         if($video['limit'] == 0 && $video['type'] == 4){
-            $time = time();
+            $time = strtotime(date('Y-m-d'));
             $upIncomeBuild = DB::table('up_play_day')->where('uid',$video['uid'])->where('at_time',$time);
             if(!$upIncomeBuild->exists()){
                 $insertData = [
