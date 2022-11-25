@@ -274,7 +274,7 @@ trait PayTrait
      */
     private function orderUpdate($tradeNo,$jsonResp = []): void
     {
-        if(!Cache::lock('payCallback_'.$tradeNo,5)->get()){
+        if(!Cache::lock('payCallback_'.$tradeNo,10)->get()){
             Log::debug('==payCallbackOrderUpdate=',['订单:'.$tradeNo.'重复在回调']);//参数日志
             exit('failed');
         }
