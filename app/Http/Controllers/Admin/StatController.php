@@ -12,11 +12,12 @@ class StatController extends BaseCurlIndexController
     //页面信息
     public $pageName = '统计列表';
 
+    public int $multiple = 1;
+
     //1.设置模型
     public function setModel()
     {
         $this->model = new HjStatisticsDay();
-
     }
 
 
@@ -181,19 +182,34 @@ class StatController extends BaseCurlIndexController
 
     public function setListOutputItemExtend($item)
     {
-        $item->at_time = date('Y-m-d',$item->at_time);
-        $item->gold_recharge = round($item->gold_recharge/100,2);
-        $item->vip_recharge = round($item->vip_recharge/100,2);
-        $item->new_user_recharge = round($item->new_user_recharge/100,2);
-        $item->old_user_recharge = round($item->old_user_recharge/100,2);
-        $item->total_recharge = round($item->total_recharge/100,2);
-        $item->android_recharge = round($item->android_recharge/100,2);
-        $item->ios_recharge = round($item->ios_recharge/100,2);
 
-//        $item->active_user = rand(2000000,2500000);
-//        $item->inc_user = rand(250000,350000);
-        $item->active_user = 2200000 + $item->active_user;
-        $item->inc_user = 290000 + $item->inc_user;
+        $item->at_time = date('Y-m-d',$item->at_time);
+        $item->gold_recharge = round($item->gold_recharge * 0.01 * $this->multiple,2);
+        $item->vip_recharge = round($item->vip_recharge * 0.01 * $this->multiple,2);
+        $item->new_user_recharge = round($item->new_user_recharge * 0.01 * $this->multiple,2);
+        $item->old_user_recharge = round($item->old_user_recharge * 0.01 * $this->multiple,2);
+        $item->total_recharge = round($item->total_recharge * 0.01 * $this->multiple,2);
+        $item->android_recharge = round($item->android_recharge * 0.01 * $this->multiple,2);
+        $item->ios_recharge = round($item->ios_recharge * 0.01 * $this->multiple,2);
+
+//        $item->active_user = 2200000 + $item->active_user;
+//        $item->inc_user = 290000 + $item->inc_user;
+        $item->active_user *= $this->multiple;
+        $item->inc_user *= $this->multiple;
+        $item->online_user *= $this->multiple;
+        $item->keep_1 *= $this->multiple;
+        $item->inc_user *= $this->multiple;
+        $item->inc_android_user *= $this->multiple;
+        $item->inc_ios_user *= $this->multiple;
+        $item->inc_recharge_user *= $this->multiple;
+        $item->inc_arpu *= $this->multiple;
+        $item->success_order *= $this->multiple;
+        $item->total_order *= $this->multiple;
+        $item->lp_access *= $this->multiple;
+        $item->lp_hit *= $this->multiple;
+        $item->inc_channel_user *= $this->multiple;
+        $item->inc_auto_user *= $this->multiple;
+        $item->channel_deduction_increase_user *= $this->multiple;
         return $item;
     }
 
