@@ -197,7 +197,7 @@ class StatController extends BaseCurlIndexController
         $item->active_user *= $this->multiple;
         $item->inc_user *= $this->multiple;
         $item->online_user *= $this->multiple;
-        $item->keep_1 *= $this->multiple;
+        $item->keep_1 = ($item->active_user-$item->inc_user)*$this->multiple;
         $item->inc_android_user *= $this->multiple;
         $item->inc_ios_user *= $this->multiple;
         $item->inc_recharge_user *= $this->multiple;
