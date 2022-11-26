@@ -39,10 +39,10 @@ class OrderController extends PayBaseController
     {
         $user = $request->user();
 
-        if(!Cache::lock('createOrder_'.$user->id,5)->get()){
+        /*if(!Cache::lock('createOrder_'.$user->id,5)->get()){
             Log::debug('==order_create=',['ID为:'.$user->id.'的用户在重复拉起订单']);//参数日志
             return response()->json(['state' => -1, 'msg' => '当前用户较多,请稍候重试']);
-        }
+        }*/
         //一小时10次拉起未付的用户,一小时后才能发起订单 todo
         $redis = $this->redis('login');
         $unpaidKey = 'unpaid_user_'.$user->id;
