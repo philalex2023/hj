@@ -43,7 +43,7 @@ class CommentShortController extends Controller
                 'content' => $content,
                 'reply_at' => date('Y-m-d H:i:s'),
             ];
-            return $this->submitComment('comments_short','video','commentForShort', $vid, $insertData, $user);
+            return $this->submitComment('comments','video','commentForShort', $vid, $insertData, $user);
         }
         return response()->json([
             'state'=>-1,
@@ -68,7 +68,7 @@ class CommentShortController extends Controller
                 'content' => 'required',
             ])->validated();
 
-            $commentTable = 'comments_short';
+            $commentTable = 'comments';
             $repliedInfo = DB::table($commentTable)->where('id',$validated['comment_id'])->first();
             $comment = DB::table($commentTable)->find($validated['comment_id'],['reply_cid']);
             if(!$repliedInfo || !$comment){
@@ -120,7 +120,7 @@ class CommentShortController extends Controller
             $vid = $params['vid'];
             $page = $params['page'] ?? 1;
             $perPage = 16;
-            $result = DB::table('comments_short')
+            $result = DB::table('comments')
                 ->select('id', 'vid', 'uid', 'reply_cid', 'replied_uid', 'content', 'replies', 'reply_at','user_avatar as avatar','user_nickname as nickname','reply_user_avatar as replied_avatar','reply_user_nickname as replied_nickname')
                 ->where('vid', $vid)
                 ->where('status', 1)
