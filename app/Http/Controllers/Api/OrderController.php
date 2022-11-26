@@ -3,29 +3,22 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\MemberCard;
 use App\Models\Order;
-use App\Models\PayLog;
 use App\Models\RechargeChannels;
-use App\Models\Video;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\ChannelTrait;
 use App\TraitClass\MemberCardTrait;
 use App\TraitClass\PayTrait;
 use Exception;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Collection;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
 
-class OrderController extends PayBaseController
+class OrderController extends Controller
 {
     use ApiParamsTrait,MemberCardTrait,PayTrait,ChannelTrait;
 
@@ -43,7 +36,7 @@ class OrderController extends PayBaseController
             Log::debug('==order_create=',['ID为:'.$user->id.'的用户在重复拉起订单']);//参数日志
             return response()->json(['state' => -1, 'msg' => '当前用户较多,请稍候重试']);
         }*/
-        //一小时10次拉起未付的用户,一小时后才能发起订单 todo
+        //一小时10次拉起未付的用户,一小时后才能发起订单
         $redis = $this->redis('login');
         $unpaidKey = 'unpaid_user_'.$user->id;
         $hourAgo = strtotime('-1 hour');
