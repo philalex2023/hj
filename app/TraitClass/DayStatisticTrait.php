@@ -102,7 +102,7 @@ trait DayStatisticTrait
         $oldDeductData = (int)$redis->zCount('ch_deduction_inc_user_'.$dayData,$starTime,$dayEndTime);
         $hashData['day_channel_deduction_increase_user'] = $oldDeductData + $this->sumRangeValue($redis->zRangeByScore('ch_deduct_inc_user_'.$dayData,$starTime,$dayEndTime));
 
-        $day_up_master_income = DB::table('up_income_day')
+        $day_up_master_income = DB::table('income_day')
             ->where('at_time','>=',$starTime)
             ->where('at_time','<=',$dayEndTime)
             ->sum('gold');
