@@ -103,49 +103,6 @@ class MoveLongVideo extends Command
                 DB::table('video')->insert($insert);
             }
         }
-
-
-        /*$tagAll = DB::table('tag')->pluck('name','id')->all();
-         * DB::table('video_short')->chunkById(100,function ($items) use ($tagAll){
-            foreach ($items as $item){
-                $insert = (array)$item;
-                if($insert['status']>0){
-                    unset($insert['id']);
-                    unset($insert['tid']);
-                    unset($insert['favors']);
-                    $insert['cid'] = 10000;
-                    $insert['dev_type'] = 1;
-
-                    $tagKvJson = json_decode($insert['tag_kv'],true);
-                    $tagKv = $tagKvJson ?? [];
-                    $intersection = array_intersect($tagAll,$tagKv);
-                    if(!empty($intersection)){
-                        $insert['tag_kv'] = json_encode($intersection);
-                    }else{
-                        $insert['tag_kv'] = json_encode([]);
-                    }
-                    DB::table('video')->insert($insert);
-                }
-            }
-        });*/
-        /*$videos = DB::table('video_short')->get();
-        foreach ($videos as $video){
-            DB::table('video')->insert([
-                'name' => $video->name,
-                'dev_type' => 1,
-                'cid' => 10000,
-                'tag' => json_encode([]),
-                'data_source' => json_encode([]),
-                'show_type' => $video->group_type,
-                'created_at' => date('Y-m-d H:i:s'),
-                'updated_at' => date('Y-m-d H:i:s'),
-            ]);
-        }*/
-//        }
-
-        //$bar = $this->output->createProgressBar(count($Items));
-        //$bar->start();
-        //$bar->finish();
         $this->info('######执行完成######');
         return 0;
     }

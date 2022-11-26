@@ -80,41 +80,6 @@ class VideoShortController extends Controller
         ]);
     }
 
-    public function getShortVideoIds($cate_id=0): JsonResponse|array
-    {
-        $redis = $this->redis();
-        $key = $cate_id>0 ? 'shortVideoIdsCollections_'.$cate_id : 'shortVideoIdsCollections';
-        if(!$redis->exists($key)){
-            $lock = Cache::lock('getShortVideoIdsLock_'.$cate_id,10);
-            if($lock->get()){
-                $buildQuery = AdminVideoShort::query();
-                if($cate_id>0){
-                    $buildQuery = $buildQuery->where('cat','like','%'.$cate_id.'%');
-                }
-                $items = $buildQuery->orderByDesc('sort')->get(['id','sort','status']);
-                $invalidIds = [];
-                foreach ($items as $item){
-                    if($item->status==1){
-                        $redis->zAdd($key,$item->sort,$item->id);
-                    }
-                    if($item->status==0){
-                        $invalidIds[] = $item->id;
-                    }
-                }
-
-                $redis->sRem($key,$invalidIds);
-                $redis->expire($key,86400);
-                $ids = (array) $redis->zRevRange($key,0,-1,true);
-                $lock->release();
-            }else{
-                return $this->returnExceptionContentForLock('无法获取锁');
-            }
-        }else{
-            $ids = (array) $redis->zRevRange($key,0,-1,true);
-        }
-        return $ids;
-    }
-
     private function isBuyShortVideo($one,$user): bool
     {
         $videoRedis = $this->redis('video');

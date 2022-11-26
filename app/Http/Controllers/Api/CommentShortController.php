@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Api;
 use App\ExtendClass\CacheUser;
 use App\Http\Controllers\Controller;
 use App\Models\Video;
-use App\Models\VideoShort;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommentTrait;
 use App\TraitClass\VipRights;
@@ -44,7 +43,7 @@ class CommentShortController extends Controller
                 'content' => $content,
                 'reply_at' => date('Y-m-d H:i:s'),
             ];
-            return $this->submitComment('comments_short','video_short','commentForShort', $vid, $insertData, $user);
+            return $this->submitComment('comments_short','video','commentForShort', $vid, $insertData, $user);
         }
         return response()->json([
             'state'=>-1,
@@ -95,7 +94,7 @@ class CommentShortController extends Controller
                 'content' => $validated['content'],
                 'reply_at' => date('Y-m-d H:i:s'),
             ];
-            return $this->replyComment($commentTable,'video_short','commentForShort',$validated['vid'],$insertData,$user);
+            return $this->replyComment($commentTable,'video','commentForShort',$validated['vid'],$insertData,$user);
 
         }
         return response()->json([
