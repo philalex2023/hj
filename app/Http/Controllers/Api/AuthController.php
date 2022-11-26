@@ -134,12 +134,13 @@ class AuthController extends Controller
         $login_info = ['device_system'=>$deviceSystem,'clipboard'=>$validated['clipboard']??'','ip'=>$ip];
 
         if($loginType===1){ //注册登录
-            if(!$loginRedis->setnx('reg_lock',1)){
-                Log::info('reg_lock',[$ip,$validated]);
+            $lockKey = 'reg_lock_'.$validated['did'];
+            if(!$loginRedis->setnx($lockKey,1)){
+                Log::info($lockKey,[$ip,$validated]);
                 return response()->json(['state' => -1, 'msg' => '服务器繁忙请稍候重试']);
             }
             $user = $this->reg($validated,$ip,$appInfo,$deviceInfo,$deviceSystem,$loginRedis,$login_info);
-            $loginRedis->del('reg_lock');
+            $loginRedis->del($lockKey);
         }else{ //第二次及以后登录
             $user = User::query()->where('did',$validated['did'])->first($this->loginUserFields);
             if(!$user){ //重新注册
