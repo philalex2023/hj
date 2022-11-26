@@ -27,7 +27,7 @@ trait TopicTrait
             foreach ($getItems as $item){
                 $key = 'topic_id_'.$item->id;
                 $pipe->set($key,$item->contain_vids);
-                $pipe->expire($key,7200);
+                $pipe->expire($key,3600);
             }
         });
     }
