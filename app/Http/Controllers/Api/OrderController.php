@@ -175,7 +175,12 @@ class OrderController extends PayBaseController
         $use = rand(0, $weight -1);
         if(isset($channelIds[$use])){
             $channelId = $channelIds[$use];
-            return $this->getRechargeChannelSelector()[$channelId];
+            $rechargeChannelSelector = $this->getRechargeChannelSelector();
+            if(!empty($rechargeChannelSelector)){
+                return $rechargeChannelSelector[$channelId];
+            }else{
+                return false;
+            }
         }else{
             return false;
         }
