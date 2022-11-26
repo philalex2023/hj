@@ -111,6 +111,11 @@ class OrderController extends PayBaseController
             $method_id = (int)$params['method_id'];
             $channelInfo = $user->channel_id>0 ? $this->getChannelInfoById($user->channel_id) : null;
             $payEnvInfo = $this->getRechargeChannelByWeight($method_id,$amount);
+            if(!$payEnvInfo){
+                $return = $this->format(-1, [], '无可用充值渠道');
+                return response()->json($return);
+            }
+
             $channelNo = match ($method_id){
                 1 => $payEnvInfo['zfb_code'],
                 2 => $payEnvInfo['wx_code'],
@@ -170,11 +175,10 @@ class OrderController extends PayBaseController
         $use = rand(0, $weight -1);
         if(isset($channelIds[$use])){
             $channelId = $channelIds[$use];
+            return $this->getRechargeChannelSelector()[$channelId];
         }else{
-            $return = $this->format(-1, [], '无可用充值渠道');
-            return response()->json($return);
+            return false;
         }
-        return $this->getRechargeChannelSelector()[$channelId];
     }
 
     public function getRechargeChannelsByCache($payChannelType,$amount)
