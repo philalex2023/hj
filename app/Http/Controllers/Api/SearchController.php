@@ -285,10 +285,11 @@ class SearchController extends Controller
                 $catPageHashKey = 'searchAfterCat';
                 $endIndexField = $tid.'_'.$page;
                 if($page==1){
-                    $endIndex = 500000;
+                    $endIndex = 200000;
                 }else{
                     $loginRedis = $this->redis('login');
                     $endIndex = $loginRedis->hGet($catPageHashKey,$endIndexField);
+                    !$endIndex && $endIndex = 200000;
                 }
                 $body['search_after'] = [$endIndex];
                 $searchParams = [
