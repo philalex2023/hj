@@ -282,6 +282,15 @@ class SearchController extends Controller
                 $body['sort'] = [
                     ['id' => 'desc']
                 ];
+                $catPageHashKey = 'searchAfterCat';
+                $endIndexField = $tid.'_'.$page;
+                if($page==1){
+                    $endIndex = 500000;
+                }else{
+                    $loginRedis = $this->redis('login');
+                    $endIndex = $loginRedis->hGet($catPageHashKey,$endIndexField);
+                }
+                $body['search_after'] = [$endIndex];
                 $searchParams = [
                     'index' => 'video_index',
                     'body' => $body,
@@ -301,6 +310,10 @@ class SearchController extends Controller
                 $hasMorePages = $total >= $perPage*$page;
 
                 if(!empty($catVideoList)){
+                    if($hasMorePages){
+                        $lastId = end($catVideoList)['id'];
+                        $this->redis('login')->hSet($catPageHashKey,$endIndexField,$lastId);
+                    }
                     $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
                     //广告
                     $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
