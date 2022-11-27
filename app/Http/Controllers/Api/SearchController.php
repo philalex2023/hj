@@ -270,7 +270,7 @@ class SearchController extends Controller
                 $ids = explode(',',$containVidStr);
                 $body = [
                     'size' => $perPage,
-                    'from' => $offset,
+//                    'from' => $offset,
                     'query' => [
                         'bool'=>[
                             'must' => [
