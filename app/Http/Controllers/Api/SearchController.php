@@ -270,41 +270,25 @@ class SearchController extends Controller
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
                 $ids = explode(',',$containVidStr);
-                $idParams = [];
-                $length = count($ids);
-                foreach ($ids as $key => $id) {
-                    $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
-                }
-
-                $searchParams = [
-                    'index' => 'video_index',
-                    'body' => [
-//                        'track_total_hits' => true,
-                        'size' => $perPage,
-                        'from' => $offset,
-                        //'_source' => false,
-                        'query' => [
-                            'function_score' => [
-                                'query' => [
-                                    'bool'=>[
-                                        'must' => [
-                                            ['terms' => ['id'=>$ids]],
-                                        ]
-                                    ]
-                                ],
-                                'script_score' => [
-                                    'script' => [
-                                        //'lang' => 'painless',
-                                        'params' => [
-                                            'scoring' => $idParams
-                                        ],
-                                        'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
-                                    ]
-                                ]
+                $body = [
+                    'size' => $perPage,
+                    'from' => $offset,
+                    'query' => [
+                        'bool'=>[
+                            'must' => [
+                                ['terms' => ['id'=>$ids]],
                             ]
                         ]
-                    ],
+                    ]
                 ];
+                $body['sort'] = [
+                    ['id' => 'desc']
+                ];
+                $searchParams = [
+                    'index' => 'video_index',
+                    'body' => $body,
+                ];
+
                 $es = $this->esClient();
                 $response = $es->search($searchParams);
                 $catVideoList = [];
