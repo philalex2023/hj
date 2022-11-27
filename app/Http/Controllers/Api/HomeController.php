@@ -158,13 +158,11 @@ class HomeController extends Controller
                                                 'bool'=>[
                                                     'must' => [
                                                         ['terms' => ['id'=>$ids]],
-                                                        //['term' => ['dev_type'=>0]],
                                                     ]
                                                 ]
                                             ],
                                             'script_score' => [
                                                 'script' => [
-                                                    //'lang' => 'painless',
                                                     'params' => [
                                                         'scoring' => $idParams
                                                     ],

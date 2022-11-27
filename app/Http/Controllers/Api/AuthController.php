@@ -70,7 +70,7 @@ class AuthController extends Controller
         //
         $nickNames = $this->createNickNames;
         $randNickName = $this->createNickNames[array_rand($nickNames)];
-        $getAccountV = $loginRedis->get('account_v');
+        $getAccountV = $loginRedis->incr('account_v');
         $accountV = !$getAccountV ? 1 : $getAccountV;
         $user->account = 'AD-'.$accountV;
         $user->promotion_code = Str::random(2).$accountV.Str::random(2);
@@ -84,7 +84,7 @@ class AuthController extends Controller
         $user->save();
 
         $loginRedis->sAdd('account_did',$validated['did']);
-        $loginRedis->incr('account_v');
+
         return $user;
     }
     /**
@@ -100,8 +100,8 @@ class AuthController extends Controller
         //Log::debug('login_request_params_info===',[$params['did']??'none did']);//参数日志
         $validated = Validator::make($params,$this->loginRules)->validated();
         //短时间内禁止同一设备注册多个账号
-//        $key = 'api_did_'.$validated['did'];
-        $key = 'api_did_lock';
+        $key = 'api_did_'.$validated['did'];
+//        $key = 'api_did_lock';
 
         $ip = $this->getRealIp();
         if($validated['did']==0){

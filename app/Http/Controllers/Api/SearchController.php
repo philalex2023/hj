@@ -259,8 +259,6 @@ class SearchController extends Controller
                 $perPage = 16;
                 $offset = ($page-1)*$perPage;
 
-//                $containVidStr = DB::table('topic')->where('id',$tid)->value('contain_vids');
-
                 if(!$tid){
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
