@@ -311,7 +311,7 @@ class SearchController extends Controller
                 if(!empty($catVideoList)){
                     if($hasMorePages){
                         $lastId = end($catVideoList)['id'];
-                        $this->redis('login')->hSet($catPageHashKey,$endIndexField,$lastId);
+                        $this->redis('login')->hSet($catPageHashKey,$tid.'_'.($page+1),$lastId);
                     }
                     $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
                     //广告
