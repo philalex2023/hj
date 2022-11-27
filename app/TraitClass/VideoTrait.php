@@ -377,9 +377,11 @@ AV-海角伙伴
             }*/
             //封面图处理
             $list['cover_img'] = $this->transferImgOut($list['cover_img'],$domainSync,$_v);
-            if ($list['usage']??false) {
+            /*if ($list['usage']??false) {
                 unset($list['vs_id'], $list['vs_name'], $list['vs_gold'], $list['vs_cat'], $list['vs_sync'], $list['vs_title'], $list['vs_duration'], $list['vs_type'], $list['vs_restricted'], $list['vs_cover_img'], $list['vs_views'], $list['vs_updated_at'], $list['vs_hls_url'], $list['vs_dash_url'], $list['vs_url']);
-            }
+            }*/
+            //收藏兼容以前响应字段
+            $list['usage'] = intval($list['dev_type']) + 1;
             //hls播放地址处理
             if(isset($list['hls_url'])){
                 $list['hls_url'] = $domainSync . $this->transferHlsUrl($list['hls_url']??'');
