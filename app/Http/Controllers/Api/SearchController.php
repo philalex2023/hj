@@ -257,7 +257,6 @@ class SearchController extends Controller
                 $tid = $validated['cid'];
                 $page = $validated['page'];
                 $perPage = 16;
-                $offset = ($page-1)*$perPage;
 
                 if(!$tid){
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
@@ -270,7 +269,6 @@ class SearchController extends Controller
                 $ids = explode(',',$containVidStr);
                 $body = [
                     'size' => $perPage,
-//                    'from' => $offset,
                     'query' => [
                         'bool'=>[
                             'must' => [
