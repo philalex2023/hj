@@ -21,7 +21,7 @@ Route::group([
 ],function (){
     Route::get('config', 'ConfigController@ack');   //配置
     Route::post('robotsUpdate', 'ConfigController@robotsUpdate');   //机器人更新
-    Route::post('login', 'AuthController@login');
+    Route::post('login', 'AuthController@login')->name('login');
 });
 
 $payNames = [
