@@ -17,14 +17,21 @@ trait DayStatisticTrait
 
         $starTime = strtotime(date('Y-m-d'));
         $dayEndTime = strtotime(date('Y-m-d 23:59:59'));
-        if($d>0 || date('H:i')=='00:00'){
+        if($d>0){
             $t = strtotime('-'.$d.' day');
             $dayData = date('Ymd',$t);
             $starTime = strtotime(date('Y-m-d 00:00:00',$t));
             $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
         }
-
         $hourAgo = strtotime('-1 hour');
+        if(date('H:i')>='00:00' || date('H:i')<='00:10'){
+            $t = strtotime('-'.$d.' day');
+            $dayData = date('Ymd',$t);
+            $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
+            $starTime = $dayEndTime-3600;
+        }
+
+
 
 //        $hashData['active_user'] = $redis->sCard('at_user_'.$dayData);
 //        $hashData['online_user'] = $this->redis('video')->sCard('onlineUser_'.$dayData);
