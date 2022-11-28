@@ -4,7 +4,6 @@
 namespace App\Http\Controllers\Admin;
 
 
-use App\Jobs\ProcessCarousel;
 use App\Models\Carousel;
 use App\Models\Category;
 use App\Services\UiService;
@@ -242,9 +241,6 @@ class CarouselController extends BaseCurlController
             ->orderByDesc('sort')
             ->get(['id','title','img','url','action_type','vid','status','sort','line','end_at']);
         Cache::forever($key,$value);
-
-        /*$job = new ProcessCarousel($model);
-        $this->dispatch($job->onQueue('high'));*/
     }
 
     public function setListOutputItemExtend($item)
