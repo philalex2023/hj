@@ -139,7 +139,7 @@ class HomeController extends Controller
                             $ids = explode(',',$topic['contain_vids']);
                             $sortArr = [];
                             foreach ($ids as $key => $id) {
-                                $sortArr[] = [$key];
+                                $sortArr[] = $key;
                             }
                             $source = $this->videoFields;
                             $searchParams = [
