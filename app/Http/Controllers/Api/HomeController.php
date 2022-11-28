@@ -137,17 +137,38 @@ class HomeController extends Controller
                             //获取专题数据
                             $topic['title'] = '';
                             $ids = explode(',',$topic['contain_vids']);
-
+                            $idParams = [];
+                            $length = count($ids);
+                            foreach ($ids as $key => $id) {
+                                $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+                            }
+                            //Log::info('index_list_str',$idParams);
+                            $size = $topic['style'] == 7 ? 7: 8;
+//                            $source = ['id','is_top','name','author','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
                             $source = $this->videoFields;
                             $searchParams = [
                                 'index' => 'video_index',
                                 'body' => [
+//                                    'track_total_hits' => true,
                                     'size' => $size,
                                     '_source' => $source,
+//                                '_source' => false,
                                     'query' => [
-                                        'bool'=>[
-                                            'must' => [
-                                                ['terms' => ['id'=>$ids]],
+                                        'function_score' => [
+                                            'query' => [
+                                                'bool'=>[
+                                                    'must' => [
+                                                        ['terms' => ['id'=>$ids]],
+                                                    ]
+                                                ]
+                                            ],
+                                            'script_score' => [
+                                                'script' => [
+                                                    'params' => [
+                                                        'scoring' => $idParams
+                                                    ],
+                                                    'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                                ]
                                             ]
                                         ]
                                     ]
@@ -162,12 +183,6 @@ class HomeController extends Controller
                                     $videoList[] = $item['_source'];
                                 }
                             }
-                            $len = count($videoList);
-                            foreach ($videoList as $key=>&$item){
-                                $item['score'] = $len-$key;
-                            }
-                            $sortArr = array_column($videoList,'score');
-                            array_multisort($sortArr,SORT_DESC,$videoList);
                         }
 
                         $topic['small_video_list'] = $videoList;
@@ -205,3 +220,4 @@ class HomeController extends Controller
     }
 
 }
+
