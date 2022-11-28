@@ -28,7 +28,7 @@ trait DayStatisticTrait
         //机器人0点报
         if($report){
             $now_time = time();
-            if($now_time >= strtotime(date('Y-m-d 00:00:00')) && $now_time < strtotime(date('Y-m-d 00:59:00'))){
+            if($now_time >= strtotime(date('Y-m-d 00:00:00')) && $now_time < strtotime(date('Y-m-d 00:10:00'))){
                 $t = strtotime('-1 day');
                 $dayData = date('Ymd',$t);
                 $starTime = strtotime(date('Y-m-d 00:00:00',$t));
