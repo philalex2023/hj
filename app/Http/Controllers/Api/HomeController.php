@@ -185,7 +185,7 @@ class HomeController extends Controller
                             unset($top['tmp_ids']);
                         }
                         unset($videoList);
-                        Log::info('list',$topics);
+                        //Log::info('list',$topics);
                         //广告
                         $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
                     }else{
