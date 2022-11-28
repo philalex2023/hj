@@ -137,10 +137,9 @@ class HomeController extends Controller
                             //获取专题数据
                             $topic['title'] = '';
                             $ids = explode(',',$topic['contain_vids']);
-                            $idParams = [];
-                            $length = count($ids);
+                            $sortArr = [];
                             foreach ($ids as $key => $id) {
-                                $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+                                $sortArr[] = [$key];
                             }
                             $source = $this->videoFields;
                             $searchParams = [
@@ -149,21 +148,9 @@ class HomeController extends Controller
                                     'size' => $size,
                                     '_source' => $source,
                                     'query' => [
-                                        'function_score' => [
-                                            'query' => [
-                                                'bool'=>[
-                                                    'must' => [
-                                                        ['terms' => ['id'=>$ids]],
-                                                    ]
-                                                ]
-                                            ],
-                                            'script_score' => [
-                                                'script' => [
-                                                    'params' => [
-                                                        'scoring' => $idParams
-                                                    ],
-                                                    'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
-                                                ]
+                                        'bool'=>[
+                                            'must' => [
+                                                ['terms' => ['id'=>$ids]],
                                             ]
                                         ]
                                     ]
@@ -179,7 +166,7 @@ class HomeController extends Controller
                                 }
                             }
                         }
-
+                        array_multisort($sortArr,$videoList);
                         $topic['small_video_list'] = $videoList;
                         unset($topic['contain_vids']);
                     }
