@@ -136,16 +136,17 @@ class HomeController extends Controller
                         if(!empty($topic['contain_vids'])){
                             $num = $topic['style'] == 7 ? 7: 8;
                             $size = $num+$size;
+
                             //获取专题数据
                             $topic['title'] = '';
                             $expAll = explode(',',$topic['contain_vids']);
-                            $topic['small_video_list'] = array_slice($expAll,0,$num);
-                            $ids = [...$ids ,...explode(',',$topic['contain_vids'])];
+                            $topic['tmp_ids'] = array_slice($expAll,0,$num);
+                            $ids = [...$ids ,...$topic['tmp_ids']];
                         }
                         unset($topic['contain_vids']);
                         unset($expAll);
                     }
-                    $ids = array_unique($ids);
+                    $ids = array_values(array_unique($ids));
                     $size = count($ids);
                     $body = [
                         'size' => $size,
@@ -174,17 +175,22 @@ class HomeController extends Controller
                             $videoList[] = $item['_source'];
                         }
                     }
-                    $videoList = array_column($videoList,null,'id');
                     if(!empty($videoList)){
+                        $videoList = array_column($videoList,null,'id');
                         foreach ($topics as &$top){
-                            foreach ($top['small_video_list'] as $key => $vid){
-                                $top['small_video_list'][$key] = $videoList[$vid];
+                            $top['small_video_list']=[];
+                            foreach ($top['tmp_ids'] as $vid){
+                                $top['small_video_list'][] = $videoList[$vid];
                             }
+                            unset($top['tmp_ids']);
                         }
+                        unset($videoList);
+                        Log::info('list',$topics);
+                        //广告
+                        $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
+                    }else{
+                        $topics = [];
                     }
-                    unset($videoList);
-                    //广告
-                    $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
                     $res['list'] = $topics;
                     $res['ctime'] = time();
                     //
