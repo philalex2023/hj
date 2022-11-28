@@ -17,7 +17,7 @@ trait DayStatisticTrait
 
         $starTime = strtotime(date('Y-m-d'));
         $dayEndTime = strtotime(date('Y-m-d 23:59:59'));
-        if($d>0){
+        if($d>0 || date('H')=='00'){
             $t = strtotime('-'.$d.' day');
             $dayData = date('Ymd',$t);
             $starTime = strtotime(date('Y-m-d 00:00:00',$t));
