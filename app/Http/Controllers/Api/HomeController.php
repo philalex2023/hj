@@ -136,12 +136,13 @@ class HomeController extends Controller
                         if(!empty($topic['contain_vids'])){
                             $num = $topic['style'] == 7 ? 7: 8;
                             $size = $num+$size;
-
                             //获取专题数据
                             $topic['title'] = '';
                             $expAll = explode(',',$topic['contain_vids']);
-                            $topic['tmp_ids'] = array_slice($expAll,0,$num);
-                            $ids = [...$ids ,...$topic['tmp_ids']];
+                            if(!empty($expAll)){
+                                $topic['tmp_ids'] = array_slice($expAll,0,$num);
+                                $ids = [...$ids ,...$topic['tmp_ids']];
+                            }
                         }
                         unset($topic['contain_vids']);
                         unset($expAll);
@@ -179,10 +180,12 @@ class HomeController extends Controller
                         $videoList = array_column($videoList,null,'id');
                         foreach ($topics as &$top){
                             $top['small_video_list']=[];
-                            foreach ($top['tmp_ids'] as $vid){
-                                $top['small_video_list'][] = $videoList[$vid];
+                            if(isset($top['tmp_ids'])){
+                                foreach ($top['tmp_ids'] as $vid){
+                                    isset($videoList[$vid]) && $top['small_video_list'][] = $videoList[$vid];
+                                }
+                                unset($top['tmp_ids']);
                             }
-                            unset($top['tmp_ids']);
                         }
                         unset($videoList);
                         //广告
