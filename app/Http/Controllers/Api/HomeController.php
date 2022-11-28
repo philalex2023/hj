@@ -164,7 +164,11 @@ class HomeController extends Controller
                             }
                             $sortArr = [];
                             foreach ($ids as $key => $id) {
-                                $sortArr[] = $key;
+                                if($key < $size){
+                                    $sortArr[] = $key;
+                                }else{
+                                    break;
+                                }
                             }
                             array_multisort($sortArr,$videoList);
                         }
