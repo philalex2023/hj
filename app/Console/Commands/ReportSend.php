@@ -44,7 +44,7 @@ class ReportSend extends Command
     public function handle()
     {
 
-        $data = $this->getDayStatisticHashData();
+        $data = $this->getDayStatisticHashData(0,true);
 //        dd($data);
 
         $msg = '统计时间：'.date('Y-m-d H:i:s')."\n";
