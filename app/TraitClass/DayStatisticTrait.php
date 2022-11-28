@@ -9,7 +9,7 @@ trait DayStatisticTrait
 {
     use PHPRedisTrait;
 
-    public function getDayStatisticHashData($d=0): array
+    public function getDayStatisticHashData($d=0,$report=false): array
     {
         $redis = $this->redis();
         $dayData = date('Ymd');
@@ -24,11 +24,14 @@ trait DayStatisticTrait
             $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
         }
         $hourAgo = strtotime('-1 hour');
-        if(date('H:i')>='00:00' || date('H:i')<='00:10'){
+
+        //机器人0点报
+        if($report && (time()>= strtotime(date('Y-m-d 00:00:00')) || time()<=strtotime(date('Y-m-d 00:30:00')))){
             $t = strtotime('-'.$d.' day');
             $dayData = date('Ymd',$t);
+            $starTime = strtotime(date('Y-m-d 00:00:00',$t));
             $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
-            $starTime = $dayEndTime-3600;
+            $hourAgo = $dayEndTime-3600;
         }
 
 
