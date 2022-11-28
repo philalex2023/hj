@@ -137,10 +137,7 @@ class HomeController extends Controller
                             //获取专题数据
                             $topic['title'] = '';
                             $ids = explode(',',$topic['contain_vids']);
-                            $sortArr = [];
-                            foreach ($ids as $key => $id) {
-                                $sortArr[] = $key;
-                            }
+
                             $source = $this->videoFields;
                             $searchParams = [
                                 'index' => 'video_index',
@@ -165,8 +162,13 @@ class HomeController extends Controller
                                     $videoList[] = $item['_source'];
                                 }
                             }
+                            $sortArr = [];
+                            foreach ($ids as $key => $id) {
+                                $sortArr[] = $key;
+                            }
+                            array_multisort($sortArr,$videoList);
                         }
-                        array_multisort($sortArr,$videoList);
+
                         $topic['small_video_list'] = $videoList;
                         unset($topic['contain_vids']);
                     }
