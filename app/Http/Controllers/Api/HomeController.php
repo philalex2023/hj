@@ -162,15 +162,12 @@ class HomeController extends Controller
                                     $videoList[] = $item['_source'];
                                 }
                             }
-                            $sortArr = [];
-                            foreach ($ids as $key => $id) {
-                                if($key < $size){
-                                    $sortArr[] = $key;
-                                }else{
-                                    break;
-                                }
+                            $len = count($videoList);
+                            foreach ($videoList as $key=>&$item){
+                                $item['score'] = $len-$key;
                             }
-                            array_multisort($sortArr,$videoList);
+                            $sortArr = array_column($videoList,'score');
+                            array_multisort($sortArr,SORT_DESC,$videoList);
                         }
 
                         $topic['small_video_list'] = $videoList;
