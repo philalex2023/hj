@@ -233,7 +233,7 @@ class ConfigController extends Controller
         $searchParams = [
             'index' => 'video_index',
             'body' => [
-                'track_total_hits' => true,
+//                'track_total_hits' => true,
                 'size' => $size,
 //                'from' => $offset,
                 '_source' => $source,
@@ -242,10 +242,12 @@ class ConfigController extends Controller
                         'must' => [
                             ['term' => ['type'=>4]],
                             ['term' => ['dev_type'=>0]],
-                            ['range' => ['id'=>['gt'=>$id]]],
+//                            ['range' => ['id'=>['gt'=>$id]]],
                         ]
                     ]
                 ],
+                'sort' => [['id' => 'asc']],
+                'search_after' => [$id],
             ],
         ];
 
