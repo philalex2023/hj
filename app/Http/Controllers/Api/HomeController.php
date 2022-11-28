@@ -123,67 +123,66 @@ class HomeController extends Controller
                 $freshTime = $redis->get('homeLists_fresh_time')??0;
                 $ctime = $res['ctime'] ?? 0;
                 if(!$res || $freshTime > $ctime){
-
                     $paginator = DB::table('topic')->where('cid',$cid)->where('status',1)->orderBy('sort')->simplePaginate($perPage,['id','name','show_type','contain_vids'],'homeContent',$page);
                     $res['hasMorePages'] = $paginator->hasMorePages();
                     $topics = $paginator->items();
                     Log::info('fresh_list',[$cid]);
+                    $ids = [];
+                    $size = 0;
                     foreach ($topics as &$topic){
                         $topic = (array)$topic;
                         $topic['style'] = (string)$topic['show_type']; //android要是字符串
-                        $videoList = [];
+
                         if(!empty($topic['contain_vids'])){
-                            $size = $topic['style'] == 7 ? 7: 8;
+                            $num = $topic['style'] == 7 ? 7: 8;
+                            $size = $num+$size;
                             //获取专题数据
                             $topic['title'] = '';
-                            $ids = explode(',',$topic['contain_vids']);
-                            $idParams = [];
-                            $length = count($ids);
-                            foreach ($ids as $key => $id) {
-                                $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
-                            }
-                            $source = $this->videoFields;
-                            $searchParams = [
-                                'index' => 'video_index',
-                                'body' => [
-//                                    'track_total_hits' => true,
-                                    'size' => $size,
-                                    '_source' => $source,
-                                    'query' => [
-                                        'function_score' => [
-                                            'query' => [
-                                                'bool'=>[
-                                                    'must' => [
-                                                        ['terms' => ['id'=>$ids]],
-                                                    ]
-                                                ]
-                                            ],
-                                            'script_score' => [
-                                                'script' => [
-                                                    'params' => [
-                                                        'scoring' => $idParams
-                                                    ],
-                                                    'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
-                                                ]
-                                            ]
-                                        ]
-                                    ]
-                                ],
-                            ];
+                            $expAll = explode(',',$topic['contain_vids']);
+                            $topic['small_video_list'] = array_slice($expAll,0,$num);
+                            $ids = [...$ids ,...explode(',',$topic['contain_vids'])];
+                        }
+                        unset($topic['contain_vids']);
+                        unset($expAll);
+                    }
+                    $ids = array_unique($ids);
+                    $size = count($ids);
+                    $body = [
+                        'size' => $size,
+                        '_source' => $this->videoFields,
+                        'query' => [
+                            'bool'=>[
+                                'must' => [
+                                    ['terms' => ['id'=>$ids]],
+                                ]
+                            ]
+                        ]
+                    ];
+                    $body['sort'] = [['id' => 'desc']];
+                    $body['search_after'] = [200000];
+                    $searchParams = [
+                        'index' => 'video_index',
+                        'body' => $body
+                    ];
 
-                            $es = $this->esClient();
-                            $response = $es->search($searchParams);
-                            //Log::info('searchParam_home_list',[json_encode($searchParams)]);
-                            if(isset($response['hits']) && isset($response['hits']['hits'])){
-                                foreach ($response['hits']['hits'] as $item) {
-                                    $videoList[] = $item['_source'];
-                                }
+                    $es = $this->esClient();
+                    $response = $es->search($searchParams);
+                    //Log::info('searchParam_home_list',[json_encode($searchParams)]);
+                    $videoList = [];
+                    if(isset($response['hits']) && isset($response['hits']['hits'])){
+                        foreach ($response['hits']['hits'] as $item) {
+                            $videoList[] = $item['_source'];
+                        }
+                    }
+                    $videoList = array_column($videoList,null,'id');
+                    if(!empty($videoList)){
+                        foreach ($topics as &$top){
+                            foreach ($top['small_video_list'] as $key => $vid){
+                                $top['small_video_list'][$key] = $videoList[$vid];
                             }
                         }
-
-                        $topic['small_video_list'] = $videoList;
-                        unset($topic['contain_vids']);
                     }
+                    unset($videoList);
                     //广告
                     $topics = $this->insertAds($topics,'home_page',true,$page,$perPage);
                     $res['list'] = $topics;
