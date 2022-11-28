@@ -26,15 +26,17 @@ trait DayStatisticTrait
         $hourAgo = strtotime('-1 hour');
 
         //机器人0点报
-        if($report && (time()>= strtotime(date('Y-m-d 00:00:00')) || time()<=strtotime(date('Y-m-d 00:30:00')))){
-            $t = strtotime('-'.$d.' day');
-            $dayData = date('Ymd',$t);
-            $starTime = strtotime(date('Y-m-d 00:00:00',$t));
-            $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
-            $hourAgo = $dayEndTime-3600;
-            $nowTime = $dayEndTime;
+        if($report){
+            $now_time = time();
+            if($now_time > strtotime(date('Y-m-d 00:00:00')) && $now_time < strtotime(date('Y-m-d 00:30:00'))){
+                $t = strtotime('-'.$d.' day');
+                $dayData = date('Ymd',$t);
+                $starTime = strtotime(date('Y-m-d 00:00:00',$t));
+                $dayEndTime = strtotime(date('Y-m-d 23:59:59',$t));
+                $hourAgo = $dayEndTime-3600;
+                $nowTime = $dayEndTime;
+            }
         }
-
 
 
 //        $hashData['active_user'] = $redis->sCard('at_user_'.$dayData);
