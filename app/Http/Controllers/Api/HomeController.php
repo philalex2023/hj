@@ -142,9 +142,6 @@ class HomeController extends Controller
                             foreach ($ids as $key => $id) {
                                 $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
                             }
-                            //Log::info('index_list_str',$idParams);
-                            $size = $topic['style'] == 7 ? 7: 8;
-//                            $source = ['id','is_top','name','author','gold','cat','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','likes','updated_at'];
                             $source = $this->videoFields;
                             $searchParams = [
                                 'index' => 'video_index',
@@ -152,7 +149,6 @@ class HomeController extends Controller
 //                                    'track_total_hits' => true,
                                     'size' => $size,
                                     '_source' => $source,
-//                                '_source' => false,
                                     'query' => [
                                         'function_score' => [
                                             'query' => [
