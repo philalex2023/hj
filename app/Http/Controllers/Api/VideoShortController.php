@@ -51,14 +51,14 @@ class VideoShortController extends Controller
         '-8' => 'sub_cat_8',
     ];*/
     private array $cateMapAlias = [
-        '-1' => 75,
-        '-2' => 76,
-        '-3' => 77,
-        '-4' => 78,
-        '-5' => 79,
-        '-6' => 80,
-        '-7' => 81,
-        '-8' => 82,
+        '-1' => 73,
+        '-2' => 72,
+        '-3' => 71,
+        '-4' => 67,
+        '-5' => 69,
+        '-6' => 68,
+        '-7' => 70,
+        '-8' => 74,
     ];
 
     /**
@@ -201,6 +201,7 @@ class VideoShortController extends Controller
                         ]
                     ];
                 }else{
+                    Log::info('testShortCate',[$cateId]);
                     if(!$cateId){
                         return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                     }

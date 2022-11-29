@@ -64,7 +64,7 @@ class SearchController extends Controller
             $es = $this->esClient();
             $body = [
 //                        'track_total_hits' => true,
-                'size' => 300,
+                'size' => 500,
                 '_source' => $this->videoFields,
                 'query' => [
                     'match_phrase'=>[
@@ -95,9 +95,9 @@ class SearchController extends Controller
                 $res['total'] = $total ?? 0;
                 $pageLists = array_slice($videoList,$offset,$perPage);
                 $hasMorePages = count($videoList) > $perPage*$page;
+                unset($videoList);
                 $res['list'] = $this->handleVideoItems($pageLists,false,$request->user()->id);
                 $res['hasMorePages'] = $hasMorePages;
-                unset($videoList);
             }else{
                 $res['list'] = [];
                 $res['hasMorePages'] = false;
