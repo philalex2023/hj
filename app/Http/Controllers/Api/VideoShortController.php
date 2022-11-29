@@ -192,6 +192,7 @@ class VideoShortController extends Controller
 
                 $catVideoList = [];
                 if (!empty($words)) {
+                    $words = substr($words,0,40);
                     $query = [
                         'bool'=>[
                             'must' => [
