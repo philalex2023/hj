@@ -245,8 +245,7 @@ class VideoShortController extends Controller
                     'index' => 'video_index',
                     'body' => [
                         //'track_total_hits' => true,
-                        'size' => $perPage,
-                        'from' => $offset,
+                        'size' => 500,
                         '_source' => $this->videoFields,
                         'query' => $query,
                     ],
@@ -259,12 +258,14 @@ class VideoShortController extends Controller
                         $catVideoList[] = $item['_source'];
                     }
                 }
-                $res['total'] = $total;
-                $hasMorePages = $total >= $perPage*$page;
 
                 //Log::info('==ShortList==',$catVideoList);
                 if(!empty($catVideoList)){
-                    $res['list'] = $this->handleVideoItems($catVideoList,true,$user->id);
+                    $res['total'] = $total;
+                    $pageLists = array_slice($catVideoList,$offset,$perPage);
+                    $hasMorePages = count($catVideoList) > $perPage*$page;
+                    unset($catVideoList);
+                    $res['list'] = $this->handleVideoItems($pageLists,true,$user->id);
                     $rights = $this->getUserAllRights($user);
                     //判断是否购买或是vip
                     foreach ($res['list'] as &$one){
@@ -289,6 +290,7 @@ class VideoShortController extends Controller
                     $res['hasMorePages'] = $hasMorePages;
                 }else{
                     $res['list'] = [];
+                    $res['hasMorePages'] = false;
                 }
 
                 return response()->json(['state'=>0, 'data'=>$res??[]]);
