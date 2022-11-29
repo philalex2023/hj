@@ -175,6 +175,7 @@ class HomeController extends Controller
                         foreach ($response['hits']['hits'] as $item) {
                             $videoList[] = $item['_source'];
                         }
+                        unset($response);
                     }
                     if(!empty($videoList)){
                         $videoList = array_column($videoList,null,'id');

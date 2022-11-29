@@ -89,6 +89,7 @@ class SearchController extends Controller
                 foreach ($response['hits']['hits'] as $item) {
                     $videoList[] = $item['_source'];
                 }
+                unset($response);
             }
 
             if(!empty($videoList)){
@@ -222,6 +223,7 @@ class SearchController extends Controller
                 foreach ($response['hits']['hits'] as $item) {
                     $videoList[] = $item['_source'];
                 }
+                unset($response);
             }
             $res['total'] = $total;
             $hasMorePages = $total >= $perPage*$page;
@@ -273,6 +275,9 @@ class SearchController extends Controller
                 $tid = $validated['cid'];
                 $page = $validated['page'];
                 $perPage = 16;
+                $offset = ($page-1)*$perPage;
+
+//                $containVidStr = DB::table('topic')->where('id',$tid)->value('contain_vids');
 
                 if(!$tid){
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
@@ -283,34 +288,40 @@ class SearchController extends Controller
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
                 $ids = explode(',',$containVidStr);
-                $body = [
-                    'size' => $perPage,
-                    'query' => [
-                        'bool'=>[
-                            'must' => [
-                                ['terms' => ['id'=>$ids]],
-                            ]
-                        ]
-                    ]
-                ];
-                $body['sort'] = [
-                    ['id' => 'desc']
-                ];
-                $catPageHashKey = 'searchAfterCat';
-                $endIndexField = $tid.'_'.$page;
-                if($page==1){
-                    $endIndex = $this->maxVid;
-                }else{
-                    $loginRedis = $this->redis('login');
-                    $endIndex = $loginRedis->hGet($catPageHashKey,$endIndexField);
-                    !$endIndex && $endIndex = $this->maxVid;
+                $idParams = [];
+                $length = count($ids);
+                foreach ($ids as $key => $id) {
+                    $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
                 }
-                $body['search_after'] = [$endIndex];
+
                 $searchParams = [
                     'index' => 'video_index',
-                    'body' => $body,
+                    'body' => [
+//                        'track_total_hits' => true,
+                        'size' => 500,
+                        '_source' => $this->videoFields,
+                        'query' => [
+                            'function_score' => [
+                                'query' => [
+                                    'bool'=>[
+                                        'must' => [
+                                            ['terms' => ['id'=>$ids]],
+                                        ]
+                                    ]
+                                ],
+                                'script_score' => [
+                                    'script' => [
+                                        //'lang' => 'painless',
+                                        'params' => [
+                                            'scoring' => $idParams
+                                        ],
+                                        'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
                 ];
-
                 $es = $this->esClient();
                 $response = $es->search($searchParams);
                 $catVideoList = [];
@@ -320,21 +331,22 @@ class SearchController extends Controller
                     foreach ($response['hits']['hits'] as $item) {
                         $catVideoList[] = $item['_source'];
                     }
+                    unset($response);
                 }
-                $res['total'] = $total;
-                $hasMorePages = $total >= $perPage*$page;
-
                 if(!empty($catVideoList)){
-                    if($hasMorePages){
-                        $lastId = end($catVideoList)['id'];
-                        $this->redis('login')->hSet($catPageHashKey,$tid.'_'.($page+1),$lastId);
-                    }
-                    $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
+                    $res['total'] = $total;
+                    $pageLists = array_slice($catVideoList,$offset,$perPage);
+                    $hasMorePages = count($catVideoList) > $perPage*$page;
                     unset($catVideoList);
+                    $res['list'] = $this->handleVideoItems($pageLists,false,$user->id);
+                    unset($pageLists);
                     //广告
                     $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
                     //Log::info('==CatList==',$res['list']);
                     $res['hasMorePages'] = $hasMorePages;
+                }else{
+                    $res['list'] = [];
+                    $res['hasMorePages'] = false;
                 }
 
                 if(isset($res['list']) && !empty($res['list'])){

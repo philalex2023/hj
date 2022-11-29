@@ -258,6 +258,7 @@ class VideoShortController extends Controller
                     foreach ($response['hits']['hits'] as $item) {
                         $catVideoList[] = $item['_source'];
                     }
+                    unset($response);
                 }
 
                 //Log::info('==ShortList==',$catVideoList);
