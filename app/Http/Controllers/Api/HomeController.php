@@ -194,6 +194,7 @@ class HomeController extends Controller
                         $topics = [];
                     }
                     $res['list'] = $topics;
+                    unset($topics);
                     $res['ctime'] = time();
                     //
                     $redis->set($sectionKey,json_encode($res,JSON_UNESCAPED_UNICODE));

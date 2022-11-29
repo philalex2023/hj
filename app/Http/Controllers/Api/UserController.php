@@ -276,6 +276,7 @@ class UserController extends Controller
             }
 
             $result = [...$videoList];
+            unset($videoList);
             $score = array_column($result,'score');
             array_multisort($score,SORT_DESC,$result);
             $offset = ($page-1)*$perPage;
@@ -348,13 +349,17 @@ class UserController extends Controller
                 }
 
                 $result = [...$video,...$videoShort];
+                unset($video);
+                unset($videoShort);
                 $score = array_column($result,'score');
                 array_multisort($score,SORT_DESC,$result);
                 $offset = ($page-1)*$perPage;
                 $pageLists = array_slice($result,$offset,$perPage);
                 $hasMorePages = count($result) > $perPage*$page;
+                unset($result);
                 //路径处理
                 $res['list'] = $this->handleVideoItems($pageLists,true, $user->id);
+                unset($pageLists);
                 //时长转秒
                 $res['list'] = self::transferSeconds($res['list']);
                 $res['hasMorePages'] = $hasMorePages;
@@ -410,6 +415,8 @@ class UserController extends Controller
                 $sr['updated_at'] = date('Y-m-d H:i:s',$sr['score']);
             }
             $result = [...$video,...$videoShort];
+            unset($video);
+            unset($videoShort);
             $score = array_column($result,'score');
             array_multisort($score,SORT_DESC,$result);
             $offset = ($page-1)*$perPage;

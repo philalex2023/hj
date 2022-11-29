@@ -267,6 +267,7 @@ class VideoShortController extends Controller
                     $hasMorePages = count($catVideoList) > $perPage*$page;
                     unset($catVideoList);
                     $res['list'] = $this->handleVideoItems($pageLists,true,$user->id);
+                    unset($pageLists);
                     $rights = $this->getUserAllRights($user);
                     //判断是否购买或是vip
                     foreach ($res['list'] as &$one){

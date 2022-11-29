@@ -49,13 +49,11 @@ Trait EsTrait
         return $this->handleEsResponse($response);
     }
 
-    public function getVideoByIdsForEs($ids,$source,$size=10000,$page=1): array
+    public function getVideoByIdsForEs($ids,$source,$size=200): array
     {
-        $offset = ($page-1)*$size;
         $body = [
 //            'track_total_hits' => true,
             'size' => $size,
-            'from' => $offset,
             '_source' => $source,
             'query' => [
                 'bool'=>[
@@ -66,6 +64,7 @@ Trait EsTrait
                 ]
             ]
         ];
+
         $searchParams = [
             'index' => 'video_index',
             'body' => $body
@@ -73,7 +72,6 @@ Trait EsTrait
 
         $es = $this->esClient();
         $response = $es->search($searchParams);
-        //Log::info('searchParam_home_list',[json_encode($searchParams)]);
         return $this->handleEsResponse($response);
     }
 }

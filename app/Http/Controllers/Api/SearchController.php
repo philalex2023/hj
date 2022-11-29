@@ -330,6 +330,7 @@ class SearchController extends Controller
                         $this->redis('login')->hSet($catPageHashKey,$tid.'_'.($page+1),$lastId);
                     }
                     $res['list'] = $this->handleVideoItems($catVideoList,false,$user->id);
+                    unset($catVideoList);
                     //广告
                     $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
                     //Log::info('==CatList==',$res['list']);
