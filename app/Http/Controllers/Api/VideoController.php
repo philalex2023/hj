@@ -65,11 +65,9 @@ class VideoController extends Controller
         });
 
         if($user->long_vedio_times>0){
-            $configData = config_cache('app');
-            $setTimes = $configData['free_view_long_video_times'] ?? 0;
-            if(($user->long_vedio_times==$setTimes) && (date('Y-m-d')==date('Y-m-d',strtotime($user->created_at)))){
+            /*if((date('Y-m-d')==date('Y-m-d',strtotime($user->created_at)))){
                 $this->saveStatisticByDay('active_view_users',$user->channel_id,$user->device_system);
-            }
+            }*/
             //
             $video['restricted']!=2 && DB::table('users')->where('id',$user->id)->where('long_vedio_times','>',0)->decrement('long_vedio_times'); //当日观看次数减一
         }
@@ -92,14 +90,8 @@ class VideoController extends Controller
                         Rule::in(['1', '0']),
                     ],
                 ])->validated();
-                // 增加冗错机制
-                $id = $validated['id']??0;
-                if ($id==0) {
-                    return response()->json(['state' => -1, 'msg' => "参数错误",'data'=>[]]);
-                }
-//                $useGold = $validated['use_gold'] ?? false;
                 $useGold = intval($validated['use_gold'] ?? 1);
-                $one = (array)$this->getVideoById($id);
+                $one = (array)$this->getVideoById($validated['id']);
                 if (!empty($one)) {
                     $one = $this->handleVideoItems([$one], true,$user->id,['cid'=>$one['cid'],'device_system'=>$user->device_system])[0];
                     $one['limit'] = 0;
