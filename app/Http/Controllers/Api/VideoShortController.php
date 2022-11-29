@@ -202,7 +202,6 @@ class VideoShortController extends Controller
                         ]
                     ];
                 }else{
-                    Log::info('testShortCate',[$cateId]);
                     if(!$cateId){
                         return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                     }
