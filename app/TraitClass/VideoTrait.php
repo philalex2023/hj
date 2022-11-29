@@ -20,6 +20,8 @@ trait VideoTrait
 {
     use GoldTrait,AboutEncryptTrait,PHPRedisTrait,CatTrait,TagTrait;
 
+    public int $maxVid=200000;
+
     public object $row;
 
     public array $videoFields = ['id','is_top','name','author','auth_avatar','dev_type','gold','cat','likes','comments','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','updated_at'];

@@ -161,7 +161,7 @@ class HomeController extends Controller
                         ]
                     ];
                     $body['sort'] = [['id' => 'desc']];
-                    $body['search_after'] = [200000];
+                    $body['search_after'] = [$this->maxVid];
                     $searchParams = [
                         'index' => 'video_index',
                         'body' => $body

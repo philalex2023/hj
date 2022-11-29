@@ -50,26 +50,35 @@ class SearchController extends Controller
             $offset = ($page-1)*$perPage;
 
             $words = $validated['words']??false;
+            if(empty($words)){
+                return response()->json([
+                    'state' => -1,
+                    'msg' => '请输入关键词',
+                    'data' => ['list'=>[]]
+                ]);
+            }
+            $words = substr($words,0,40);
             $project = intval($validated['project'] ?? 1);
             $project = $project>0 ? $project : 1;
 
             $es = $this->esClient();
-            $searchParams = [
-                'index' => 'video_index',
-                'body' => [
+            $body = [
 //                        'track_total_hits' => true,
-                    'size' => $perPage,
-                    'from' => $offset,
-                    '_source' => $this->videoFields,
-                    'query' => [
-                        'match_phrase'=>[
-                            'name' => ['query' => $words?:"*",'slop'=>50]
-                        ]
-                    ],
-                    'sort' => [
-                        'id' => ['order'=>'desc']
+                'size' => 200,
+                '_source' => $this->videoFields,
+                'query' => [
+                    'match_phrase'=>[
+                        'name' => ['query' => $words?:"*",'slop'=>50]
                     ]
                 ],
+                'sort' => [
+                    ['id' => 'desc']
+                ]
+            ];
+
+            $searchParams = [
+                'index' => 'video_index',
+                'body' => $body,
             ];
 
             //Log::info('ES_keyword_params',[json_encode($searchParams)]);
@@ -81,12 +90,18 @@ class SearchController extends Controller
                     $videoList[] = $item['_source'];
                 }
             }
-            $res['total'] = $total ?? 0;
-            $hasMorePages = $res['total'] >= $perPage*$page;
 
-            $res['list'] = $this->handleVideoItems($videoList,false,$request->user()->id);
+            if(!empty($videoList)){
+                $res['total'] = $total ?? 0;
+                $pageLists = array_slice($videoList,$offset,$perPage);
+                $hasMorePages = count($videoList) > $perPage*$page;
+                $res['list'] = $this->handleVideoItems($pageLists,false,$request->user()->id);
+                $res['hasMorePages'] = $hasMorePages;
+            }else{
+                $res['list'] = [];
+                $res['hasMorePages'] = false;
+            }
 
-            $res['hasMorePages'] = $hasMorePages;
             if ($words && $words!='') {
                 $this->incrTagWeightsByWords($project,$words);
             }
@@ -283,11 +298,11 @@ class SearchController extends Controller
                 $catPageHashKey = 'searchAfterCat';
                 $endIndexField = $tid.'_'.$page;
                 if($page==1){
-                    $endIndex = 200000;
+                    $endIndex = $this->maxVid;
                 }else{
                     $loginRedis = $this->redis('login');
                     $endIndex = $loginRedis->hGet($catPageHashKey,$endIndexField);
-                    !$endIndex && $endIndex = 200000;
+                    !$endIndex && $endIndex = $this->maxVid;
                 }
                 $body['search_after'] = [$endIndex];
                 $searchParams = [
@@ -356,15 +371,12 @@ class SearchController extends Controller
                 $cid = $this->getVideoById($vid)->cid;
                 $res = ['list'=>[], 'hasMorePages'=>false];
                 $perPage = 8;
-                $offset = ($page-1)*$perPage;
-
                 if($cid > 0){
                     $searchParams = [
                         'index' => 'video_index',
                         'body' => [
-//                            'track_total_hits' => true,
+                            'track_total_hits' => true,
                             'size' => $perPage,
-                            'from' => $offset,
                             //'_source' => false,
                             'query' => [
                                 'bool'=>[
