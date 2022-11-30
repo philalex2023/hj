@@ -94,7 +94,7 @@ class VideoController extends Controller
                 $one = (array)$this->getVideoById($validated['id']);
                 if (!empty($one)) {
                     $one = $this->handleVideoItems([$one], true,$user->id,['cid'=>$one['cid'],'device_system'=>$user->device_system])[0];
-                    $one['limit'] = 0;
+
                     //观看限制
                     if (($viewLongVideoTimes<=0 && $one['restricted'] > 0) || ($viewLongVideoTimes>0 && $one['restricted']==2)) {
                         //是否有观看次数
@@ -252,6 +252,7 @@ class VideoController extends Controller
         /*if($user->id=='6977976'){
             Log::info('ViewVideoUser1==',[$user->id,$rights]);
         }*/
+        $one['limit'] = 0;
         switch ($one['restricted']) {
             case 0: //免费视频非vip会员只能免费看一次
                 $loginRedis = $this->redis('login');
