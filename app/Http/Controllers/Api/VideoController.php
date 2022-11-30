@@ -254,11 +254,9 @@ class VideoController extends Controller
         $one['limit'] = 0;
         switch ($one['restricted']) {
             case 0: //免费视频非vip会员只能免费看一次
-                Log::info('TestFreeViewVideo',[$user->id]);
                 $loginRedis = $this->redis('login');
                 $key = 'viewFreeVideo:'.$one['id'];
                 $isView = $loginRedis->getBit($key,$user->id);
-                Log::info('testFreeViewVideo',[$user->id,$isView]);
                 if($isView==1){
                     !isset($rights[1]) && $one['limit'] = 1 && $one['restricted'] = 1;
                 }else{
