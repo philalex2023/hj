@@ -109,6 +109,8 @@ Route::group([
     Route::post('commRes', 'CommMiscController@res');  //发送资源
     Route::post('commBbs', 'CommContentController@post');  //发贴
 
+    Route::get('community', 'CommunityController@index');  //社区首页
+
     /// 小视频模块
     Route::get('shortCate', 'VideoShortController@cate');  //视频分类
     Route::get('shortList', 'VideoShortController@lists');  //播放列表
