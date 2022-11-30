@@ -260,7 +260,7 @@ class VideoController extends Controller
                 $isView = $loginRedis->getBit($key,$user->id);
                 Log::info('testFreeViewVideo',[$user->id,$isView]);
                 if($isView==1){
-                    !isset($rights[1]) && $one['limit'] = 1;
+                    !isset($rights[1]) && $one['limit'] = 1 && $one['restricted'] = 1;
                 }else{
                     $loginRedis->setBit($key,$user->id,1);
                     $loginRedis->expire($key,7*24*3600);
