@@ -69,7 +69,7 @@ class VideoController extends Controller
                 $this->saveStatisticByDay('active_view_users',$user->channel_id,$user->device_system);
             }*/
             //
-            $video['restricted']!=2 && DB::table('users')->where('id',$user->id)->where('long_vedio_times','>',0)->decrement('long_vedio_times'); //当日观看次数减一
+            $video['limit']==1 && DB::table('users')->where('id',$user->id)->where('long_vedio_times','>',0)->decrement('long_vedio_times'); //当日观看次数减一
         }
     }
 
@@ -79,7 +79,7 @@ class VideoController extends Controller
         try {
             if (isset($request->params)) {
                 $user = $request->user();
-                $viewLongVideoTimes = $user->long_vedio_times; //观看次数
+                //$viewLongVideoTimes = $user->long_vedio_times; //观看次数
                 // 业务逻辑
                 $params = self::parse($request->params);
                 $validated = Validator::make($params, [
@@ -96,16 +96,15 @@ class VideoController extends Controller
                     $one = $this->handleVideoItems([$one], true,$user->id,['cid'=>$one['cid'],'device_system'=>$user->device_system])[0];
 
                     //观看限制
-                    if (($viewLongVideoTimes<=0 && $one['restricted'] > 0) || ($viewLongVideoTimes>0 && $one['restricted']==2)) {
-                        //是否有观看次数
-                        $one['restricted'] = (int)$one['restricted'];
-                        $one = $this->vipOrGold($one, $user);
-                        if (($useGold==1) && $one['limit'] == 2) {
-                            // 如果金币则尝试购买
-                            $buy = $this->useGold($one, $user);
-                            $buy && ($one['limit'] = 0);
-                        }
+                    //是否有观看次数
+                    $one['restricted'] = (int)$one['restricted'];
+                    $one = $this->vipOrGold($one, $user);
+                    if (($useGold==1) && $one['limit'] == 2) {
+                        // 如果金币则尝试购买
+                        $buy = $this->useGold($one, $user);
+                        $buy && ($one['limit'] = 0);
                     }
+
                     $this->processViewVideo($user, $one);
                 }
                 Cache::forget('cachedUser.'.$user->id);
