@@ -256,7 +256,9 @@ class VideoController extends Controller
             case 0: //免费视频非vip会员只能免费看一次
                 $loginRedis = $this->redis('login');
                 $key = 'viewFreeVideo:'.$one['id'];
-                if($loginRedis->getBit($key,$user->id)){
+                $isView = $loginRedis->getBit($key,$user->id);
+                Log::info('testFreeViewVideo',[$user->id,$isView]);
+                if($isView==1){
                     !isset($rights[1]) && $one['limit'] = 1;
                 }else{
                     $loginRedis->setBit($key,$user->id,1);
