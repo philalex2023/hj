@@ -23,9 +23,9 @@ class CommunityController extends Controller
         //热门话题
         $hotTopic = DB::table('circle_topic')->select('id','name','interactive as inter')->orderByDesc('id')->limit(12)->get();
         //热门圈子
-        $hotCircle = DB::table('circle')->limit(8)->get(['id','name','background','many_friends']);
+        $hotCircle = DB::table('circle')->select('id','name','background as imgUrl','many_friends as user')->limit(8)->get();
         //圈子精选
-        $featuredCircle = DB::table('circle')->limit(8)->get(['id','name','avatar','introduction','background','many_friends']);
+        $featuredCircle = DB::table('circle')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
         $data = [];
         $data['list'] = [
             [
