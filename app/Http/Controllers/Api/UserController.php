@@ -213,6 +213,13 @@ class UserController extends Controller
         return response()->json([]);
     }
 
+    private function isBuyShortVideo($one,$user): bool
+    {
+        $videoRedis = $this->redis('video');
+        $buyShortKey = 'buyShortKey_' . $user->id;
+        return $videoRedis->sIsMember($buyShortKey,$one['id']);
+    }
+
     public function myCollect(Request $request): JsonResponse
     {
         if(isset($request->params)){
@@ -273,6 +280,21 @@ class UserController extends Controller
                 $iv['usage'] = 1;
                 $iv['score'] = $vidArrAll[$iv['id']] ?? 0;
                 $iv['updated_at'] = date('Y-m-d H:i:s',$iv['score']);
+                $restricted = (int)$iv['restricted'];
+                $iv['limit'] = 0;
+                switch ($restricted){
+                    case 2: //金币
+                        if(!isset($rights[4])){ //如果没有免费观看金币视频的权益
+                            $buy = $this->isBuyShortVideo($iv,$user);
+                            !$buy && $iv['limit'] = 2;
+                        }
+                        break;
+                    case 1: //vip会员
+                        if ($iv['restricted'] == 1  && (!isset($rights[1]))) {
+                            $iv['limit'] = 1;
+                        }
+                        break;
+                }
             }
 
             $result = [...$videoList];
