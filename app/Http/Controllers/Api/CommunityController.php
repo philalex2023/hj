@@ -40,7 +40,6 @@ class CommunityController extends Controller
         ];
         $res = [
             'state' => 0,
-            'hasMorePages' => false,
             'data' => $data,
         ];
 
