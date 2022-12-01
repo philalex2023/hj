@@ -21,7 +21,7 @@ class CommunityController extends Controller
             'page' => 'required|integer',
         ])->validated();*/
         //热门话题
-        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(12)->get(['id','name']);
+        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(12)->get(['id','name','interactive']);
         //热门圈子
         $hotCircle = DB::table('circle')->limit(8)->get(['id','name','background','many_friends']);
         //圈子精选
