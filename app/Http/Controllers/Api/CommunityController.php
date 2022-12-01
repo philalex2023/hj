@@ -16,29 +16,26 @@ class CommunityController extends Controller
 
     public function square()
     {
-        /*$params = self::parse($request->params??'');
-        $validated = Validator::make($params,[
-            'page' => 'required|integer',
-        ])->validated();*/
+        //todo cache
         //热门话题
         $hotTopic = DB::table('circle_topic')->select('id','name','interactive as inter')->orderByDesc('id')->limit(12)->get();
         //热门圈子
-        $hotCircle = DB::table('circle')->select('id','name','background as imgUrl','many_friends as user')->limit(8)->get();
+        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->select('id','name','background as imgUrl','many_friends as user')->limit(8)->get();
         //圈子精选
-        $featuredCircle = DB::table('circle')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
-        $data = [];
-        $data['list'] = [
+        $featuredCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
+
+        $data = [
             [
                 'name' => '热门话题',
-                'data_list' => $hotTopic,
+                'list' => $hotTopic,
             ],
             [
                 'name' => '热门圈子',
-                'data_list' => $hotCircle,
+                'list' => $hotCircle,
             ],
             [
                 'name' => '圈子精选',
-                'data_list' => $featuredCircle,
+                'list' => $featuredCircle,
             ],
         ];
         $res = [
