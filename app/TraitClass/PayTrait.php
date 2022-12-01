@@ -108,8 +108,9 @@ trait PayTrait
         return $data;
     }
 
-    public function getAllPayChannel(){
-        $data[] = ['id'=>'0','name'=>'全部'];
+    public function getAllPayChannel(): array
+    {
+        $data[] = ['id'=>'','name'=>'全部'];
         $raw = RechargeChannel::where('status',1)->get();
         foreach ($raw as $v) {
             $data[] = ['id'=>$v->id,'name'=>$v->remark];

@@ -58,9 +58,9 @@ class CommunityController extends Controller
         //热门圈子
         $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','name','background as imgUrl','many_friends as user']);
         //我加入的圈子
-        $joinCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
+        $joinCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','name','background as imgUrl']);
         //来自我关注的圈子
-        $fromMeFocusCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
+        $fromMeFocusCircle = DB::table('circle_topic')->orderByDesc('introduction')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
 
         $data = [
             [

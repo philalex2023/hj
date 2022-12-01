@@ -249,7 +249,7 @@ class OrderController extends BaseCurlController
                 'field' => 'query_channel_code',
                 'type' => 'select',
                 'name' => '通道码',
-                'data' => array_merge(['0'=>['id'=>'0','name'=>'全部']],$this->getPayTypeCode())
+                'data' => array_merge([''=>['id'=>'','name'=>'全部']],$this->getPayTypeCode())
             ],
             [
                 'field' => 'updated_at',
