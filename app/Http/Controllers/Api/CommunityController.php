@@ -14,7 +14,7 @@ class CommunityController extends Controller
 {
     use ApiParamsTrait,CommunityTrait;
 
-    public function square(Request $request): \Illuminate\Http\JsonResponse
+    public function square()
     {
         /*$params = self::parse($request->params??'');
         $validated = Validator::make($params,[
