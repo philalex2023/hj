@@ -109,6 +109,7 @@ Route::group([
     Route::post('commRes', 'CommMiscController@res');  //发送资源
     Route::post('commBbs', 'CommContentController@post');  //发贴
 
+    Route::get('communityFocus', 'CommunityController@focus');  //社区关注
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
 
     /// 小视频模块

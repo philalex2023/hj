@@ -14,13 +14,16 @@ class CommunityController extends Controller
 {
     use ApiParamsTrait,CommunityTrait;
 
-    public function square()
+    public function square(Request $request): \Illuminate\Http\JsonResponse
     {
+        if(!$request->user()){
+            return response()->json([]);
+        }
         //todo cache
         //热门话题
-        $hotTopic = DB::table('circle_topic')->select('id','name','interactive as inter')->orderByDesc('id')->limit(12)->get();
+        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(12)->get(['id','name','interactive as inter']);
         //热门圈子
-        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->select('id','name','background as imgUrl','many_friends as user')->limit(8)->get();
+        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','name','background as imgUrl','many_friends as user']);
         //圈子精选
         $featuredCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
 
@@ -36,6 +39,41 @@ class CommunityController extends Controller
             [
                 'name' => '圈子精选',
                 'list' => $featuredCircle,
+            ],
+        ];
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+
+        return response()->json($res);
+    }
+
+    public function focus(Request $request): \Illuminate\Http\JsonResponse
+    {
+        /*if(!$request->user()){
+            return response()->json([]);
+        }*/
+        //todo cache
+        //热门圈子
+        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','name','background as imgUrl','many_friends as user']);
+        //我加入的圈子
+        $joinCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
+        //来自我关注的圈子
+        $fromMeFocusCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
+
+        $data = [
+            [
+                'name' => '热门圈子',
+                'list' => $hotCircle,
+            ],
+            [
+                'name' => '我加入的圈子',
+                'list' => $joinCircle,
+            ],
+            [
+                'name' => '来自我关注的圈子',
+                'list' => $fromMeFocusCircle,
             ],
         ];
         $res = [
