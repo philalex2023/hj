@@ -196,7 +196,7 @@ class OrderController extends Controller
                     if(isset($amountArr[$amountIndex])){
                         $zData[$item->pay_channel] = $item->weights;
                         $redis->zAdd($key,$item->weights,$item->pay_channel);
-                        $redis->expire($key,14400);
+                        $redis->expire($key,3600);
                     }
                 }
             }
