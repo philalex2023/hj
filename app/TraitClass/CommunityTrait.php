@@ -2,8 +2,23 @@
 
 namespace App\TraitClass;
 
+use App\Models\Category;
+
 trait CommunityTrait
 {
+    public function getCircleTopicCat(): array
+    {
+        $allCat = Category::query()
+            ->where('parent_id',10074)
+            ->where('is_checked',1)
+            ->pluck('name','id')->all();
+        $cats = [];
+        foreach ($allCat as $id=>$name){
+            $cats[$id] = ['id'=>$id,'name'=>$name];
+        }
+        return $cats;
+    }
+
     public function getCommunityCat(): array
     {
         return [

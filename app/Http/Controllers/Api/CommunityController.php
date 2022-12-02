@@ -50,9 +50,37 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function topic(Request $request)
+    public function topic(Request $request): \Illuminate\Http\JsonResponse
     {
+        //月话题精选
+        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(7)->get(['id','name','circle_name','avatar','circle_friends as user','author','interactive as inter','participate']);
+        //分类
+        $topicCat = $this->getCircleTopicCat();
 
+        //列表
+        if(!empty($topicCat)){
+            $firstIndex = key($topicCat);
+            $topicList = DB::table('circle_topic')->where('cid',$firstIndex)->limit(7)->get(['id','name','interactive as inter']);
+        }else{
+            $topicList = [];
+        }
+
+        $data = [
+            [
+                'name' => '月话题精选',
+                'list' => $hotTopic,
+            ],
+            [
+                'name' => '',
+                'cat' => $topicCat,
+                'list' => $topicList,
+            ],
+        ];
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
     }
 
     public function focus(Request $request): \Illuminate\Http\JsonResponse
