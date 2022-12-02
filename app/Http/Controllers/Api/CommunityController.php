@@ -99,6 +99,7 @@ class CommunityController extends Controller
         foreach ($fromMeFocusCircle as &$item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
+            $item->album = json_decode($item->album,true) ?? [];
         }
 
         $data = [
