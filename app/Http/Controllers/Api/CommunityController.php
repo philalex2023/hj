@@ -97,7 +97,7 @@ class CommunityController extends Controller
             'id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv'
         ]);
         $domain = env('RESOURCE_DOMAIN');
-        foreach ($fromMeFocusCircle as &$item){
+        foreach ($fromMeFocusCircle as $item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
             if(!empty($item->album) && $item->album!='null'){
