@@ -100,7 +100,8 @@ class CommunityController extends Controller
         $fromMeFocusCircle = DB::table('circle_topic')
 //            ->whereIn('id',$ids)
             ->orderByDesc('created_at')
-            ->limit(8)->get(['id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv']);
+            ->limit(8)
+            ->get(['id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv']);
 
         foreach ($fromMeFocusCircle as $item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
