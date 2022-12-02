@@ -83,7 +83,7 @@ class CommunityController extends Controller
         $ids = []; //todo
         //热门圈子
         $domain = env('RESOURCE_DOMAIN');
-        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','name','background as imgUrl','many_friends as user']);
+        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','name','author','background as imgUrl','many_friends as user']);
         foreach ($hotCircle as $hot){
             $hot->imgUrl = $domain.$hot->imgUrl;
         }
@@ -91,7 +91,7 @@ class CommunityController extends Controller
         $joinCircle = DB::table('circle')
 //            ->whereIn('id',$ids)
             ->orderByDesc('id')
-            ->limit(8)->get(['id','name','background as imgUrl']);
+            ->limit(8)->get(['id','name','author','background as imgUrl']);
         foreach ($joinCircle as $join){
             $join->imgUrl = $domain.$join->imgUrl;
         }
