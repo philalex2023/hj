@@ -191,8 +191,9 @@ class OrderController extends Controller
             foreach ($items as $item){
                 if(!empty($item->match_amount)){
                     $amountArr = (array)json_decode($item->match_amount,true);
+                    $amountArr = array_flip($amountArr);
                     $amountIndex = $amountIdArr[$amount];
-                    if(in_array($amountIndex,$amountArr)){
+                    if(isset($amountArr[$amountIndex])){
                         $zData[$item->pay_channel] = $item->weights;
                         $redis->zAdd($key,$item->weights,$item->pay_channel);
                         $redis->expire($key,14400);
