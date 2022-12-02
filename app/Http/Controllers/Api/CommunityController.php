@@ -96,10 +96,16 @@ class CommunityController extends Controller
             ->limit(8)->get([
             'id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv'
         ]);
+        $domain = env('RESOURCE_DOMAIN');
         foreach ($fromMeFocusCircle as &$item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
-            $item->album = json_decode($item->album,true) ?? [];
+            if(!empty($item->album) && $item->album!='null'){
+                $item->album = json_decode($item->album,true) ?? [];
+                foreach ($item->album as &$album){
+                    $album = $domain . $album;
+                }
+            }
         }
 
         $data = [
