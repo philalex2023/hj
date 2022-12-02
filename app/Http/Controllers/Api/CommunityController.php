@@ -82,21 +82,26 @@ class CommunityController extends Controller
         //todo cache
         $ids = []; //todo
         //热门圈子
+        $domain = env('RESOURCE_DOMAIN');
         $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','name','background as imgUrl','many_friends as user']);
+        foreach ($hotCircle as $hot){
+            $hot->imgUrl = $domain.$hot->imgUrl;
+        }
         //我加入的圈子
         $joinCircle = DB::table('circle')
 //            ->whereIn('id',$ids)
             ->orderByDesc('id')
             ->limit(8)->get(['id','name','background as imgUrl']);
+        foreach ($joinCircle as $join){
+            $join->imgUrl = $domain.$join->imgUrl;
+        }
         //来自我关注的圈子
 
         $fromMeFocusCircle = DB::table('circle_topic')
 //            ->whereIn('id',$ids)
             ->orderByDesc('created_at')
-            ->limit(8)->get([
-            'id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv'
-        ]);
-        $domain = env('RESOURCE_DOMAIN');
+            ->limit(8)->get(['id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv']);
+
         foreach ($fromMeFocusCircle as $item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
