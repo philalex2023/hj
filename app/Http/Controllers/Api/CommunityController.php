@@ -60,7 +60,7 @@ class CommunityController extends Controller
         //列表
         if(!empty($topicCat)){
             $firstIndex = key($topicCat);
-            $topicList = DB::table('circle_topic')->where('cid',$firstIndex)->limit(7)->get(['id','name','interactive as inter']);
+            $topicList = DB::table('circle_topic')->where('cid',$firstIndex)->limit(7)->get(['id','name','circle_name','avatar','circle_friends as user','interactive as inter']);
         }else{
             $topicList = [];
         }
