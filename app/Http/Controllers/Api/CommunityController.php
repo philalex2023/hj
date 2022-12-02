@@ -112,6 +112,9 @@ class CommunityController extends Controller
                     $album = $domain . $album;
                 }
             }
+            if(!empty($item->avatar)){
+                $item->avatar = $domain . $item->avatar;
+            }
         }
 
         $data = [
