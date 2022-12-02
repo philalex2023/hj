@@ -111,6 +111,7 @@ Route::group([
 
     Route::get('communityFocus', 'CommunityController@focus');  //社区关注
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
+    Route::get('communityTopic', 'CommunityController@topic');  //社区话题
 
     /// 小视频模块
     Route::get('shortCate', 'VideoShortController@cate');  //视频分类
