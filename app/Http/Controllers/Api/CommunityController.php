@@ -89,7 +89,7 @@ class CommunityController extends Controller
 //            ->whereIn('id',$ids)
             ->orderByDesc('introduction')
             ->limit(8)->get([
-            'id','name','circle_name','avatar','author','scan','comments','likes','introduction as des','many_friends as user','album','created_at','tag_kv'
+            'id','name','circle_name','avatar','desc','author','scan','comments','likes','introduction as des','many_friends as user','album','created_at','tag_kv'
         ]);
         foreach ($fromMeFocusCircle as &$item){
             $item['tag_kv'] = json_decode($item->tag_kv,true) ?? [];
