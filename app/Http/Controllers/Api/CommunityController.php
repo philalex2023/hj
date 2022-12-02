@@ -94,6 +94,7 @@ class CommunityController extends Controller
         ]);
         foreach ($fromMeFocusCircle as &$item){
             Log::info('TestFocus',[$item->tag_kv]);
+
             $item['tag_kv'] = json_decode($item->tag_kv,true) ?? [];
             $item['created_at'] = $this->mdate(strtotime($item->created_at));
         }
