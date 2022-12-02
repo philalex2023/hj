@@ -54,20 +54,24 @@ class CommunityController extends Controller
     {
         $time  =  $time === NULL ||  $time  > time() ? time() :  intval ( $time );
         $t  = time() -  $time ;  //时间差 （秒）
-//        $y  =  date ( 'Y' ,  $time )- date ( 'Y' , time()); //是否跨年
-        return match ($t) {
-            $t == 0 => '刚刚',
-            $t < 60 => $t . '秒前',
-            $t < 60 * 60 => floor($t / 60) . '分钟前',
-            $t < 60 * 60 * 24 => floor($t / (60 * 60)) . '小时前',
-            $t < 60 * 60 * 24 * 7 => floor($t / (60 * 60 * 24)) . '天前',
-            $t < 60 * 60 * 24 * 30 => floor($t / (60 * 60 * 24 * 7)) . '周前',
-            $t < 60 * 60 * 24 * 365 => floor($t / (60 * 60 * 24 * 30)) . '月前',
-//            $t < 60 * 60 * 24 * 3 => floor($time / (60 * 60 * 24)) == 1 ? '昨天 ' . date('H:i', $time) : '前天 ' . date('H:i', $time),
-//            $t < 60 * 60 * 24 * 30 => date('m月d日 H:i', $time),
-//            $t < 60 * 60 * 24 * 365 && $y == 0 => date('m月d日', $time),
-            default => date('Y年m月d日', $time),
-        };
+        if($t == 0){
+            $txt = '刚刚';
+        } elseif ($t < 60){
+            $txt = $t . '秒前';
+        } elseif ($t < 60 * 60){
+            $txt = floor($t / 60) . '分钟前';
+        } elseif ($t < 60 * 60 * 24){
+            $txt = floor($t / (60 * 60)) . '小时前';
+        } elseif (60 * 60 * 24 * 7){
+            $txt = floor($t / (60 * 60 * 24)) . '天前';
+        } elseif (60 * 60 * 24 * 30){
+            $txt = floor($t / (60 * 60 * 24 * 7)) . '周前';
+        } elseif (60 * 60 * 24 * 365){
+            $txt = floor($t / (60 * 60 * 24 * 30)) . '月前';
+        } else {
+            $txt = date('Y年m月d日', $time);
+        }
+        return $txt;
     }
 
     public function focus(Request $request): \Illuminate\Http\JsonResponse
