@@ -8,6 +8,7 @@ use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommunityTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
 
 class CommunityController extends Controller
@@ -90,8 +91,9 @@ class CommunityController extends Controller
             ->orderByDesc('created_at')
             ->limit(8)->get([
             'id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv'
-        ])->toArray();
+        ]);
         foreach ($fromMeFocusCircle as &$item){
+            Log::info('TestFocus',[$item->tag_kv]);
             $item['tag_kv'] = json_decode($item->tag_kv,true) ?? [];
             $item['created_at'] = $this->mdate(strtotime($item->created_at));
         }
