@@ -93,10 +93,8 @@ class CommunityController extends Controller
             'id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv'
         ]);
         foreach ($fromMeFocusCircle as &$item){
-            Log::info('TestFocus',[$item->tag_kv]);
-
-            $item['tag_kv'] = json_decode($item->tag_kv,true) ?? [];
-            $item['created_at'] = $this->mdate(strtotime($item->created_at));
+            $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
+            $item->created_at = $this->mdate(strtotime($item->created_at));
         }
 
         $data = [
