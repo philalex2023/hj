@@ -181,7 +181,7 @@ class OrderController extends Controller
 
     public function getRechargeChannelsByCache($payChannelType,$amount)
     {
-        $key = 'recharge_channels_Z_'.$payChannelType;
+        $key = 'recharge_channels_Z_'.$payChannelType.'_'.$amount;
         $redis = $this->redis();
         $cacheData = $redis->zRange($key,0,-1,true);
         if(!$cacheData){

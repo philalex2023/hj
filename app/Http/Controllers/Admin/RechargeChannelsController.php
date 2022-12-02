@@ -217,8 +217,6 @@ class RechargeChannelsController extends BaseCurlController
 
     protected function afterSaveSuccessEvent($model, $id = '')
     {
-        $this->redis()->del('recharge_channels_Z_1');
-        $this->redis()->del('recharge_channels_Z_2');
         return $model;
     }
 

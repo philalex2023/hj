@@ -183,8 +183,6 @@ class ConfigController extends Controller
                         $payType = $code==$payChannelInfo['zfb_code'] ? 1 : 2;
                         $status = $on==1 ? 1 : 0;
                         DB::table('recharge_channels')->where('pay_channel',$payChannelInfo['id'])->where('pay_type',$payType)->update(['status'=>$status]);
-                        $this->redis()->del('recharge_channels_Z_1');
-                        $this->redis()->del('recharge_channels_Z_2');
 
                         $msg = match ($status){
                             0 => '通道关闭成功',
