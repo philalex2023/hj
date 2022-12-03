@@ -71,7 +71,6 @@ class CommunityController extends Controller
                 'list' => $hotTopic,
             ],
             [
-                'name' => '',
                 'cat' => $topicCat,
                 'list' => $topicList,
             ],
