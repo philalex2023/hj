@@ -9,7 +9,7 @@ trait LoginTrait
 {
     use ChannelTrait,PHPRedisTrait;
 
-    public array $loginUserFields = ['id','account','channel_id','nickname','device_system','phone_number','promotion_code','avatar','sex','status','gold','balance','long_vedio_times','area_number'];
+    public array $loginUserFields = ['id','account','channel_id','mid','nickname','device_system','phone_number','promotion_code','avatar','sex','status','gold','balance','long_vedio_times','movie_ticket','area_number'];
 
     public array $loginRules = [
         'type' => 'required|integer|between:1,2',
