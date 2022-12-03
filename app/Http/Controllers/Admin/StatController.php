@@ -12,7 +12,7 @@ class StatController extends BaseCurlIndexController
     //页面信息
     public $pageName = '统计列表';
 
-    public int $multiple = 10;
+    public int $multiple = 1;
 
     //1.设置模型
     public function setModel()
@@ -211,6 +211,9 @@ class StatController extends BaseCurlIndexController
         $item->inc_channel_user *= $this->multiple;
         $item->inc_auto_user *= $this->multiple;
         $item->channel_deduction_increase_user *= $this->multiple;
+
+        $item->active_user = 490000 + $item->active_user;
+        $item->inc_user = 90000 + $item->inc_user;
         return $item;
     }
 
