@@ -491,7 +491,7 @@ class UserController extends Controller
         return $lists;
     }
 
-    public function bindInviteCode(Request $request)
+    public function bindInviteCode(Request $request): JsonResponse
     {
         if(isset($request->params)){
             $params = self::parse($request->params);
@@ -509,10 +509,13 @@ class UserController extends Controller
                     return response()->json(['state'=>-1, 'msg'=>'不能绑定自己']);
                 }
                 User::query()->where('id',$user->id)->update(['pid' => $pid]);
+                $now = time();
+                User::query()->where('id',$pid)->update(['vip_start_last' => $now,'vip_expired'=>$now+3600*24]);
+
                 return response()->json(['state'=>0, 'msg'=>'绑定成功']);
             }
         }
-        return [];
+        return response()->json([]);
     }
 
     public function getAreaNum(Request $request): JsonResponse
@@ -605,6 +608,46 @@ class UserController extends Controller
 
     }
 
+    public function findAdByQrcode(Request $request): JsonResponse
+    {
+        try {
+            if(isset($request->params)){
+                $params = self::parse($request->params);
+                $validated = Validator::make($params, [
+                    'account' => 'required|string',
+                    'did' => 'required|string',
+                ])->validated();
+
+                $requestUser = $request->user();
+                if(!$requestUser){
+                    return response()->json(['state'=>-1, 'msg'=>'无效用户']);
+                }
+                $userModel = User::query()
+                    ->where('account',$validated['account'])
+                    ->where('did',$validated['did'])
+                    ->where('status',1);
+                $user = $userModel->first();
+                if(!$user){
+                    Log::debug('findAdByQrcode_UID:',[$requestUser->id]);
+                    return response()->json(['state'=>-1, 'msg'=>'被找回账号不存在或被禁用']);
+                }
+                //同一账号的情况
+                if($requestUser->account == $user->account){
+                    Log::debug('findAdByQrcode_the_same_account',[$requestUser->id,$requestUser->account]);
+                    return response()->json(['state'=>-1, 'msg'=>'找回账号与此账号是同一账号,无须找回']);
+                }
+
+                $requestUser = $this->getRequestUserInfo($requestUser, $user);
+                Log::debug('==findADByQrcode===',['账号找回成功']);
+                return response()->json(['state'=>0, 'data'=>$requestUser, 'msg'=>'账号找回成功']);
+
+            }
+            return response()->json([]);
+        } catch (\Exception $exception){
+            return $this->returnExceptionContent($exception->getMessage());
+        }
+    }
+
     public function findADByPhone(Request $request): JsonResponse
     {
         try {
@@ -640,53 +683,8 @@ class UserController extends Controller
                         Log::debug('find_phone_same_bind_phone===',[$validated]);
                         return response()->json(['state'=>-1, 'msg'=>'找回账号与此账号是同一账号']);
                     }
-                    $requestUser->status = 1;
-                    $requestUser->vip_start_last = $user->vip_start_last;
-                    $requestUser->vip_expired = $user->vip_expired;
-                    $requestUser->vip = $user->vip;
-                    $requestUser->gold = $user->gold;
-                    $requestUser->avatar = $user->avatar;
-                    $requestUser->promotion_code = $user->promotion_code;
-                    $requestUser->member_card_type = $user->member_card_type;
-                    $requestUser->balance = $user->balance;
-                    $requestUser->phone_number = $user->phone_number;
-                    $requestUser->area_number = $user->area_number;
-                    $requestUser->channel_id = $user->channel_id;
-                    $requestUser->save();
 
-                    $tokenResult = $requestUser->createToken($requestUser->account,['check-user']);
-                    $token = $tokenResult->token;
-                    $token->expires_at = Carbon::now()->addDays();
-                    $token->save();
-                    $requestUser = $requestUser->only($this->loginUserFields);
-                    if(isset($requestUser['avatar'])){
-                        $requestUser['avatar'] += 0;
-                    }
-                    $requestUser['token'] = $tokenResult->accessToken;
-                    $requestUser['token_type'] = 'Bearer';
-                    $requestUser['expires_at'] = Carbon::parse(
-                        $tokenResult->token->expires_at
-                    )->toDateTimeString();
-                    $requestUser['expires_at_timestamp'] = strtotime($requestUser['expires_at']);
-                    //生成用户专有的客服链接
-                    $requestUser = $this->generateChatUrl($requestUser);
-                    User::query()->where('id',$user->id)->update([
-                        'vip'=>0,
-                        'member_card_type'=>'',
-                        //'status'=>0,
-                        'phone_number'=>0,
-                        'area_number'=>0,
-                        'long_vedio_times'=>0,
-                        'vip_start_last'=>0,
-                        'vip_expired'=>0,
-                        'gold'=>0
-                    ]);
-
-                    $tokenId = Token::query()->where('name',$user->account)->value('id');
-                    $tokenKey = 'api_passport_token_'.$tokenId;
-                    $this->redis()->del($tokenKey);
-                    Cache::forget("cachedUser.{$user->id}");
-                    Cache::forget("cachedUser.".$requestUser['id']);
+                    $requestUser = $this->getRequestUserInfo($requestUser, $user);
                     $lock->release();
                     Log::debug('==findADByPhoneRes===',['find back success']);
                     return response()->json(['state'=>0, 'data'=>$requestUser, 'msg'=>'账号找回成功']);
@@ -701,6 +699,62 @@ class UserController extends Controller
             return $this->returnExceptionContent($exception->getMessage());
         }
 
+    }
+
+    public function getRequestUserInfo($requestUser,$user): array
+    {
+        $requestUser->status = 1;
+        $requestUser->vip_start_last = $user->vip_start_last;
+        $requestUser->vip_expired = $user->vip_expired;
+        $requestUser->vip = $user->vip;
+        $requestUser->gold = $user->gold;
+        $requestUser->avatar = $user->avatar;
+        $requestUser->promotion_code = $user->promotion_code;
+        $requestUser->member_card_type = $user->member_card_type;
+        $requestUser->balance = $user->balance;
+        $requestUser->phone_number = $user->phone_number;
+        $requestUser->area_number = $user->area_number;
+        $requestUser->channel_id = $user->channel_id;
+        $requestUser->movie_ticket = $user->movie_ticket;
+        $requestUser->mid = $user->mid;
+        $requestUser->save();
+
+        $tokenResult = $requestUser->createToken($requestUser->account,['check-user']);
+        $token = $tokenResult->token;
+        $token->expires_at = Carbon::now()->addDays();
+        $token->save();
+        $requestUser = $requestUser->only($this->loginUserFields);
+        if(isset($requestUser['avatar'])){
+            $requestUser['avatar'] += 0;
+        }
+        $requestUser['token'] = $tokenResult->accessToken;
+        $requestUser['token_type'] = 'Bearer';
+        $requestUser['expires_at'] = Carbon::parse(
+            $tokenResult->token->expires_at
+        )->toDateTimeString();
+        $requestUser['expires_at_timestamp'] = strtotime($requestUser['expires_at']);
+        //生成用户专有的客服链接
+        $requestUser = $this->generateChatUrl($requestUser);
+        User::query()->where('id',$user->id)->update([
+            'vip'=>0,
+            'member_card_type'=>'',
+            //'status'=>0,
+            'phone_number'=>0,
+            'area_number'=>0,
+            'long_vedio_times'=>0,
+            'vip_start_last'=>0,
+            'vip_expired'=>0,
+            'movie_ticket'=>0,
+            'mid'=>0,
+            'gold'=>0
+        ]);
+
+        $tokenId = Token::query()->where('name',$user->account)->value('id');
+        $tokenKey = 'api_passport_token_'.$tokenId;
+        $this->redis()->del($tokenKey);
+        Cache::forget("cachedUser.{$user->id}");
+        Cache::forget("cachedUser.".$requestUser['id']);
+        return $requestUser;
     }
 
 }

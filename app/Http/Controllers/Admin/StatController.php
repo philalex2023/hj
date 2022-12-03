@@ -12,7 +12,7 @@ class StatController extends BaseCurlIndexController
     //页面信息
     public $pageName = '统计列表';
 
-    public int $multiple = 3;
+    public int $multiple = 10;
 
     //1.设置模型
     public function setModel()

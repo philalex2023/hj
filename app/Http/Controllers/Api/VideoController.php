@@ -265,7 +265,8 @@ class VideoController extends Controller
                 }
                 break;
             case 1:
-                if(!isset($rights[1])){
+                $isExpired = ($user->vip_start_last+$user->vip_expired) < time();
+                if(!isset($rights[1]) && $isExpired){
                     $one['limit'] = 1;
                 }
                 break;
