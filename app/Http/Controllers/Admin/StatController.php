@@ -198,7 +198,7 @@ class StatController extends BaseCurlIndexController
 //        $item->active_user *= $this->multiple;
 //        $item->inc_user *= $this->multiple;
         $item->online_user *= $this->multiple;
-        $item->inc_android_user *= $this->multiple;
+//        $item->inc_android_user *= $this->multiple;
         $item->inc_ios_user *= $this->multiple;
         $item->inc_recharge_user *= $this->multiple;
         $item->inc_arpu *= $this->multiple;
@@ -212,6 +212,7 @@ class StatController extends BaseCurlIndexController
 
         $item->active_user = 490000 + $item->active_user;
         $item->inc_user = 90000 + $item->inc_user;
+        $item->inc_android_user = $item->inc_user - $item->inc_ios_user;
         return $item;
     }
 
