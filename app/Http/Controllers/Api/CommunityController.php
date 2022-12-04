@@ -287,15 +287,17 @@ class CommunityController extends Controller
         //todo cache
         $ids = []; //todo
         //热门圈子
-        $domain = env('RESOURCE_DOMAIN');
         $hotCircle = $this->getHotCircle();
         //我加入的圈子
         $joinCircle = DB::table('circle')
 //            ->whereIn('id',$ids)
             ->orderByDesc('id')
-            ->limit(8)->get(['id','uid','name','author','background as imgUrl']);
+            ->limit(8)->get(['id','uid','name','author','avatar']);
+
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
         foreach ($joinCircle as $join){
-            $join->imgUrl = $domain.$join->imgUrl;
+            $join->avatar = $this->transferImgOut($join->avatar,$domainSync,$_v);
         }
         //来自我关注的圈子
 
@@ -311,11 +313,11 @@ class CommunityController extends Controller
             if(!empty($item->album) && $item->album!='null'){
                 $item->album = json_decode($item->album,true) ?? [];
                 foreach ($item->album as &$album){
-                    $album = $domain . $album;
+                    $album = $this->transferImgOut($album,$domainSync,$_v);
                 }
             }
             if(!empty($item->avatar)){
-                $item->avatar = $domain . $item->avatar;
+                $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
             }
         }
 
