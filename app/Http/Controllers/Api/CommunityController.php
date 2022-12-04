@@ -167,7 +167,7 @@ class CommunityController extends Controller
         ])->validated();
         $uid = $validated['uid'];       //todo
         $filter = $validated['filter']; //todo
-        $type = $validated['type']??0;
+        $type = $validated['type'];
         $page = $validated['page'];
 
         $build = DB::table('video')
