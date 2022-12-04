@@ -162,12 +162,17 @@ class CommunityController extends Controller
         $validated = Validator::make($params,[
             'uid' => 'required|integer',
             'filter' => 'required|integer',
+            'type' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
-        $uid = $validated['uid'];
+        $uid = $validated['uid'];       //todo
+        $filter = $validated['filter']; //todo
+        $type = $validated['type']??0;
         $page = $validated['page'];
 
-        $build = DB::table('video')->orderByDesc('id')
+        $build = DB::table('video')
+            ->where('dev_type',$type)
+            ->orderByDesc('id')
 //            ->where('uid',$uid)
         ;
         $paginator = $build->simplePaginate(8,$this->videoFields,'video',$page);
