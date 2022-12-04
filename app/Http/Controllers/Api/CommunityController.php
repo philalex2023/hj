@@ -90,6 +90,57 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function topicInfo(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'tid' => 'required|integer',
+        ])->validated();
+        $tid = $validated['tid'];
+
+        //月话题精选
+        $field = ['id','name','desc','circle_name','avatar','circle_avatar','circle_friends as user','author','interactive as inter','participate'];
+        $one = DB::table('circle_topic')->find($tid,$field);
+        $res = [
+            'state' => 0,
+            'data' => $one,
+        ];
+        return response()->json($res);
+    }
+
+    public function discuss(): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'filter' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $uid = $validated['uid'];
+        $filter = $validated['filter']; //1按最多播放、2按最新 todo
+        $page = $validated['page'];
+
+        $field = ['id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
+        $build = DB::table('circle_discuss')->where('uid',$uid);
+        /*if($filter==1){
+
+        }else{
+
+        }*/
+        $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $data['list'] = $paginator->items();
+        foreach ($data['list'] as &$item){
+            $item['created_at'] = $this->mdate(strtotime($item['created_at']));
+        }
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     public function topic(Request $request): \Illuminate\Http\JsonResponse
     {
         //月话题精选
