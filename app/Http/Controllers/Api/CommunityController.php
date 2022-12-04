@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommunityTrait;
 use App\TraitClass\PHPRedisTrait;
+use App\TraitClass\VideoTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -14,7 +15,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CommunityController extends Controller
 {
-    use ApiParamsTrait,CommunityTrait,PHPRedisTrait;
+    use ApiParamsTrait,CommunityTrait,PHPRedisTrait,VideoTrait;
 
     //创建话题
     public function addCircleTopic(Request $request)
@@ -120,13 +121,51 @@ class CommunityController extends Controller
         $filter = $validated['filter']; //1按最多播放、2按最新 todo
         $page = $validated['page'];
 
-        $field = ['id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
+        $field = ['id','vid','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
         $build = DB::table('circle_discuss')->where('uid',$uid);
         /*if($filter==1){
 
         }else{
 
         }*/
+        $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $data['list'] = $paginator->items();
+        foreach ($data['list'] as $item){
+            $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
+            $item->created_at = $this->mdate(strtotime($item->created_at));
+            if($item->vid>0){
+                $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views']);
+                if(!empty($one)){
+                    $video = $this->handleVideoItems([$one])[0];
+                    $video['score'] = '9.5';
+                    $item->video = $video;
+                }else{
+                    $item->video = [];
+                }
+            }
+        }
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    /*public function video(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $uid = $validated['uid'];
+        $page = $validated['page'];
+
+        $field = ['id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
+        $build = DB::table('circle_discuss')->where('uid',$uid);
+
         $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
@@ -140,7 +179,7 @@ class CommunityController extends Controller
             'data' => $data,
         ];
         return response()->json($res);
-    }
+    }*/
 
     public function topic(Request $request): \Illuminate\Http\JsonResponse
     {
