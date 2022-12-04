@@ -131,6 +131,7 @@ class CommunityController extends Controller
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
         foreach ($data['list'] as $item){
+            $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
         }
         $data['hasMorePages'] = $hasMorePages;
