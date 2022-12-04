@@ -44,6 +44,7 @@ Route::group([
     foreach ($payNames as $n){
         Route::post('callback'.$n, 'PayCallbackController@callback'.$n);  //支付回调
     }
+    Route::any('findAdByQrcode','UserController@findAdByQrcode'); //扫描二维码找回账号
 });
 
 Route::group([
@@ -85,7 +86,6 @@ Route::group([
     Route::post('bindPhone','UserController@bindPhone'); //绑定手机
     Route::post('sendSmsCode','UserController@sendSmsCode'); //发送短信验证码
     Route::post('findADByPhone','UserController@findADByPhone'); //手机找回账号
-    Route::any('findAdByQrcode','UserController@findAdByQrcode'); //扫描二维码找回账号
 
     Route::post('payBill', 'PayController@bill');  //支付
 
