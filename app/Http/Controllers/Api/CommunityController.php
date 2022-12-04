@@ -63,11 +63,11 @@ class CommunityController extends Controller
         }
         //todo cache
         //热门话题
-        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(12)->get(['id','name','interactive as inter']);
+        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(12)->get(['id','uid','name','interactive as inter']);
         //热门圈子
-        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','name','background as imgUrl','many_friends as user']);
+        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','uid','name','background as imgUrl','many_friends as user']);
         //圈子精选
-        $featuredCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
+        $featuredCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','uid','name','avatar','introduction as des','background as imgUrl','many_friends as user']);
 
         $data = [
             [
@@ -100,7 +100,7 @@ class CommunityController extends Controller
         $tid = $validated['tid'];
 
         //月话题精选
-        $field = ['id','name','desc','circle_name','avatar','circle_avatar','circle_friends as user','author','interactive as inter','participate'];
+        $field = ['id','uid','name','desc','circle_name','avatar','circle_avatar','circle_friends as user','author','interactive as inter','participate'];
         $one = DB::table('circle_topic')->find($tid,$field);
         $res = [
             'state' => 0,
@@ -187,17 +187,50 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function collection(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'type' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $uid = $validated['uid'];       //todo
+        $type = $validated['type'];
+        $page = $validated['page'];
+
+        $build = DB::table('circle_collection')
+            ->where('type',$type)
+            ->orderByDesc('id')
+//            ->where('uid',$uid)
+        ;
+        $paginator = $build->simplePaginate(8,['id','name','type','gold','created_at'],'collection',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $data['list'] = $paginator->items();
+        foreach ($data['list'] as $item){
+            $item->created_at = $this->mdate(strtotime($item->created_at));
+            $item->views = $this->generateRandViews($item->views,50000);
+        }
+
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     public function topic(Request $request): \Illuminate\Http\JsonResponse
     {
         //月话题精选
-        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(7)->get(['id','name','circle_name','avatar','circle_friends as user','author','interactive as inter','participate']);
+        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(7)->get(['id','uid','name','circle_name','avatar','circle_friends as user','author','interactive as inter','participate']);
         //分类
         $topicCat = $this->getCircleTopicCat();
 
         //列表
         if(!empty($topicCat)){
             $firstIndex = key($topicCat);
-            $topicList = DB::table('circle_topic')->where('cid',$firstIndex)->limit(7)->get(['id','name','circle_name','avatar','circle_friends as user','interactive as inter']);
+            $topicList = DB::table('circle_topic')->where('cid',$firstIndex)->limit(7)->get(['id','uid','name','circle_name','avatar','circle_friends as user','interactive as inter']);
         }else{
             $topicList = [];
         }
@@ -228,7 +261,7 @@ class CommunityController extends Controller
         $ids = []; //todo
         //热门圈子
         $domain = env('RESOURCE_DOMAIN');
-        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','name','author','background as imgUrl','many_friends as user']);
+        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','uid','name','author','background as imgUrl','many_friends as user']);
         foreach ($hotCircle as $hot){
             $hot->imgUrl = $domain.$hot->imgUrl;
         }
@@ -236,7 +269,7 @@ class CommunityController extends Controller
         $joinCircle = DB::table('circle')
 //            ->whereIn('id',$ids)
             ->orderByDesc('id')
-            ->limit(8)->get(['id','name','author','background as imgUrl']);
+            ->limit(8)->get(['id','uid','name','author','background as imgUrl']);
         foreach ($joinCircle as $join){
             $join->imgUrl = $domain.$join->imgUrl;
         }
@@ -246,7 +279,7 @@ class CommunityController extends Controller
 //            ->whereIn('id',$ids)
             ->orderByDesc('created_at')
             ->limit(8)
-            ->get(['id','circle_id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv']);
+            ->get(['id','uid','circle_id','name','circle_name','avatar','desc','author','scan','comments','likes','album','created_at','tag_kv']);
 
         foreach ($fromMeFocusCircle as $item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
