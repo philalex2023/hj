@@ -131,8 +131,8 @@ class CommunityController extends Controller
         $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
-        foreach ($data['list'] as &$item){
-            $item['created_at'] = $this->mdate(strtotime($item['created_at']));
+        foreach ($data['list'] as $item){
+            $item->created_at = $this->mdate(strtotime($item->created_at));
         }
         $data['hasMorePages'] = $hasMorePages;
         $res = [
