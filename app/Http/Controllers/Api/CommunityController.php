@@ -135,7 +135,7 @@ class CommunityController extends Controller
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
             if($item->vid>0){
-                $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views']);
+                $one = DB::table('video')->where('id',$item->vid)->first($this->videoFields);
                 if(!empty($one)){
                     $video = $this->handleVideoItems([$one])[0];
                     $video['score'] = '9.5';
