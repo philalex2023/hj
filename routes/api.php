@@ -110,9 +110,12 @@ Route::group([
     Route::post('commRes', 'CommMiscController@res');  //发送资源
     Route::post('commBbs', 'CommContentController@post');  //发贴
 
+    Route::get('myData', 'CommunityController@myData');  //我的数据
     Route::get('communityFocus', 'CommunityController@focus');  //社区关注
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题
+    Route::post('addCircleTopic', 'CommunityController@addCircleTopic');  //创建话题
+    Route::post('addCircle', 'CommunityController@addCircle');  //创建圈子
 
     /// 小视频模块
     Route::get('shortCate', 'VideoShortController@cate');  //视频分类

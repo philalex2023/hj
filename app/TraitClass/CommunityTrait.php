@@ -6,6 +6,13 @@ use App\Models\Category;
 
 trait CommunityTrait
 {
+    use PHPRedisTrait;
+
+    public function getUpMasterId($uid)
+    {
+        return $this->redis()->hGet('MemberUpMaster',$uid);
+    }
+
     public function getCircleTopicCat(): array
     {
         $allCat = Category::query()

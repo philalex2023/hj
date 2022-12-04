@@ -6,6 +6,7 @@ use App\ExtendClass\CacheUser;
 use App\Http\Controllers\Controller;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommunityTrait;
+use App\TraitClass\PHPRedisTrait;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -13,7 +14,46 @@ use Illuminate\Support\Facades\Validator;
 
 class CommunityController extends Controller
 {
-    use ApiParamsTrait,CommunityTrait;
+    use ApiParamsTrait,CommunityTrait,PHPRedisTrait;
+
+    //创建话题
+    public function addCircleTopic(Request $request)
+    {
+        $upMasterId = $this->getUpMasterId($request->user()->id);
+        if(!$upMasterId){
+            return response()->json(['state' => -1, 'msg' => "请联系客服开通",'data'=>[]]);
+        }else{
+            // todo
+            return response()->json(['state' => -1, 'msg' => "创建成功",'data'=>[]]);
+        }
+    }
+
+    //创建圈子
+    public function addCircle(Request $request)
+    {
+        $upMasterId = $this->getUpMasterId($request->user()->id);
+        if(!$upMasterId){
+            return response()->json(['state' => -1, 'msg' => "请联系客服开通",'data'=>[]]);
+        }else{
+            // todo
+            return response()->json(['state' => -1, 'msg' => "创建成功",'data'=>[]]);
+        }
+    }
+
+    //我的数据
+    public function myData(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $upMasterId = $this->getUpMasterId($request->user()->id);
+        $data = [
+            'playTimes' => 0, //视频播放次数
+            'comments' => 0, //评论数
+            'likes' => 0, //点赞数
+            'fans' => 0, //粉丝数
+            'share' => 0, //分享
+            'income' => 0, //今日收益
+        ];
+        return response()->json(['state' => -1,'data'=>$data]);
+    }
 
     public function square(Request $request): \Illuminate\Http\JsonResponse
     {
