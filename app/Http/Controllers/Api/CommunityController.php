@@ -56,7 +56,7 @@ class CommunityController extends Controller
         return response()->json(['state' => -1,'data'=>$data]);
     }
 
-    public function getHotCircle($domain): \Illuminate\Support\Collection
+    public function getHotCircle(): \Illuminate\Support\Collection
     {
         //热门圈子
         $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','uid','name','avatar','many_friends as user']);
@@ -79,16 +79,19 @@ class CommunityController extends Controller
         //热门话题
         $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(12)->get(['id','uid','name','interactive as inter']);
         //热门圈子
-        $domain = env('RESOURCE_DOMAIN');
-        $hotCircle = $this->getHotCircle($domain);
+        $hotCircle = $this->getHotCircle();
         //圈子精选
         $featuredCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','uid','cname','name','scan','avatar','introduction as des','background as imgUrl','many_friends as user']);
 
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
         foreach ($featuredCircle as $f){
             //$f->user_avatar = [];//圈友头像（三个，不足三个有多少给多少）todo
             $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
             $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
             $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
+            $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
         }
 
         $data = [
@@ -285,7 +288,7 @@ class CommunityController extends Controller
         $ids = []; //todo
         //热门圈子
         $domain = env('RESOURCE_DOMAIN');
-        $hotCircle = $this->getHotCircle($domain);
+        $hotCircle = $this->getHotCircle();
         //我加入的圈子
         $joinCircle = DB::table('circle')
 //            ->whereIn('id',$ids)
