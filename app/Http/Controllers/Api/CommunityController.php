@@ -80,7 +80,11 @@ class CommunityController extends Controller
         $hotCircle = $this->getHotCircle($domain);
         //圈子精选
         $featuredCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','uid','cname','name','scan','avatar','introduction as des','background as imgUrl','many_friends as user']);
-        //圈友头像（三个，不足三个有多少给多少）
+
+        foreach ($featuredCircle as $f){
+            $f->user_avatar = [];//圈友头像（三个，不足三个有多少给多少）todo
+        }
+
         $data = [
             [
                 'name' => '热门话题',
