@@ -167,10 +167,10 @@ class CommunityController extends Controller
         $uid = $validated['uid'];
         $page = $validated['page'];
 
-        $build = DB::table('video')
+        $build = DB::table('video')->orderByDesc('id')
 //            ->where('uid',$uid)
         ;
-        $paginator = $build->simplePaginate(7,$this->videoFields,'video',$page);
+        $paginator = $build->simplePaginate(8,$this->videoFields,'video',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
         $data['list'] = $this->handleVideoItems($data['list']);
