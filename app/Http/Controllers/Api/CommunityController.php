@@ -108,10 +108,9 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function discuss(): \Illuminate\Http\JsonResponse
+    public function discuss(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
-        dd($params);
         $validated = Validator::make($params,[
             'uid' => 'required|integer',
             'filter' => 'required|integer',
