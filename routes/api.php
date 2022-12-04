@@ -115,7 +115,7 @@ Route::group([
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题
     Route::get('communityTopicInfo', 'CommunityController@topicInfo');  //话题信息
-    Route::get('communityDiscuss', 'CommunityController@discuss');  //话题讨论
+    Route::post('communityDiscuss', 'CommunityController@discuss');  //话题讨论
 
     Route::post('addCircleTopic', 'CommunityController@addCircleTopic');  //创建话题
     Route::post('addCircle', 'CommunityController@addCircle');  //创建圈子
