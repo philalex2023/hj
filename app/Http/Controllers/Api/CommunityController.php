@@ -131,9 +131,11 @@ class CommunityController extends Controller
         $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
+        $domain = env('RESOURCE_DOMAIN');
         foreach ($data['list'] as $item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
+            $item->avatar = $domain.$item->avatar;
             if($item->vid>0){
                 $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views']);
                 if(!empty($one)){
@@ -154,33 +156,31 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    /*public function video(Request $request): \Illuminate\Http\JsonResponse
+    public function video(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
             'uid' => 'required|integer',
+            'filter' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
         $uid = $validated['uid'];
         $page = $validated['page'];
 
-        $field = ['id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
-        $build = DB::table('circle_discuss')->where('uid',$uid);
-
-        $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
+        $build = DB::table('video')
+//            ->where('uid',$uid)
+        ;
+        $paginator = $build->simplePaginate(7,$this->videoFields,'video',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
-        foreach ($data['list'] as $item){
-            $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
-            $item->created_at = $this->mdate(strtotime($item->created_at));
-        }
+        $data['list'] = $this->handleVideoItems($data['list']);
         $data['hasMorePages'] = $hasMorePages;
         $res = [
             'state' => 0,
             'data' => $data,
         ];
         return response()->json($res);
-    }*/
+    }
 
     public function topic(Request $request): \Illuminate\Http\JsonResponse
     {
