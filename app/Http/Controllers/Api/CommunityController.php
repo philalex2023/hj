@@ -139,6 +139,7 @@ class CommunityController extends Controller
                 if(!empty($one)){
 //                    $video = $this->handleVideoItems([$one])[0];
                     $one->score = '9.5';
+                    $one->view = $one->view > 0 ? $this->generateRandViews($one->view) : $this->generateRandViews(rand(500, 99999));
                     $item->video = $one;
                 }else{
                     $item->video = [];
