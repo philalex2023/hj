@@ -204,7 +204,7 @@ class CommunityController extends Controller
             ->orderByDesc('id')
 //            ->where('uid',$uid)
         ;
-        $paginator = $build->simplePaginate(8,['id','name','views','type','gold','created_at'],'collection',$page);
+        $paginator = $build->simplePaginate(8,['id','name','views','gold','created_at'],'collection',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
         foreach ($data['list'] as $item){
