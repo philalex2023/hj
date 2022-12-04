@@ -60,9 +60,12 @@ class CommunityController extends Controller
     {
         //热门圈子
         $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','uid','name','avatar','many_friends as user']);
+        //封面图处理
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
         foreach ($hotCircle as $h){
             $h->isJoin = 0; //todo
-            $h->avatar = $domain . $h->avatar;
+            $h->avatar = $this->transferImgOut($h->avatar,$domainSync,$_v);
         }
         return $hotCircle;
     }
@@ -82,7 +85,10 @@ class CommunityController extends Controller
         $featuredCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','uid','cname','name','scan','avatar','introduction as des','background as imgUrl','many_friends as user']);
 
         foreach ($featuredCircle as $f){
-            $f->user_avatar = [];//圈友头像（三个，不足三个有多少给多少）todo
+            //$f->user_avatar = [];//圈友头像（三个，不足三个有多少给多少）todo
+            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
         }
 
         $data = [
