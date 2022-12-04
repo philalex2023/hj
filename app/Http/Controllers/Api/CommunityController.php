@@ -110,18 +110,19 @@ class CommunityController extends Controller
 
     public function discuss(): \Illuminate\Http\JsonResponse
     {
-        $params = self::parse($request->params??'');
+        /*$params = self::parse($request->params??'');
         $validated = Validator::make($params,[
             'uid' => 'required|integer',
             'filter' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
         $uid = $validated['uid'];
-        $filter = $validated['filter']; //1按最多播放、2按最新 todo
-        $page = $validated['page'];
+        $filter = $validated['filter'];*/ //1按最多播放、2按最新 todo
+        $page = $validated['page']??1;
 
         $field = ['id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
-        $build = DB::table('circle_discuss')->where('uid',$uid);
+        $build = DB::table('circle_discuss');
+            //->where('uid',$uid);
         /*if($filter==1){
 
         }else{
