@@ -204,12 +204,14 @@ class CommunityController extends Controller
             ->orderByDesc('id')
 //            ->where('uid',$uid)
         ;
-        $paginator = $build->simplePaginate(8,['id','name','views','gold','created_at'],'collection',$page);
+        $paginator = $build->simplePaginate(8,['id','name','cover','views','gold','created_at'],'collection',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
+        $domain = env('RESOURCE_DOMAIN');
         foreach ($data['list'] as $item){
             $item->created_at = $this->mdate(strtotime($item->created_at));
             $item->views = $this->generateRandViews($item->views,50000);
+            !empty($item->cover) && $item->cover = $domain.$item->cover;
         }
 
         $data['hasMorePages'] = $hasMorePages;
