@@ -46,7 +46,12 @@ class CommunityController extends Controller
     //我的数据
     public function myData(Request $request): \Illuminate\Http\JsonResponse
     {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'time' => 'required|integer', //时间戳
+        ])->validated();
         $upMasterId = $this->getUpMasterId($request->user()->id);
+        //todo
         $data = [
             'playTimes' => 0, //视频播放次数
             'comments' => 0, //评论数
@@ -58,18 +63,32 @@ class CommunityController extends Controller
         return response()->json(['state' => -1,'data'=>$data]);
     }
 
-    public function getHotCircle(): \Illuminate\Support\Collection
+    public function getHotCircle($uid): \Illuminate\Support\Collection
     {
         //热门圈子
         $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','uid','name','avatar','many_friends as user']);
         //封面图处理
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
+        $redis = $this->redis('login');
         foreach ($hotCircle as $h){
-            $h->isJoin = 0; //todo
+            $h->isJoin = $redis->sIsMember('circleJoinUser:'.$uid,$h->id) ? 1 : 0;
             $h->avatar = $this->transferImgOut($h->avatar,$domainSync,$_v);
         }
         return $hotCircle;
+    }
+
+    public function circleCate(Request $request): \Illuminate\Http\JsonResponse
+    {
+        if(!$request->user()){
+            return response()->json([]);
+        }
+        $cats = array_values($this->getCircleCat());
+        $res = [
+            'state' => 0,
+            'data' => $cats,
+        ];
+        return response()->json($res);
     }
 
     //圈子精选

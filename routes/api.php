@@ -111,6 +111,7 @@ Route::group([
     Route::post('commBbs', 'CommContentController@post');  //发贴
 
     Route::get('myData', 'CommunityController@myData');  //我的数据
+    Route::get('communityCircleCate', 'CommunityController@circleCate');  //圈子分类
     Route::get('communityFocus', 'CommunityController@focus');  //社区关注
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题

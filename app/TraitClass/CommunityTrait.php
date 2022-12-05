@@ -26,28 +26,17 @@ trait CommunityTrait
         return $cats;
     }
 
-    public function getCommunityCat(): array
+    public function getCircleCat(): array
     {
-        return [
-            [
-                'id'=>1,
-                'sort'=>1,
-                'selected'=>0,
-                'name'=>'关注',
-            ],
-            [
-                'id'=>2,
-                'sort'=>2,
-                'selected'=>1,
-                'name'=>'广场',
-            ],
-            [
-                'id'=>3,
-                'sort'=>3,
-                'selected'=>0,
-                'name'=>'话题中心',
-            ],
-        ];
+        $allCat = Category::query()
+            ->where('parent_id',10073)
+            ->where('is_checked',1)
+            ->pluck('name','id')->all();
+        $cats = [];
+        foreach ($allCat as $id=>$name){
+            $cats[$id] = ['id'=>$id,'name'=>$name];
+        }
+        return $cats;
     }
 
     public function mdate($time = NULL): string
