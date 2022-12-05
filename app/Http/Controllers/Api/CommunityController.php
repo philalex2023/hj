@@ -204,6 +204,7 @@ class CommunityController extends Controller
         $uid = $validated['uid'];
         $filter = $validated['filter']; //1按最多播放、2按最新 todo
         $page = $validated['page'];
+        $uid = $request->user()->id;
 
         $build = DB::table('circle_discuss')->where('uid',$uid);
         /*if($filter==1){
@@ -214,7 +215,7 @@ class CommunityController extends Controller
         $paginator = $build->simplePaginate(7,$this->discussField,'discuss',$page);
         $data['list'] = $paginator->items();
 
-        $data['list'] = $this->handleDiscussItem($data['list']);
+        $data['list'] = $this->handleDiscussItem($data['list'],$uid);
 
         $data['hasMorePages'] = $paginator->hasMorePages();
         $res = [
