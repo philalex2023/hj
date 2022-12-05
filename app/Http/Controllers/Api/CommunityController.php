@@ -70,6 +70,7 @@ class CommunityController extends Controller
         return $hotCircle;
     }
 
+    //圈子精选
     public function circleFeatured (Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -80,7 +81,7 @@ class CommunityController extends Controller
 
         $filter = $validated['filter'];
         $page = $validated['page'];
-        //圈子精选
+
         $field = ['id','uid','cname','name','scan','avatar','introduction as des','background as imgUrl','many_friends as user'];
         $paginator= DB::table('circle')->simplePaginate(8,$field,'circleFeatured',$page);
         $hasMorePages = $paginator->hasMorePages();
