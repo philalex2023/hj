@@ -159,17 +159,19 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function handleDiscussItem($data)
+    public function handleDiscussItem($data,$uid)
     {
         $domain = env('RESOURCE_DOMAIN');
         $domainSync = self::getDomain(2);
         $_v = date('ymd');
+        $redis = $this->redis('login');
         foreach ($data as $item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
             $item->avatar = $domain.$item->avatar;
-            $item->isFocus = 0; //todo
-            $item->isLike = 0; //todo
+            $item->isJoin = $redis->sIsMember('circleJoinUser:'.$uid,$item->circle_id) ? 1 : 0;
+            $item->isFocus = $redis->sIsMember('discussFocusUser:'.$uid,$item->id) ? 1 : 0;
+            $item->isLike = $redis->sIsMember('discussLikesUser:'.$uid,$item->id) ? 1 : 0;
             $item->album = !$item->album ? [] : json_decode($item->album,true);
             foreach ($item->album as &$album){
                 $album = $this->transferImgOut($album,$domainSync,$_v);
@@ -328,12 +330,13 @@ class CommunityController extends Controller
             'page' => 'required|integer'
         ])->validated();
         $page = $validated['page'];
+        $uid = $request->user()->id;
 
         $build = DB::table('circle_discuss'); //todo
         $paginator = $build->simplePaginate(7,$this->discussField,'fromMeFocusCircle',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
-        $data['list'] = $this->handleDiscussItem($data['list']);
+        $data['list'] = $this->handleDiscussItem($data['list'],$uid);
         $data['hasMorePages'] = $hasMorePages;
         $res = [
             'state' => 0,
