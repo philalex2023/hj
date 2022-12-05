@@ -398,7 +398,7 @@ class CommunityController extends Controller
         $hit = $validated['hit'];
         $action = $validated['action'];
         $user = $request->user();
-        $redis = $this->redis('login');
+
         switch($action){
             case 1:
                 $key = 'circleJoinUser:'.$user->id;
@@ -410,11 +410,14 @@ class CommunityController extends Controller
                 $key = 'discussLikesUser:'.$user->id;
                 break;
         }
-        if($hit==1){
-            $redis->sAdd($key,$id);
-            $redis->expireAt($key,time()+30*24*3600);
-        }else{
-            $redis->sRem($key,$id);
+        if(isset($key)){
+            $redis = $this->redis('login');
+            if($hit==1){
+                $redis->sAdd($key,$id);
+                $redis->expireAt($key,time()+30*24*3600);
+            }else{
+                $redis->sRem($key,$id);
+            }
         }
         return response()->json([
             'state' => 0,
