@@ -314,7 +314,7 @@ class CommunityController extends Controller
                 'list' => $hotTopic,
             ],
             [
-                'cat' => $topicCat,
+                'cat' => array_values($topicCat),
                 'list' => $topicList,
             ],
         ];
@@ -361,7 +361,7 @@ class CommunityController extends Controller
         $joinCircle = DB::table('circle')
 //            ->whereIn('id',$ids)
             ->orderByDesc('id')
-            ->limit(8)->get(['id','uid','name','author','avatar'])->toArray();
+            ->limit(8)->get(['id','uid','name','author','avatar']);
 
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
