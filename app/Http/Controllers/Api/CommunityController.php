@@ -311,21 +311,26 @@ class CommunityController extends Controller
         ])->validated();
         $page = $validated['page'];
 
-        $field = ['id','vid','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
+        $field = ['id','uid','circle_id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
         $build = DB::table('circle_discuss'); //todo
         $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
         $domain = env('RESOURCE_DOMAIN');
+        $domainSync = self::getDomain(2);
+        $_v = date('ymd');
         foreach ($data['list'] as $item){
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
             $item->avatar = $domain.$item->avatar;
-            $item->isFocus = 0;
+            $item->isFocus = 0; //todo
+            $item->isLike = 0; //todo
             if($item->vid>0){
-                $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views']);
+                $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views','dev_type','cover_img']);
                 if(!empty($one)){
 //                    $video = $this->handleVideoItems([$one])[0];
+                    //封面图处理
+                    $one->cover_img = $this->transferImgOut($one->cover_img,$domainSync,$_v);
                     $one->score = '9.5';
                     $one->views = $one->views > 0 ? $this->generateRandViews($one->views) : $this->generateRandViews(rand(500, 99999));
                     $item->video = $one;
@@ -380,21 +385,60 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function cat(): \Illuminate\Http\JsonResponse
-    {
-        $data = $this->getCommunityCat();
-        return response()->json($data);
-    }
-
-    public function HotCircleTopic(Request $request): \Illuminate\Http\JsonResponse
+    //加入/退出圈子
+    public function joinCircle(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
-            'cid' => 'required|integer',
+            'id' => 'required|integer',
+            'join' => 'required|integer', //
             'page' => 'required|integer'
         ])->validated();
+        $id = $validated['id'];
+        $focus = $validated['join'];
+        $user = $request->user();
+        $redis = $this->redis('login');
+        $key = 'circleJoinUser:'.$user->id;
+        if($focus==1){
+            $redis->sAdd($key,$id);
+            $redis->expireAt($key,time()+30*24*3600);
+        }else{
+            $redis->sRem($key,$id);
+        }
 
-        return response()->json([]);
+        return response()->json([
+            'state' => 0,
+            'msg' => '成功',
+            'data' => [],
+        ]);
+    }
+
+    //关注/取消关注帖子
+    public function focusDiscuss(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'id' => 'required|integer',
+            'focus' => 'required|integer', //
+            'page' => 'required|integer'
+        ])->validated();
+        $id = $validated['id'];
+        $focus = $validated['focus'];
+        $user = $request->user();
+        $redis = $this->redis('login');
+        $key = 'discussFocusUser:'.$user->id;
+        if($focus==1){
+            $redis->sAdd($key,$id);
+            $redis->expireAt($key,time()+30*24*3600);
+        }else{
+            $redis->sRem($key,$id);
+        }
+
+        return response()->json([
+            'state' => 0,
+            'msg' => '成功',
+            'data' => [],
+        ]);
     }
 
 }
