@@ -386,26 +386,36 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    //加入/退出圈子
-    public function joinCircle(Request $request): \Illuminate\Http\JsonResponse
+    public function actionEvent(Request $request)
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
             'id' => 'required|integer',
-            'hit' => 'required|integer',
+            'hit' => 'required|integer', //1点击 0 取消点击
+            'action' => 'required|integer', //1加入圈子 2关注帖子 3喜欢帖子
         ])->validated();
         $id = $validated['id'];
         $hit = $validated['hit'];
+        $action = $validated['action'];
         $user = $request->user();
         $redis = $this->redis('login');
-        $key = 'circleJoinUser:'.$user->id;
+        switch($action){
+            case 1:
+                $key = 'circleJoinUser:'.$user->id;
+                break;
+            case 2:
+                $key = 'discussFocusUser:'.$user->id;
+                break;
+            case 3:
+                $key = 'discussLikesUser:'.$user->id;
+                break;
+        }
         if($hit==1){
             $redis->sAdd($key,$id);
             $redis->expireAt($key,time()+30*24*3600);
         }else{
             $redis->sRem($key,$id);
         }
-
         return response()->json([
             'state' => 0,
             'msg' => '成功',
@@ -413,58 +423,5 @@ class CommunityController extends Controller
         ]);
     }
 
-    //关注/取消关注帖子
-    public function focusDiscuss(Request $request): \Illuminate\Http\JsonResponse
-    {
-        $params = self::parse($request->params??'');
-        $validated = Validator::make($params,[
-            'id' => 'required|integer',
-            'hit' => 'required|integer', //
-        ])->validated();
-        $id = $validated['id'];
-        $hit = $validated['hit'];
-        $uid = $request->user()->id;
-        $redis = $this->redis('login');
-        $key = 'discussFocusUser:'.$uid;
-        if($hit==1){
-            $redis->sAdd($key,$id);
-            $redis->expireAt($key,time()+30*24*3600);
-        }else{
-            $redis->sRem($key,$id);
-        }
-
-        return response()->json([
-            'state' => 0,
-            'msg' => '成功',
-            'data' => [],
-        ]);
-    }
-
-    //喜欢/取消喜欢
-    public function likesDiscuss(Request $request): \Illuminate\Http\JsonResponse
-    {
-        $params = self::parse($request->params??'');
-        $validated = Validator::make($params,[
-            'id' => 'required|integer',
-            'hit' => 'required|integer', //
-        ])->validated();
-        $id = $validated['id'];
-        $hit = $validated['hit'];
-        $user = $request->user();
-        $redis = $this->redis('login');
-        $key = 'discussLikesUser:'.$user->id;
-        if($hit==1){
-            $redis->sAdd($key,$id);
-            $redis->expireAt($key,time()+30*24*3600);
-        }else{
-            $redis->sRem($key,$id);
-        }
-
-        return response()->json([
-            'state' => 0,
-            'msg' => '成功',
-            'data' => [],
-        ]);
-    }
 
 }
