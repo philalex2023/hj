@@ -311,7 +311,7 @@ class CommunityController extends Controller
         ])->validated();
         $page = $validated['page'];
 
-        $field = ['id','vid','uid','circle_id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
+        $field = ['id','vid','uid','circle_id','content','circle_name','avatar','album','author','tag_kv','scan','comments','likes','created_at'];
         $build = DB::table('circle_discuss'); //todo
         $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
         $hasMorePages = $paginator->hasMorePages();
@@ -325,6 +325,10 @@ class CommunityController extends Controller
             $item->avatar = $domain.$item->avatar;
             $item->isFocus = 0; //todo
             $item->isLike = 0; //todo
+            $item->album = !$item->album ? [] : json_decode($item->album,true);
+            foreach ($item->album as &$album){
+                $album = $this->transferImgOut($album,$domainSync,$_v);
+            }
             if($item->vid>0){
                 $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views','dev_type','cover_img']);
                 if(!empty($one)){
