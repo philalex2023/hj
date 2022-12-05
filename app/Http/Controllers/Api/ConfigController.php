@@ -30,6 +30,7 @@ class ConfigController extends Controller
             $weight = 0;
             $keys = [];
             foreach ($res['open_screen_ads'] as $key => $ad){
+                Log::info('==open_screen_ads==',[$ad]);
                 $weight += $ad['weight'];
                 for ($i=0;$i<$ad['weight'];++$i){
                     $keys[] = $key;
@@ -38,7 +39,8 @@ class ConfigController extends Controller
             $use = rand(0, $weight -1);
             $hitKey = $weight==0 ? 0 : $keys[$use];
 
-            Log::info('==weight==',['命中第 '.($hitKey+1).' 张',$use,count($res['open_screen_ads']),$weight]);
+//            Log::info('==weight==',['命中第 '.($hitKey+1).' 张',$use,count($res['open_screen_ads']),$weight]);
+
             $one = $res['open_screen_ads'][$hitKey];
             $res['open_screen_ads'] = [$one];
         }
