@@ -47,9 +47,10 @@ class CommunityController extends Controller
     public function myData(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
-        $validated = Validator::make($params,[
+        /*$validated = Validator::make($params,[
             'time' => 'required|integer', //时间戳
-        ])->validated();
+        ])->validated();*/
+        $time = $params['time'] ?? 0;
         $upMasterId = $this->getUpMasterId($request->user()->id);
         //todo
         $data = [
@@ -91,16 +92,37 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    /*public function circle(Request $request)
+    public function circle(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
+        $uid = $request->user()->id;
         $validated = Validator::make($params,[
-            'cid' => 'required|integer', //1最热 2当周 todo
+            'cid' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
         $cid = $validated['cid'];
         $page = $validated['page'];
-    }*/
+        $field = ['id','uid','cname','name','scan','participate','avatar','introduction as des','many_friends as user'];
+        $paginator= DB::table('circle')
+//            ->where('cid',$cid)
+            ->simplePaginate(8,$field,'circleFeatured',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $featuredCircle = $paginator->items();
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
+        $redis = $this->redis('login');
+        foreach ($featuredCircle as $f){
+            $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
+            $f->isJoin = $redis->sIsMember('circleJoinUser:'.$uid,$f->id) ? 1 : 0;
+        }
+        $data['list'] = $featuredCircle;
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
 
     //圈子精选
     public function circleFeatured (Request $request): \Illuminate\Http\JsonResponse
@@ -446,8 +468,14 @@ class CommunityController extends Controller
             $redis = $this->redis('login');
             if($hit==1){
                 $redis->sAdd($key,$id);
-                $redis->expireAt($key,time()+30*24*3600);
+//                $redis->expireAt($key,time()+30*24*3600);
+                if($action==1){
+                    DB::table('circle')->where('id',$id)->increment('participate');
+                }
             }else{
+                if($action==1){
+                    DB::table('circle')->where('id',$id)->decrement('participate');
+                }
                 $redis->sRem($key,$id);
             }
         }
