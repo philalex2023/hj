@@ -112,6 +112,7 @@ Route::group([
 
     Route::get('myData', 'CommunityController@myData');  //我的数据
     Route::get('communityCircleCate', 'CommunityController@circleCate');  //圈子分类
+    Route::get('communityCircle', 'CommunityController@circle');  //圈子更多列表
     Route::get('communityFocus', 'CommunityController@focus');  //社区关注
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题

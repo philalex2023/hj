@@ -50,7 +50,7 @@ class CommunityController extends Controller
         /*$validated = Validator::make($params,[
             'time' => 'required|integer', //时间戳
         ])->validated();*/
-        $time = $params['time'] ?? 0;
+        $time = $params['time'] ?? time();
         $upMasterId = $this->getUpMasterId($request->user()->id);
         //todo
         $data = [
@@ -102,7 +102,7 @@ class CommunityController extends Controller
         ])->validated();
         $cid = $validated['cid'];
         $page = $validated['page'];
-        $field = ['id','uid','cname','name','scan','participate','avatar','introduction as des','many_friends as user'];
+        $field = ['id','uid','name','participate','avatar','introduction as des','many_friends as user'];
         $paginator= DB::table('circle')
 //            ->where('cid',$cid)
             ->simplePaginate(8,$field,'circleFeatured',$page);
