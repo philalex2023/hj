@@ -70,6 +70,40 @@ class CommunityController extends Controller
         return $hotCircle;
     }
 
+    public function circleFeatured (Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'filter' => 'required|integer', //1最热 2当周 todo
+            'page' => 'required|integer'
+        ])->validated();
+
+        $filter = $validated['filter'];
+        $page = $validated['page'];
+        //圈子精选
+        $field = ['id','uid','cname','name','scan','avatar','introduction as des','background as imgUrl','many_friends as user'];
+        $paginator= DB::table('circle')->simplePaginate(8,$field,'circleFeatured',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $featuredCircle = $paginator->items();
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
+        foreach ($featuredCircle as $f){
+            //$f->user_avatar = [];//圈友头像（三个，不足三个有多少给多少）todo
+            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
+            $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
+        }
+        $data['list'] = $featuredCircle;
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     public function square(Request $request): \Illuminate\Http\JsonResponse
     {
         if(!$request->user()){
@@ -81,18 +115,6 @@ class CommunityController extends Controller
         //热门圈子
         $hotCircle = $this->getHotCircle();
         //圈子精选
-        $featuredCircle = DB::table('circle')->orderByDesc('introduction')->limit(8)->get(['id','uid','cname','name','scan','avatar','introduction as des','background as imgUrl','many_friends as user']);
-
-        $domainSync = self::getDomain(2);
-        $_v = date('Ymd');
-        foreach ($featuredCircle as $f){
-            //$f->user_avatar = [];//圈友头像（三个，不足三个有多少给多少）todo
-            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-            $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
-            $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
-        }
 
         $data = [
             [
@@ -103,10 +125,10 @@ class CommunityController extends Controller
                 'name' => '热门圈子',
                 'list' => $hotCircle,
             ],
-            [
+            /*[
                 'name' => '圈子精选',
                 'list' => $featuredCircle,
-            ],
+            ],*/
         ];
         $res = [
             'state' => 0,
@@ -341,12 +363,6 @@ class CommunityController extends Controller
         ];
 
         return response()->json($res);
-    }
-
-    public function circleFeatured ()
-    {
-        //圈子精选
-        $featuredCircle = DB::table('circle')->limit(8)->get(['id','name','avatar','introduction','background','many_friends']);
     }
 
     public function cat(): \Illuminate\Http\JsonResponse
