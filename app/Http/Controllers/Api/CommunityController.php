@@ -157,6 +157,38 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function handleDiscussItem($data)
+    {
+        $domain = env('RESOURCE_DOMAIN');
+        $domainSync = self::getDomain(2);
+        $_v = date('ymd');
+        foreach ($data as $item){
+            $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
+            $item->created_at = $this->mdate(strtotime($item->created_at));
+            $item->avatar = $domain.$item->avatar;
+            $item->isFocus = 0; //todo
+            $item->isLike = 0; //todo
+            $item->album = !$item->album ? [] : json_decode($item->album,true);
+            foreach ($item->album as &$album){
+                $album = $this->transferImgOut($album,$domainSync,$_v);
+            }
+            if($item->vid>0){
+                $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views','dev_type','cover_img']);
+                if(!empty($one)){
+//                    $video = $this->handleVideoItems([$one])[0];
+                    //封面图处理
+                    $one->cover_img = $this->transferImgOut($one->cover_img,$domainSync,$_v);
+                    $one->score = '9.5';
+                    $one->views = $one->views > 0 ? $this->generateRandViews($one->views) : $this->generateRandViews(rand(500, 99999));
+                    $item->video = $one;
+                }else{
+                    $item->video = [];
+                }
+            }
+        }
+        return $data;
+    }
+
     public function discuss(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -176,27 +208,12 @@ class CommunityController extends Controller
         }else{
 
         }*/
-        $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
-        $hasMorePages = $paginator->hasMorePages();
+        $paginator = $build->simplePaginate(7,$field,'discuss',$page);
         $data['list'] = $paginator->items();
-        $domain = env('RESOURCE_DOMAIN');
-        foreach ($data['list'] as $item){
-            $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
-            $item->created_at = $this->mdate(strtotime($item->created_at));
-            $item->avatar = $domain.$item->avatar;
-            if($item->vid>0){
-                $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views']);
-                if(!empty($one)){
-//                    $video = $this->handleVideoItems([$one])[0];
-                    $one->score = '9.5';
-                    $one->views = $one->views > 0 ? $this->generateRandViews($one->views) : $this->generateRandViews(rand(500, 99999));
-                    $item->video = $one;
-                }else{
-                    $item->video = [];
-                }
-            }
-        }
-        $data['hasMorePages'] = $hasMorePages;
+
+        $data['list'] = $this->handleDiscussItem($data['list']);
+
+        $data['hasMorePages'] = $paginator->hasMorePages();
         $res = [
             'state' => 0,
             'data' => $data,
@@ -313,36 +330,10 @@ class CommunityController extends Controller
 
         $field = ['id','vid','uid','circle_id','content','circle_name','avatar','album','author','tag_kv','scan','comments','likes','created_at'];
         $build = DB::table('circle_discuss'); //todo
-        $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
+        $paginator = $build->simplePaginate(7,$field,'fromMeFocusCircle',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
-        $domain = env('RESOURCE_DOMAIN');
-        $domainSync = self::getDomain(2);
-        $_v = date('ymd');
-        foreach ($data['list'] as $item){
-            $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
-            $item->created_at = $this->mdate(strtotime($item->created_at));
-            $item->avatar = $domain.$item->avatar;
-            $item->isFocus = 0; //todo
-            $item->isLike = 0; //todo
-            $item->album = !$item->album ? [] : json_decode($item->album,true);
-            foreach ($item->album as &$album){
-                $album = $this->transferImgOut($album,$domainSync,$_v);
-            }
-            if($item->vid>0){
-                $one = DB::table('video')->where('id',$item->vid)->first(['id','name','views','dev_type','cover_img']);
-                if(!empty($one)){
-//                    $video = $this->handleVideoItems([$one])[0];
-                    //封面图处理
-                    $one->cover_img = $this->transferImgOut($one->cover_img,$domainSync,$_v);
-                    $one->score = '9.5';
-                    $one->views = $one->views > 0 ? $this->generateRandViews($one->views) : $this->generateRandViews(rand(500, 99999));
-                    $item->video = $one;
-                }else{
-                    $item->video = [];
-                }
-            }
-        }
+        $data['list'] = $this->handleDiscussItem($data['list']);
         $data['hasMorePages'] = $hasMorePages;
         $res = [
             'state' => 0,
