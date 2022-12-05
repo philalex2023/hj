@@ -17,6 +17,8 @@ class CommunityController extends Controller
 {
     use ApiParamsTrait,CommunityTrait,PHPRedisTrait,VideoTrait;
 
+    public array $discussField = ['id','vid','uid','circle_id','circle_topic_id','content','circle_name','circle_topic_name','avatar','album','author','tag_kv','scan','comments','likes','created_at'];
+
     //创建话题
     public function addCircleTopic(Request $request)
     {
@@ -201,14 +203,13 @@ class CommunityController extends Controller
         $filter = $validated['filter']; //1按最多播放、2按最新 todo
         $page = $validated['page'];
 
-        $field = ['id','vid','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
         $build = DB::table('circle_discuss')->where('uid',$uid);
         /*if($filter==1){
 
         }else{
 
         }*/
-        $paginator = $build->simplePaginate(7,$field,'discuss',$page);
+        $paginator = $build->simplePaginate(7,$this->discussField,'discuss',$page);
         $data['list'] = $paginator->items();
 
         $data['list'] = $this->handleDiscussItem($data['list']);
@@ -328,9 +329,8 @@ class CommunityController extends Controller
         ])->validated();
         $page = $validated['page'];
 
-        $field = ['id','vid','uid','circle_id','content','circle_name','avatar','album','author','tag_kv','scan','comments','likes','created_at'];
         $build = DB::table('circle_discuss'); //todo
-        $paginator = $build->simplePaginate(7,$field,'fromMeFocusCircle',$page);
+        $paginator = $build->simplePaginate(7,$this->discussField,'fromMeFocusCircle',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
         $data['list'] = $this->handleDiscussItem($data['list']);
