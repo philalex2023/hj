@@ -91,6 +91,17 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    /*public function circle(Request $request)
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'cid' => 'required|integer', //1最热 2当周 todo
+            'page' => 'required|integer'
+        ])->validated();
+        $cid = $validated['cid'];
+        $page = $validated['page'];
+    }*/
+
     //圈子精选
     public function circleFeatured (Request $request): \Illuminate\Http\JsonResponse
     {
@@ -128,14 +139,15 @@ class CommunityController extends Controller
 
     public function square(Request $request): \Illuminate\Http\JsonResponse
     {
-        if(!$request->user()){
+        $user = $request->user();
+        if(!$user){
             return response()->json([]);
         }
         //todo cache
         //热门话题
         $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(12)->get(['id','uid','name','interactive as inter']);
         //热门圈子
-        $hotCircle = $this->getHotCircle();
+        $hotCircle = $this->getHotCircle($user->id);
         //圈子精选
 
         $data = [
@@ -369,13 +381,14 @@ class CommunityController extends Controller
 
     public function focus(Request $request): \Illuminate\Http\JsonResponse
     {
-        /*if(!$request->user()){
+        $user = $request->user();
+        if(!$user){
             return response()->json([]);
-        }*/
+        }
         //todo cache
         $ids = []; //todo
         //热门圈子
-        $hotCircle = $this->getHotCircle();
+        $hotCircle = $this->getHotCircle($user->id);
         //我加入的圈子
         $joinCircle = DB::table('circle')
 //            ->whereIn('id',$ids)
