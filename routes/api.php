@@ -115,6 +115,7 @@ Route::group([
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题
     Route::get('communityTopicInfo', 'CommunityController@topicInfo');  //话题信息
+    Route::post('fromMeFocusCircle', 'CommunityController@fromMeFocusCircle');  //来自我关注的圈子
     Route::post('circleFeatured', 'CommunityController@circleFeatured');  //圈子精选
     Route::post('communityDiscuss', 'CommunityController@discuss');  //讨论
     Route::post('communityVideo', 'CommunityController@video');  //视频
