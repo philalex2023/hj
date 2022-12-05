@@ -311,7 +311,7 @@ class CommunityController extends Controller
         ])->validated();
         $page = $validated['page'];
 
-        $field = ['id','uid','circle_id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
+        $field = ['id','vid','uid','circle_id','content','circle_name','avatar','author','tag_kv','scan','comments','likes','created_at'];
         $build = DB::table('circle_discuss'); //todo
         $paginator = $build->simplePaginate(7,$field,'topicInfo',$page);
         $hasMorePages = $paginator->hasMorePages();
