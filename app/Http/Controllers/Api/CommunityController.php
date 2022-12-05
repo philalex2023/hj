@@ -303,7 +303,7 @@ class CommunityController extends Controller
     }
 
     //来自我关注的圈子 todo 过滤
-    public function fromMeFocusCircle(Request $request)
+    public function fromMeFocusCircle(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
