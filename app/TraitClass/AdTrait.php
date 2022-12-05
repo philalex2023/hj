@@ -60,9 +60,11 @@ trait AdTrait
 
     public function weightGet($flag='',$sortFiled='sort',$more=false): array
     {
+        $date = date('Y-m-d H:i:s');
         $ads = Ad::query()
             ->where('name',$flag)
             ->where('status',1)
+            ->where('end_at','>',$date)
             ->orderByDesc($sortFiled)
             ->get(['id','name','weight','title','img','position','url','play_url','type','status','action_type','vid','end_at'])
             ->toArray();
