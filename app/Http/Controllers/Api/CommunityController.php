@@ -206,7 +206,9 @@ class CommunityController extends Controller
         $page = $validated['page'];
         $uid = $request->user()->id;
 
-        $build = DB::table('circle_discuss')->where('uid',$uid);
+        $build = DB::table('circle_discuss')
+//            ->where('uid',$uid)
+        ;
         /*if($filter==1){
 
         }else{
@@ -359,7 +361,7 @@ class CommunityController extends Controller
         $joinCircle = DB::table('circle')
 //            ->whereIn('id',$ids)
             ->orderByDesc('id')
-            ->limit(8)->get(['id','uid','name','author','avatar']);
+            ->limit(8)->get(['id','uid','name','author','avatar'])->toArray();
 
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
@@ -390,15 +392,14 @@ class CommunityController extends Controller
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
             'id' => 'required|integer',
-            'join' => 'required|integer', //
-            'page' => 'required|integer'
+            'hit' => 'required|integer',
         ])->validated();
         $id = $validated['id'];
-        $focus = $validated['join'];
+        $hit = $validated['hit'];
         $user = $request->user();
         $redis = $this->redis('login');
         $key = 'circleJoinUser:'.$user->id;
-        if($focus==1){
+        if($hit==1){
             $redis->sAdd($key,$id);
             $redis->expireAt($key,time()+30*24*3600);
         }else{
@@ -418,15 +419,41 @@ class CommunityController extends Controller
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
             'id' => 'required|integer',
-            'focus' => 'required|integer', //
-            'page' => 'required|integer'
+            'hit' => 'required|integer', //
         ])->validated();
         $id = $validated['id'];
-        $focus = $validated['focus'];
+        $hit = $validated['hit'];
+        $uid = $request->user()->id;
+        $redis = $this->redis('login');
+        $key = 'discussFocusUser:'.$uid;
+        if($hit==1){
+            $redis->sAdd($key,$id);
+            $redis->expireAt($key,time()+30*24*3600);
+        }else{
+            $redis->sRem($key,$id);
+        }
+
+        return response()->json([
+            'state' => 0,
+            'msg' => '成功',
+            'data' => [],
+        ]);
+    }
+
+    //喜欢/取消喜欢
+    public function likesDiscuss(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'id' => 'required|integer',
+            'hit' => 'required|integer', //
+        ])->validated();
+        $id = $validated['id'];
+        $hit = $validated['hit'];
         $user = $request->user();
         $redis = $this->redis('login');
-        $key = 'discussFocusUser:'.$user->id;
-        if($focus==1){
+        $key = 'discussLikesUser:'.$user->id;
+        if($hit==1){
             $redis->sAdd($key,$id);
             $redis->expireAt($key,time()+30*24*3600);
         }else{
