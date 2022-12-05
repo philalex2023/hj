@@ -362,28 +362,6 @@ class CommunityController extends Controller
         foreach ($joinCircle as $join){
             $join->avatar = $this->transferImgOut($join->avatar,$domainSync,$_v);
         }
-        //来自我关注的圈子
-
-        $fromMeFocusCircle = DB::table('circle_discuss')
-//            ->whereIn('id',$ids)
-            ->orderByDesc('created_at')
-            ->limit(8)
-            ->get(['id','uid','circle_id','circle_name','avatar','content','author','scan','comments','likes','album','created_at','tag_kv']);
-
-        foreach ($fromMeFocusCircle as $item){
-            $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
-            $item->created_at = $this->mdate(strtotime($item->created_at));
-            if(!empty($item->album) && $item->album!='null'){
-                $item->album = json_decode($item->album,true) ?? [];
-                foreach ($item->album as &$album){
-                    $album = $this->transferImgOut($album,$domainSync,$_v);
-                }
-            }
-            if(!empty($item->avatar)){
-                $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
-            }
-        }
-
         $data = [
             [
                 'name' => '热门圈子',
@@ -392,11 +370,7 @@ class CommunityController extends Controller
             [
                 'name' => '我加入的圈子',
                 'list' => $joinCircle,
-            ],
-            [
-                'name' => '来自我关注的圈子',
-                'list' => $fromMeFocusCircle,
-            ],
+            ]
         ];
         $res = [
             'state' => 0,
