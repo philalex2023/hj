@@ -386,7 +386,7 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function actionEvent(Request $request)
+    public function actionEvent(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
