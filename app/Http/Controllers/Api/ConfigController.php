@@ -38,7 +38,7 @@ class ConfigController extends Controller
             $use = rand(0, $weight -1);
             $hitKey = $weight==0 ? 0 : $keys[$use];
 
-            Log::info('==weight==',['命中第 '.($hitKey+1).' 张',$use,count($keys),$weight]);
+            Log::info('==weight==',['命中第 '.($hitKey+1).' 张',$use,count($res['open_screen_ads']),$weight]);
             $one = $res['open_screen_ads'][$hitKey];
             $res['open_screen_ads'] = [$one];
         }
