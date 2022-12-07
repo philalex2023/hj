@@ -294,7 +294,7 @@ class CommunityController extends Controller
         $filter = $validated['filter']; //0全部 1已发布 2审核中 3未通过
         $page = $validated['page'];
         $mid = $this->getUpMasterId($user->id);
-        if($mid){
+//        if($mid){ todo
             $build = DB::table('video')
 //                ->where('uid',$mid) todo
             ;
@@ -314,8 +314,8 @@ class CommunityController extends Controller
                 $item->cover_img = $this->transferImgOut($item->cover_img,$domainSync);
             }
             return response()->json(['state' => 0, 'data' => $data]);
-        }
-        return response()->json(['state' => -1, 'msg' => '系统错误']);
+//        }
+//        return response()->json(['state' => -1, 'msg' => '系统错误']);
     }
 
     public function video(Request $request): \Illuminate\Http\JsonResponse
