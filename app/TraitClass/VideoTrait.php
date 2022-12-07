@@ -24,7 +24,7 @@ trait VideoTrait
 
     public object $row;
 
-    public array $videoFields = ['id','is_top','name','author','auth_avatar','dev_type','gold','cat','likes','comments','tag_kv','sync','title','dash_url','hls_url','duration','type','restricted','cover_img','views','updated_at'];
+    public array $videoFields = ['id','is_top','name','author','auth_avatar','dev_type','gold','cat','likes','comments','tag_kv','sync','title','hls_url','duration','type','restricted','cover_img','views','updated_at'];
 
     public string $coverImgDir = 'coverImg';
 
@@ -373,7 +373,6 @@ AV-海角伙伴
             }
             if (!$display_url) {
                 unset($list['hls_url']);
-                unset($list['dash_url']);
             }
 //            $domainSync = self::getDomain($list['sync']);
             /*if(isset($appendInfo['device_system'])){

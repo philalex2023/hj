@@ -184,13 +184,6 @@ class VideoController extends BaseCurlController
                 'align' => 'center',
                 'hide' => true
             ],
-            /*[
-                'field' => 'dash_url',
-                'minWidth' => 80,
-                'title' => 'dash地址',
-                'align' => 'center',
-                'hide' => true
-            ],*/
             [
                 'field' => 'type',
                 'minWidth' => 120,
@@ -469,7 +462,6 @@ class VideoController extends BaseCurlController
             }
         }*/
         if(isset($model->url)){
-            //$model->dash_url = self::get_slice_url($model->url);
             $model->hls_url = self::get_slice_url($model->url,'hls');
             $model->cover_img = str_replace(self::getDomain($model->sync),'',$model->cover_img??'');
             if(!$model->cover_img){
@@ -845,7 +837,7 @@ class VideoController extends BaseCurlController
                     $r=true;
                     break;
                 /*case 'preview':
-                    $previews = Video::query()->whereIn($id, $id_arr)->get(['id','url','sync','dash_url','hls_url']);
+                    $previews = Video::query()->whereIn($id, $id_arr)->get(['id','url','sync','hls_url']);
                     //ProcessPreviewVideo::dispatchAfterResponse($previews);
                     $job = new ProcessPreviewVideo($previews);
                     $this->dispatch($job);
