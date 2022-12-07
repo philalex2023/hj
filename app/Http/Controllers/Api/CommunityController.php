@@ -365,7 +365,7 @@ class CommunityController extends Controller
             $videoIds = explode(',',$vids);
             $body = [
                 'size' => 1000,
-                '_source' => ['id','name','dev_type','gold','restricted','cover_img','views','updated_at'],
+                '_source' => ['id','name','dev_type','gold','restricted','cover_img','views','created_at'],
                 'query' => [
                     'bool'=>[
                         'must' => [
@@ -402,7 +402,7 @@ class CommunityController extends Controller
                     $item['views'] = $this->generateRandViews($item['views']);
                     $item['gold'] = $item['gold'] * 0.01;
                     $item['cover_img'] = $this->transferImgOut($item['cover_img'],$domainSync,$_v);
-                    $item['updated_at'] = $this->mdate($item['updated_at']);
+                    $item['created_at'] = $this->mdate($item['created_at']);
                 }
                 return response()->json(['state' => 0, 'data' => ['list'=>$pageLists,'isBuy'=>$isBuy,'hasMorePages'=>$hasMorePages]]);
             }
