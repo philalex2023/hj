@@ -125,8 +125,7 @@ Route::group([
     Route::post('circleFeatured', 'CommunityController@circleFeatured');  //圈子精选
     Route::post('communityDiscuss', 'CommunityController@discuss');  //讨论
     Route::post('communityVideo', 'CommunityController@video');  //视频
-    Route::post('communityWorkVideo', 'CommunityController@workVideo');  //我的作品-视频
-    Route::post('communityWorkShortVideo', 'CommunityController@workShortVideo');  //我的作品-短视频
+    Route::post('communityWorkVideo', 'CommunityController@workVideo');  //我的作品-视频/短视频
     Route::post('communityWorkCollection', 'CommunityController@workCollection');  //我的作品-合集
     Route::post('communityCollection', 'CommunityController@collection');  //合集
     Route::post('addCircleTopic', 'CommunityController@addCircleTopic');  //创建话题

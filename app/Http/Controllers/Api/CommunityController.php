@@ -283,6 +283,40 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function workCollection(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'type' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $page = $validated['page'];
+        $user = $request->user();
+        $mid = $this->getUpMasterId($user->id); //todo
+        $type = $validated['type']; //0长视频 1短视频
+        /*if($mid){
+            todo
+        }*/
+        $columns = ['id','uid','name','cover','gold','views','created_at'];
+        $build = DB::table('circle_collection')->where('type',$type);
+        $paginator = $build->orderByDesc('id')->simplePaginate(8,$columns,'workVideo',$page);
+        $items = $paginator->items();
+        $domainSync = self::getDomain(2);
+        $_v = date('ymd');
+        foreach ($items as $item){
+            $item->views = $this->generateRandViews($item->views);
+            $item->created_at = $this->mdate(strtotime($item->created_at));
+            $item->cover = $this->transferImgOut($item->cover,$domainSync,$_v);
+        }
+        $data['list'] = $items;
+        $data['hasMorePages'] = $paginator->hasMorePages();
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     public function workVideo(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
