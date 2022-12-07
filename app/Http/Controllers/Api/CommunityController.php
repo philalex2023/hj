@@ -346,7 +346,7 @@ class CommunityController extends Controller
         return response()->json(['state' => 0, 'msg' => '合集解锁成功', 'data' => []]);
     }
 
-    public function collectionDetail(Request $request)
+    public function collectionDetail(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
