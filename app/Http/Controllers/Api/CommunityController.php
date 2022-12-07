@@ -338,6 +338,10 @@ class CommunityController extends Controller
             return response()->json(['state' => -1, 'msg' => '解锁失败', 'data' => []]);
         }
         Cache::forget('cachedUser.'.$user->id);
+        $redis = $this->redis('login');
+        $key = 'unlockCollectionUser:'.$user->id;
+        $redis->sAdd($key,$collectionId);
+        $redis->expire($key,90*24*3600);
         return response()->json(['state' => 0, 'msg' => '合集解锁成功', 'data' => []]);
     }
 
@@ -349,6 +353,7 @@ class CommunityController extends Controller
             'type' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
+        $user = $request->user();
         $uid = $validated['uid'];       //todo
         $type = $validated['type'];
         $page = $validated['page'];
@@ -362,9 +367,12 @@ class CommunityController extends Controller
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
         $domain = env('RESOURCE_DOMAIN');
+        $redis = $this->redis('login');
+        $key = 'unlockCollectionUser:'.$user->id;
         foreach ($data['list'] as $item){
             $item->created_at = $this->mdate(strtotime($item->created_at));
             $item->views = $this->generateRandViews($item->views,50000);
+            $item->isBuy = (int)$redis->sIsMember($key,$item->id);
             !empty($item->cover) && $item->cover = $domain.$item->cover;
         }
 
