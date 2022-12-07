@@ -614,13 +614,13 @@ class UserController extends Controller
             if(isset($request->params)){
                 $params = self::parse($request->params);
                 $validated = Validator::make($params, [
-//                    'account' => 'required|string',
+                    'account' => 'required|string',
                     'did' => 'required|string',
                 ])->validated();
 
                 $userModel = User::query()
-//                    ->where('account',$validated['account'])
                     ->where('did',$validated['did'])
+                    ->where('account',$validated['account'])
                     ->where('status',1);
                 $user = $userModel->first();
                 if(!$user){
