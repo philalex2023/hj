@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api;
 
 use App\ExtendClass\CacheUser;
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommunityTrait;
 use App\TraitClass\PHPRedisTrait;
@@ -309,6 +310,33 @@ class CommunityController extends Controller
             'data' => $data,
         ];
         return response()->json($res);
+    }
+
+    public function buyCollection(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'id' => 'required|integer'
+        ])->validated();
+        $user= $request->user();
+        $collectionId = $validated['id'];
+        $needGold = DB::table('circle_collection')->where('id',$collectionId)->value('gold');
+        if(!$needGold){
+            return response()->json(['state' => -1, 'msg' => '合集不存在', 'data' => [],]);
+        }
+        $newGold = $user->gold - $needGold;
+        if($newGold < 0){
+            return response()->json(['state' => -1, 'msg' => '金币不足', 'data' => [],]);
+        }
+        $userEffect = User::query()->where('id', '=', $user->id)
+            ->where('gold', '>=', $needGold)
+            ->update(
+                ['gold' => $newGold]
+            );
+        if (!$userEffect) {
+            return response()->json(['state' => -1, 'msg' => '解锁失败', 'data' => [],]);
+        }
+        return response()->json(['state' => 0, 'msg' => '合集解锁成功', 'data' => [],]);
     }
 
     public function collection(Request $request): \Illuminate\Http\JsonResponse
