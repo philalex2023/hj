@@ -288,10 +288,12 @@ class CommunityController extends Controller
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
             'filter' => 'required|integer',
+            'type' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
         $user = $request->user();
         $filter = $validated['filter']; //0全部 1已发布 2审核中 3未通过
+        $type = $validated['type']; //0长视频 1短视频
         $page = $validated['page'];
         $mid = $this->getUpMasterId($user->id);
 //        if($mid){ todo
@@ -300,6 +302,9 @@ class CommunityController extends Controller
             ;
             if($filter>0){
                 $build->where('status',$filter);
+            }
+            if($type>0){
+                $build->where('dev_type',$type);
             }
             $columns = ['id','name','dev_type','gold','tag_kv','duration','restricted','cover_img','views'];
             $paginator = $build->orderByDesc('id')->simplePaginate(16,$columns,'workVideo',$page);
