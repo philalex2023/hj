@@ -608,6 +608,37 @@ class UserController extends Controller
 
     }
 
+    public function checkAdByQrcode(Request $request): JsonResponse
+    {
+        try {
+            if(isset($request->params)){
+                $params = self::parse($request->params);
+                $validated = Validator::make($params, [
+//                    'account' => 'required|string',
+                    'did' => 'required|string',
+                ])->validated();
+
+                $userModel = User::query()
+//                    ->where('account',$validated['account'])
+                    ->where('did',$validated['did'])
+                    ->where('status',1);
+                $user = $userModel->first();
+                if(!$user){
+                    return response()->json(['state'=>-1, 'msg'=>'被找回账号不存在或被禁用']);
+                }
+
+                return response()->json(['state'=>0, 'data'=>[
+                    'account' => $user->account,
+                    'did' => $user->did,
+                ],]);
+
+            }
+            return response()->json([]);
+        } catch (\Exception $exception){
+            return $this->returnExceptionContent($exception->getMessage());
+        }
+    }
+
     public function findAdByQrcode(Request $request): JsonResponse
     {
         try {
