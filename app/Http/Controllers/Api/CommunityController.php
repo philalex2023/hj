@@ -10,6 +10,7 @@ use App\TraitClass\CommunityTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Validator;
@@ -322,11 +323,11 @@ class CommunityController extends Controller
         $collectionId = $validated['id'];
         $needGold = DB::table('circle_collection')->where('id',$collectionId)->value('gold');
         if(!$needGold){
-            return response()->json(['state' => -1, 'msg' => '合集不存在', 'data' => [],]);
+            return response()->json(['state' => -1, 'msg' => '合集不存在', 'data' => []]);
         }
         $newGold = $user->gold - $needGold;
         if($newGold < 0){
-            return response()->json(['state' => -1, 'msg' => '金币不足', 'data' => [],]);
+            return response()->json(['state' => -1, 'msg' => '金币不足', 'data' => []]);
         }
         $userEffect = User::query()->where('id', '=', $user->id)
             ->where('gold', '>=', $needGold)
@@ -334,9 +335,10 @@ class CommunityController extends Controller
                 ['gold' => $newGold]
             );
         if (!$userEffect) {
-            return response()->json(['state' => -1, 'msg' => '解锁失败', 'data' => [],]);
+            return response()->json(['state' => -1, 'msg' => '解锁失败', 'data' => []]);
         }
-        return response()->json(['state' => 0, 'msg' => '合集解锁成功', 'data' => [],]);
+        Cache::forget('cachedUser.'.$user->id);
+        return response()->json(['state' => 0, 'msg' => '合集解锁成功', 'data' => []]);
     }
 
     public function collection(Request $request): \Illuminate\Http\JsonResponse
