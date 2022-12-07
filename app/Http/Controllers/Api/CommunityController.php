@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommunityTrait;
+use App\TraitClass\EsTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CommunityController extends Controller
 {
-    use ApiParamsTrait,CommunityTrait,PHPRedisTrait,VideoTrait;
+    use ApiParamsTrait,CommunityTrait,PHPRedisTrait,VideoTrait,EsTrait;
 
     public array $discussField = ['id','vid','uid','circle_id','circle_topic_id','content','circle_name','circle_topic_name','avatar','album','author','tag_kv','scan','comments','likes','created_at'];
 
@@ -343,6 +344,71 @@ class CommunityController extends Controller
         $redis->sAdd($key,$collectionId);
         $redis->expire($key,90*24*3600);
         return response()->json(['state' => 0, 'msg' => '合集解锁成功', 'data' => []]);
+    }
+
+    public function collectionDetail(Request $request)
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'id' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $perPage = 6;
+        $page = $validated['page'];
+        $offset = ($page-1)*$perPage;
+        $user = $request->user();
+        $redis = $this->redis('login');
+        $key = 'unlockCollectionUser:'.$user->id;
+        $isBuy = (int)$redis->sIsMember($key,$validated['id']);
+        $vids = DB::table('circle_collection')->where('id',$validated['id'])->value('vids');
+        if(!empty($vids)){
+            $videoIds = explode(',',$vids);
+            $body = [
+                'size' => 1000,
+                '_source' => ['id','name','dev_type','gold','restricted','cover_img','views','updated_at'],
+                'query' => [
+                    'bool'=>[
+                        'must' => [
+                            ['terms' => ['id'=>$videoIds]],
+                        ]
+                    ]
+                ]
+            ];
+
+            $body['sort'] = [['id' => 'desc']];
+            $body['search_after'] = [$this->maxVid];
+            $searchParams = [
+                'index' => 'video_index',
+                'body' => $body
+            ];
+
+            $es = $this->esClient();
+            $response = $es->search($searchParams);
+            $videoList = [];
+            if(isset($response['hits']) && isset($response['hits']['hits'])){
+                //$total = $response['hits']['total']['value'];
+                foreach ($response['hits']['hits'] as $item) {
+                    $videoList[] = $item['_source'];
+                }
+                unset($response);
+            }
+            if(!empty($videoList)){
+                $pageLists = array_slice($videoList,$offset,$perPage);
+                $hasMorePages = count($videoList) > $perPage*$page;
+                unset($videoList);
+                $domainSync = self::getDomain(2);
+                $_v = date('ymd');
+                foreach ($pageLists as &$item){
+                    $item['views'] = $this->generateRandViews($item['views']);
+                    $item['gold'] = $item['gold'] * 0.01;
+                    $item['cover_img'] = $this->transferImgOut($item['cover_img'],$domainSync,$_v);
+                    $item['updated_at'] = $this->mdate($item['updated_at']);
+                }
+                return response()->json(['state' => 0, 'data' => ['list'=>$pageLists,'isBuy'=>$isBuy,'hasMorePages'=>$hasMorePages]]);
+            }
+
+        }
+        return response()->json(['state' => 0, 'data' => ['list'=>[],'hasMorePages'=>false]]);
     }
 
     public function collection(Request $request): \Illuminate\Http\JsonResponse
