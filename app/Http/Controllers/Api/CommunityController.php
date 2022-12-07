@@ -402,7 +402,7 @@ class CommunityController extends Controller
                     $item['views'] = $this->generateRandViews($item['views']);
                     $item['gold'] = $item['gold'] * 0.01;
                     $item['cover_img'] = $this->transferImgOut($item['cover_img'],$domainSync,$_v);
-                    $item['created_at'] = $this->mdate($item['created_at']);
+                    $item['created_at'] = $this->mdate(strtotime($item['created_at']));
                 }
                 return response()->json(['state' => 0, 'data' => ['list'=>$pageLists,'isBuy'=>$isBuy,'hasMorePages'=>$hasMorePages]]);
             }
