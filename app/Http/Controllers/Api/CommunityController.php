@@ -283,6 +283,41 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function workVideo(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'filter' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $user = $request->user();
+        $filter = $validated['filter']; //0全部 1已发布 2审核中 3未通过
+        $page = $validated['page'];
+        $mid = $this->getUpMasterId($user->id);
+        if($mid){
+            $build = DB::table('video')
+//                ->where('uid',$mid) todo
+            ;
+            if($filter>0){
+                $build->where('status',$filter);
+            }
+            $columns = ['id','name','dev_type','gold','tag_kv','duration','restricted','cover_img','views'];
+            $paginator = $build->simplePaginate(16,$columns,'workVideo',$page);
+            $data = [];
+            $data['list'] = $paginator->items();
+            $data['hasMorePages'] = $paginator->hasMorePages();
+            $domainSync = self::getDomain(2);
+            foreach ($data['list'] as $item) {
+                $item->views = $this->generateRandViews($item->views);
+                $item->tag_kv = json_decode($item->tag_kv,true)??[];
+                $item->gold = $item->gold * 0.01;
+                $item->cover_img = $this->transferImgOut($item->cover_img,$domainSync);
+            }
+            return response()->json(['state' => 0, 'data' => $data]);
+        }
+        return response()->json(['state' => -1, 'msg' => '系统错误']);
+    }
+
     public function video(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -364,7 +399,7 @@ class CommunityController extends Controller
         if(!empty($vids)){
             $videoIds = explode(',',$vids);
             $body = [
-                'size' => 1000,
+                'size' => 10000,
                 '_source' => ['id','name','dev_type','gold','restricted','cover_img','views','created_at'],
                 'query' => [
                     'bool'=>[

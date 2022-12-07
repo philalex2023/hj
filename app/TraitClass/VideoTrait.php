@@ -359,10 +359,12 @@ AV-海角伙伴
     public function handleVideoItems($lists,$display_url=false,$uid = 0,$appendInfo = [])
     {
         $_v = date('Ymd');
+        $domainSync = self::getDomain(2);
         foreach ($lists as &$list){
             $list = (array)$list;
             $list['limit'] = $list['restricted'];
-            $list['gold'] = $list['gold'] / $this->goldUnit;
+//            $list['gold'] = $list['gold'] / $this->goldUnit;
+            $list['gold'] = $list['gold'] *0.01;
             $list['views'] = $list['views'] > 0 ? $this->generateRandViews($list['views']) : $this->generateRandViews(rand(500, 99999));
 //            $list['views'] = $this->generateRandViews(rand(500, 99999));
             $list['preview_hls_url'] = $this->getPreviewPlayUrl($list['hls_url']??'');
@@ -373,7 +375,7 @@ AV-海角伙伴
                 unset($list['hls_url']);
                 unset($list['dash_url']);
             }
-            $domainSync = self::getDomain($list['sync']);
+//            $domainSync = self::getDomain($list['sync']);
             /*if(isset($appendInfo['device_system'])){
                 $appendInfo['device_system']!=2 && $domainSync = self::getDomain(0);
             }*/
