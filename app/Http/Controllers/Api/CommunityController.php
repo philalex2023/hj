@@ -302,7 +302,7 @@ class CommunityController extends Controller
                 $build->where('status',$filter);
             }
             $columns = ['id','name','dev_type','gold','tag_kv','duration','restricted','cover_img','views'];
-            $paginator = $build->simplePaginate(16,$columns,'workVideo',$page);
+            $paginator = $build->orderByDesc('id')->simplePaginate(16,$columns,'workVideo',$page);
             $data = [];
             $data['list'] = $paginator->items();
             $data['hasMorePages'] = $paginator->hasMorePages();
