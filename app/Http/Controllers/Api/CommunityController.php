@@ -22,7 +22,7 @@ class CommunityController extends Controller
 
     public array $discussField = ['id','vid','uid','circle_id','circle_topic_id','content','circle_name','circle_topic_name','avatar','album','author','tag_kv','scan','comments','likes','created_at'];
 
-    public array $upVideoFields = ['id','name','dev_type','gold','tag_kv','duration','restricted','cover_img','circle_topic','views'];
+    public array $upVideoFields = ['id','name','dev_type','gold','tag_kv','duration','restricted','cover_img','circle','circle_topic','views'];
 
     //创建话题
     public function addCircleTopic(Request $request)
@@ -329,6 +329,9 @@ class CommunityController extends Controller
             $item->cover_img = $this->transferImgOut($item->cover_img,$domainSync);
             if(!empty($item->circle_topic)){
                 $item->circle_topic = json_decode($item->circle_topic,true);
+            }
+            if(!empty($item->circle)){
+                $item->circle = json_decode($item->circle,true);
             }
         }
         return $dataList;
