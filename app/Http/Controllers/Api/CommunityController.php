@@ -419,9 +419,13 @@ class CommunityController extends Controller
         $page = $validated['page'];
 
         $build = DB::table('video');
+        if($cid==0){ //默认
+            $build = $build->orderByDesc('likes');
+        }
         if($cid==2){ //总榜/热榜
             $build = $build->orderByDesc('views');
         }
+
         $paginator = $build->simplePaginate(8,['id','name','dev_type','likes','author','auth_avatar','gold','tag_kv','duration','restricted','cover_img','circle','circle_topic','views'],'video',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
