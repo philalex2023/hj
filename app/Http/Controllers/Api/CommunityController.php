@@ -22,6 +22,8 @@ class CommunityController extends Controller
 
     public array $discussField = ['id','vid','uid','circle_id','circle_topic_id','content','circle_name','circle_topic_name','avatar','album','author','tag_kv','scan','comments','likes','created_at'];
 
+    public array $upVideoFields = ['id','name','dev_type','gold','tag_kv','duration','restricted','cover_img','circle_topic','views'];
+
     //创建话题
     public function addCircleTopic(Request $request)
     {
@@ -317,6 +319,20 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function handleUpVideoItems($dataList)
+    {
+        $domainSync = self::getDomain(2);
+        foreach ($dataList as $item) {
+            $item->views = $this->generateRandViews($item->views);
+            $item->tag_kv = json_decode($item->tag_kv,true)??[];
+            $item->gold = $item->gold * 0.01;
+            $item->cover_img = $this->transferImgOut($item->cover_img,$domainSync);
+            if(!empty($item->circle_topic)){
+                $item->circle_topic = json_decode($item->circle_topic,true);
+            }
+        }
+        return $dataList;
+    }
     public function workVideo(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -340,18 +356,11 @@ class CommunityController extends Controller
             if($type>0){
                 $build->where('dev_type',$type);
             }
-            $columns = ['id','name','dev_type','gold','tag_kv','duration','restricted','cover_img','views'];
-            $paginator = $build->orderByDesc('id')->simplePaginate(16,$columns,'workVideo',$page);
+            $paginator = $build->orderByDesc('id')->simplePaginate(16,$this->upVideoFields,'workVideo',$page);
             $data = [];
             $data['list'] = $paginator->items();
             $data['hasMorePages'] = $paginator->hasMorePages();
-            $domainSync = self::getDomain(2);
-            foreach ($data['list'] as $item) {
-                $item->views = $this->generateRandViews($item->views);
-                $item->tag_kv = json_decode($item->tag_kv,true)??[];
-                $item->gold = $item->gold * 0.01;
-                $item->cover_img = $this->transferImgOut($item->cover_img,$domainSync);
-            }
+            $data['list'] = $this->handleUpVideoItems($data['list']);
             return response()->json(['state' => 0, 'data' => $data]);
 //        }
 //        return response()->json(['state' => -1, 'msg' => '系统错误']);
@@ -376,10 +385,10 @@ class CommunityController extends Controller
             ->orderByDesc('id')
 //            ->where('uid',$uid)
         ;
-        $paginator = $build->simplePaginate(8,$this->videoFields,'video',$page);
+        $paginator = $build->simplePaginate(8,$this->upVideoFields,'video',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
-        $data['list'] = $this->handleVideoItems($data['list']);
+        $data['list'] = $this->handleUpVideoItems($data['list']);
         $data['hasMorePages'] = $hasMorePages;
         $res = [
             'state' => 0,
