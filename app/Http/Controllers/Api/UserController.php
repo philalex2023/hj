@@ -740,6 +740,7 @@ class UserController extends Controller
         $requestUser->vip = $user->vip;
         $requestUser->gold = $user->gold;
         $requestUser->avatar = $user->avatar;
+        $requestUser->nickname = $user->nickname;
         $requestUser->promotion_code = $user->promotion_code;
         $requestUser->member_card_type = $user->member_card_type;
         $requestUser->balance = $user->balance;
