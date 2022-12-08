@@ -24,7 +24,7 @@ trait VideoTrait
 
     public object $row;
 
-    public array $videoFields = ['id','is_top','name','author','auth_avatar','dev_type','gold','cat','likes','comments','tag_kv','sync','title','hls_url','duration','type','restricted','cover_img','views','updated_at'];
+    public array $videoFields = ['id','is_top','name','author','auth_avatar','dev_type','gold','likes','comments','tag_kv','sync','title','hls_url','duration','type','restricted','cover_img','views','updated_at'];
 
     public string $coverImgDir = 'coverImg';
 
@@ -396,9 +396,6 @@ AV-海角伙伴
             $videoCollectsKey = 'videoCollects_'.$uid;
             $list['is_collect'] = $videoRedis->zScore($videoCollectsKey,$list['id']) ? 1 : 0;
             //
-            unset($list['tagNames']);
-            unset($list['tag']);
-            unset($list['cat']);
             //标签
             isset($list['tag_kv']) && $list['tag_kv'] = json_decode($list['tag_kv'],true);
             //片名加前缀
