@@ -148,7 +148,9 @@ class CommunityController extends Controller
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
         $redis = $this->redis('login');
-
+        if(!$f){
+            return response()->json(['state'=>-1,'msg'=>'记录不存在']);
+        }
         $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
         $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
         $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
