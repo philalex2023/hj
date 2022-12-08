@@ -220,13 +220,6 @@ class VideoController extends BaseCurlController
                 'align' => 'center',
             ],*/
             /*[
-                'field' => 'is_top',
-                'minWidth' => 80,
-                'title' => '是否置顶',
-                'sort' => 1,
-                'align' => 'center',
-            ],*/
-            /*[
                 'field' => 'is_recommend',
                 'minWidth' => 80,
                 'title' => '是否推荐',
@@ -404,7 +397,6 @@ class VideoController extends BaseCurlController
             1 => '上架'
         };
 //        $item->status = UiService::switchTpl('status', $item,'','上架|下架');
-//        $item->is_top = UiService::switchTpl('is_top', $item,'','置顶|取消');
         $item->type = !isset($this->video_source[$item->type]) ? '-' : $this->video_source[$item->type]['name'];
         $item->dev_type = !isset($this->dev_type[$item->dev_type]) ? '-' : $this->dev_type[$item->dev_type]['name'];
         $item->restricted = $this->restrictedType[$item->restricted]['name'];
@@ -858,7 +850,7 @@ class VideoController extends BaseCurlController
                 case 'cat':
                     $value_arr = explode(',',$value);
                     $buildQueryVideo = Video::query()->whereIn($id, $id_arr);
-                    $buildQueryVideo->update(['cat'=>json_encode($value_arr),'is_top'=>0]);
+                    $buildQueryVideo->update(['cat'=>json_encode($value_arr)]);
                     $r=true;
                     break;
                 case 'tag':
@@ -916,11 +908,7 @@ class VideoController extends BaseCurlController
                     $r = true;
                     break;
                 case 'status':
-                    if($value==0){
-                        $r = $this->editTableAddWhere()->whereIn($id, $id_arr)->update(['status' => $value,'is_top'=>0]);
-                    }else{
-                        $r = $this->editTableAddWhere()->whereIn($id, $id_arr)->update(['status' => $value]);
-                    }
+                    $r = $this->editTableAddWhere()->whereIn($id, $id_arr)->update(['status' => $value]);
                     break;
                 case 'sort':
                     if($this->dataSourceId>0 && $ids){
