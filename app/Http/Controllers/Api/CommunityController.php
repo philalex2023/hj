@@ -327,6 +327,12 @@ class CommunityController extends Controller
             $item->tag_kv = json_decode($item->tag_kv,true)??[];
             $item->gold = $item->gold * 0.01;
             $item->cover_img = $this->transferImgOut($item->cover_img,$domainSync);
+            if(isset($item->likes)){
+                $item->likes = $this->generateRandViews($item->likes,5000);
+            }
+            if(isset($item->auth_avatar)){
+                $item->auth_avatar = $domainSync.$item->auth_avatar;
+            }
             if(!empty($item->circle_topic)){
                 $item->circle_topic = json_decode($item->circle_topic,true);
             }
@@ -336,6 +342,7 @@ class CommunityController extends Controller
         }
         return $dataList;
     }
+
     public function workVideo(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -396,6 +403,54 @@ class CommunityController extends Controller
         $res = [
             'state' => 0,
             'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    //视频榜
+    public function rankList(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'cid' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $cid = $validated['cid'];
+        $page = $validated['page'];
+
+        $build = DB::table('video');
+        if($cid==2){ //总榜/热榜
+            $build = $build->orderByDesc('views');
+        }
+        $paginator = $build->simplePaginate(8,['id','name','dev_type','likes','author','auth_avatar','gold','tag_kv','duration','restricted','cover_img','circle','circle_topic','views'],'video',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $data['list'] = $paginator->items();
+        $data['list'] = $this->handleUpVideoItems($data['list']);
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    public function rankingCate(Request $request): \Illuminate\Http\JsonResponse
+    {
+        if(!$request->user()){
+            return response()->json([]);
+        }
+        $cats = [
+            ['id'=>1,'name'=>'抖音榜'],
+            ['id'=>2,'name'=>'总榜'],
+            ['id'=>3,'name'=>'乱伦榜'],
+            ['id'=>4,'name'=>'黑料榜'],
+            ['id'=>5,'name'=>'动漫榜'],
+            ['id'=>6,'name'=>'原创榜'],
+            ['id'=>7,'name'=>'日韩榜']
+        ];
+        $res = [
+            'state' => 0,
+            'data' => $cats,
         ];
         return response()->json($res);
     }

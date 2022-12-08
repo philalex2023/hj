@@ -112,12 +112,14 @@ Route::group([
     Route::post('commBbs', 'CommContentController@post');  //发贴
 
     Route::get('myData', 'CommunityController@myData');  //我的数据
+    Route::get('communityRankingCate', 'CommunityController@rankingCate');  //视频榜分类
     Route::get('communityCircleCate', 'CommunityController@circleCate');  //圈子分类
     Route::get('communityCircle', 'CommunityController@circle');  //圈子更多列表
     Route::get('communityFocus', 'CommunityController@focus');  //社区关注
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题
     Route::get('communityTopicInfo', 'CommunityController@topicInfo');  //话题信息
+    Route::post('communityRankList', 'CommunityController@rankList');  //视频榜
     Route::post('communityCollectionDetail', 'CommunityController@collectionDetail');  //合集详情
     Route::post('communityBuyCollection', 'CommunityController@buyCollection');  //解锁合集
     Route::post('communityActionEvent', 'CommunityController@actionEvent');  //加入、喜欢、关注事件
