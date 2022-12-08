@@ -120,6 +120,7 @@ Route::group([
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题
     Route::get('communityTopicInfo', 'CommunityController@topicInfo');  //话题信息
     Route::post('communityRankList', 'CommunityController@rankList');  //视频榜
+    Route::post('communityCircleDetail', 'CommunityController@circleDetail');  //圈子详情
     Route::post('communityCollectionDetail', 'CommunityController@collectionDetail');  //合集详情
     Route::post('communityBuyCollection', 'CommunityController@buyCollection');  //解锁合集
     Route::post('communityActionEvent', 'CommunityController@actionEvent');  //加入、喜欢、关注事件
