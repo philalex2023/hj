@@ -129,6 +129,37 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //圈子详情
+    public function circleDetail(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $uid = $request->user()->id;
+        $validated = Validator::make($params,[
+            'id' => 'required|integer'
+        ])->validated();
+        $id = $validated['id'];
+        $field = ['id','uid','name','participate','avatar','introduction as des','background as imgUrl','many_friends as user'];
+        $f= DB::table('circle')
+            ->where('id',$id)
+            ->first($field);
+
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
+        $redis = $this->redis('login');
+        $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
+        $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
+        $f->isJoin = $redis->sIsMember('circleJoinUser:'.$uid,$f->id) ? 1 : 0;
+
+        $res = [
+            'state' => 0,
+            'data' => $f,
+        ];
+        return response()->json($res);
+    }
+
     //圈子精选
     public function circleFeatured (Request $request): \Illuminate\Http\JsonResponse
     {
