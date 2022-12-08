@@ -72,14 +72,15 @@ class CommunityController extends Controller
     public function getHotCircle($uid): \Illuminate\Support\Collection
     {
         //热门圈子
-        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','uid','name','avatar','many_friends as user']);
+        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','uid','name','avatar']);
         //封面图处理
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
         $redis = $this->redis('login');
-        foreach ($hotCircle as $h){
-            $h->isJoin = $redis->sIsMember('circleJoinUser:'.$uid,$h->id) ? 1 : 0;
-            $h->avatar = $this->transferImgOut($h->avatar,$domainSync,$_v);
+        foreach ($hotCircle as $f){
+            $f->isJoin = $redis->sIsMember('participateCircle:'.$f->id,$uid) ? 1 : 0;
+            $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
+            $f->user = $redis->sCard('participateCircle:'.$f->id);
         }
         return $hotCircle;
     }
@@ -118,7 +119,8 @@ class CommunityController extends Controller
         $redis = $this->redis('login');
         foreach ($featuredCircle as $f){
             $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
-            $f->isJoin = $redis->sIsMember('circleJoinUser:'.$uid,$f->id) ? 1 : 0;
+            $f->isJoin = $redis->sIsMember('participateCircle:'.$f->id,$uid) ? 1 : 0;
+            $f->user = $redis->sCard('participateCircle:'.$f->id);
         }
         $data['list'] = $featuredCircle;
         $data['hasMorePages'] = $hasMorePages;
@@ -138,7 +140,7 @@ class CommunityController extends Controller
             'id' => 'required|integer'
         ])->validated();
         $id = $validated['id'];
-        $field = ['id','uid','name','participate','avatar','introduction as des','background as imgUrl','many_friends as user'];
+        $field = ['id','uid','name','participate','avatar','introduction as des','background as imgUrl'];
         $f= DB::table('circle')
             ->where('id',$id)
             ->first($field);
@@ -146,13 +148,14 @@ class CommunityController extends Controller
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
         $redis = $this->redis('login');
-        $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-        $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-        $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+
+        $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
         $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
         $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
-        $f->isJoin = $redis->sIsMember('circleJoinUser:'.$uid,$f->id) ? 1 : 0;
-
+        $f->isJoin = $redis->sIsMember('participateCircle:'.$f->id,$uid) ? 1 : 0;
+        $f->user = $redis->sCard('participateCircle:'.$f->id);
         $res = [
             'state' => 0,
             'data' => $f,
@@ -178,13 +181,15 @@ class CommunityController extends Controller
         $featuredCircle = $paginator->items();
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
+        $redis = $this->redis('login');
         foreach ($featuredCircle as $f){
             //$f->user_avatar = [];//圈友头像（三个，不足三个有多少给多少）todo
-            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
-            $f->user_avatar[] = '/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
             $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
             $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
+            $f->user = $redis->sCard('participateCircle:'.$f->id);
         }
         $data['list'] = $featuredCircle;
         $data['hasMorePages'] = $hasMorePages;
@@ -258,7 +263,7 @@ class CommunityController extends Controller
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
             $item->avatar = $domain.$item->avatar;
-            $item->isJoin = $redis->sIsMember('circleJoinUser:'.$uid,$item->circle_id) ? 1 : 0;
+            $item->isJoin = $redis->sIsMember('participateCircle:'.$item->circle_id,$uid) ? 1 : 0;
             $item->isFocus = $redis->sIsMember('discussFocusUser:'.$uid,$item->id) ? 1 : 0;
             $item->isLike = $redis->sIsMember('discussLikesUser:'.$uid,$item->id) ? 1 : 0;
             $item->album = !$item->album ? [] : json_decode($item->album,true);
@@ -735,7 +740,7 @@ class CommunityController extends Controller
 
         switch($action){
             case 1:
-                $key = 'circleJoinUser:'.$user->id;
+                //$key = 'circleJoinUser:'.$user->id;
                 break;
             case 2:
                 $key = 'discussFocusUser:'.$user->id;
@@ -746,17 +751,20 @@ class CommunityController extends Controller
         }
         if(isset($key)){
             $redis = $this->redis('login');
-            if($hit==1){
-                $redis->sAdd($key,$id);
+            if($hit==1){ //命中
+
 //                $redis->expireAt($key,time()+30*24*3600);
                 if($action==1){
-                    DB::table('circle')->where('id',$id)->increment('participate');
+                    $redis->sAdd('participateCircle:'.$id,$user->id);
+                }else{
+                    $redis->sAdd($key,$id);
                 }
-            }else{
+            }else{ //取消
                 if($action==1){
-                    DB::table('circle')->where('id',$id)->decrement('participate');
+                    $redis->sRem('participateCircle:'.$id,$user->id);
+                }else{
+                    $redis->sRem($key,$id);
                 }
-                $redis->sRem($key,$id);
             }
         }
         return response()->json([
