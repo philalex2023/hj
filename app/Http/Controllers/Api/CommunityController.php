@@ -212,6 +212,7 @@ class CommunityController extends Controller
             }
         }
 
+        unset($f->collection_ids);
         //当前话题
         $topic = DB::table('circle_topic')->where('circle_id',$id)->get(['id','name']);
         $res = [
@@ -671,6 +672,7 @@ class CommunityController extends Controller
                 ->where('type',$type)
                 ->whereIn('id',$idArr)
                 ->orderByDesc('id');
+            $data['total'] = $build->count();
             $paginator = $build->simplePaginate(8,['id','name','cover','views','gold','created_at'],'collection',$page);
             $hasMorePages = $paginator->hasMorePages();
             $data['list'] = $paginator->items();
