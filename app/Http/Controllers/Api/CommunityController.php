@@ -298,6 +298,33 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //话题列表
+    public function topicList(): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'cid' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $cid = $validated['cid'];
+        $page = $validated['page'];
+        $perPage = 16;
+        $field = ['id','uid','name','circle_name','avatar','circle_id','interactive as inter'];
+        $paginator = DB::table('circle_topic')->where('cid',$cid)->simplePaginate($perPage,$field,'topicList',$page);
+        $data['list'] = $paginator->items();
+        $data['hasMorePages'] = $paginator->hasMorePages();
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
+        foreach ($data['list'] as $item){
+            $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
+        }
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     public function topicDetail(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
