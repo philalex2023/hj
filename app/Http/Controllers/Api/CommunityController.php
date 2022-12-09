@@ -330,18 +330,17 @@ class CommunityController extends Controller
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
-            'uid' => 'required|integer',
+            'cid' => 'required|integer',
             'filter' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
-        $uid = $validated['uid'];
+        $cid = $validated['cid'];
         $filter = $validated['filter']; //1按最多播放、2按最新 todo
         $page = $validated['page'];
         $uid = $request->user()->id;
 
         $build = DB::table('circle_discuss')
-//            ->where('uid',$uid)
-        ;
+            ->where('circle_id',$cid);
         /*if($filter==1){
 
         }else{
