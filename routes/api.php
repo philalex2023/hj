@@ -118,7 +118,7 @@ Route::group([
     Route::get('communityFocus', 'CommunityController@focus');  //社区关注
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题
-    Route::get('communityTopicDetail', 'CommunityController@topicDetail');  //话题详情
+    Route::post('communityTopicDetail', 'CommunityController@topicDetail');  //话题详情
     Route::post('communityCircleUserList', 'CommunityController@circleUserList');  //圈友列表
     Route::post('communityRankList', 'CommunityController@rankList');  //视频榜
     Route::post('communityCircleDetail', 'CommunityController@circleDetail');  //圈子详情
