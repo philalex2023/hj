@@ -174,7 +174,7 @@ class CommunityController extends Controller
             'id' => 'required|integer'
         ])->validated();
         $id = $validated['id'];
-        $field = ['id','uid','name','participate','avatar','introduction as des','background as imgUrl'];
+        $field = ['id','uid','name','video_num','participate','avatar','introduction as des','background as imgUrl'];
         $f= DB::table('circle')
             ->where('id',$id)
             ->first($field);
@@ -192,6 +192,8 @@ class CommunityController extends Controller
         $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
         $f->isJoin = $redis->hExists('joinCircle:'.$f->id,$uid) ? 1 : 0;
         $f->user = $redis->hLen('joinCircle:'.$f->id);
+        //帖子数
+        $f->discuss_num = DB::table('circle_discuss')->where('circle_id',$id)->count();
         $res = [
             'state' => 0,
             'data' => $f,
@@ -280,8 +282,9 @@ class CommunityController extends Controller
         $tid = $validated['tid'];
 
         //月话题精选
-        $field = ['id','uid','name','desc','circle_name','avatar','circle_avatar','circle_friends as user','author','interactive as inter','participate'];
+        $field = ['id','uid','name','desc','circle_name','avatar','circle_avatar','circle_id','author','interactive as inter','participate'];
         $one = DB::table('circle_topic')->find($tid,$field);
+        $one->user = $this->redis('login')->hLen('joinCircle:'.$one->circle_id);
         $res = [
             'state' => 0,
             'data' => $one,
@@ -683,14 +686,21 @@ class CommunityController extends Controller
     public function topic(Request $request): \Illuminate\Http\JsonResponse
     {
         //月话题精选
-        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(7)->get(['id','uid','name','circle_name','avatar','circle_friends as user','author','interactive as inter','participate']);
+        $hotTopic = DB::table('circle_topic')->orderByDesc('id')->limit(7)->get(['id','uid','name','circle_name','avatar','circle_id','author','interactive as inter','participate']);
+        $redis = $this->redis('login');
+        foreach ($hotTopic as $item){
+            $item->user = $redis->hLen('joinCircle:'.$item->circle_id);
+        }
         //分类
         $topicCat = $this->getCircleTopicCat();
 
         //列表
         if(!empty($topicCat)){
             $firstIndex = key($topicCat);
-            $topicList = DB::table('circle_topic')->where('cid',$firstIndex)->limit(7)->get(['id','uid','name','circle_name','avatar','circle_friends as user','interactive as inter']);
+            $topicList = DB::table('circle_topic')->where('cid',$firstIndex)->limit(7)->get(['id','uid','name','circle_name','avatar','circle_id','interactive as inter']);
+            foreach ($topicList as $e){
+                $e->user = $redis->hLen('joinCircle:'.$e->circle_id);
+            }
         }else{
             $topicList = [];
         }
