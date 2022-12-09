@@ -214,7 +214,7 @@ class CommunityController extends Controller
 
         unset($f->collection_ids);
         //当前话题
-        $topic = DB::table('circle_topic')->where('circle_id',$id)->get(['id','name']);
+        $topic = DB::table('circle_topic')->where('circle_id',$id)->get(['id','name','interactive as inter']);
         $res = [
             'state' => 0,
             'data' => [
@@ -657,6 +657,7 @@ class CommunityController extends Controller
         return response()->json(['state' => 0, 'data' => ['list'=>[],'hasMorePages'=>false]]);
     }
 
+    //合集
     public function collection(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
