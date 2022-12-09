@@ -343,6 +343,8 @@ class CommunityController extends Controller
         $one->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
         $one->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
         $one->avatar = $this->transferImgOut($one->avatar,$domainSync,$_v);
+        $redis = $this->redis('login');
+        $one->isFocus = $redis->sIsMember('topicFocusUser:'.$request->user()->id,$one->id) ? 1 : 0;
         $res = [
             'state' => 0,
             'data' => $one,
@@ -845,7 +847,7 @@ class CommunityController extends Controller
         $validated = Validator::make($params,[
             'id' => 'required|integer',
             'hit' => 'required|integer', //1点击 0 取消点击
-            'action' => 'required|integer', //1加入圈子 2关注帖子 3喜欢帖子
+            'action' => 'required|integer', //1加入圈子 2关注帖子 3喜欢帖子 4关注话题
         ])->validated();
         $id = $validated['id'];
         $hit = $validated['hit'];
@@ -861,6 +863,9 @@ class CommunityController extends Controller
                 break;
             case 3:
                 $key = 'discussLikesUser:'.$user->id;
+                break;
+            case 4:
+                $key = 'topicFocusUser:'.$user->id;
                 break;
         }
         if(isset($key)){
