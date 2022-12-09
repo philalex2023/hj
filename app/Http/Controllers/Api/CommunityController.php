@@ -298,7 +298,7 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function topicInfo(Request $request): \Illuminate\Http\JsonResponse
+    public function topicDetail(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
@@ -310,6 +310,12 @@ class CommunityController extends Controller
         $field = ['id','uid','name','desc','circle_name','avatar','circle_avatar','circle_id','author','interactive as inter','participate'];
         $one = DB::table('circle_topic')->find($tid,$field);
         $one->user = $this->redis('login')->hLen('joinCircle:'.$one->circle_id);
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
+        $one->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $one->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $one->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $one->avatar = $this->transferImgOut($one->avatar,$domainSync,$_v);
         $res = [
             'state' => 0,
             'data' => $one,
