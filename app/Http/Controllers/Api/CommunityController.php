@@ -78,9 +78,9 @@ class CommunityController extends Controller
         $_v = date('Ymd');
         $redis = $this->redis('login');
         foreach ($hotCircle as $f){
-            $f->isJoin = $redis->sIsMember('participateCircle:'.$f->id,$uid) ? 1 : 0;
             $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
-            $f->user = $redis->sCard('participateCircle:'.$f->id);
+            $f->isJoin = $redis->hExists('joinCircle:'.$f->id,$uid) ? 1 : 0;
+            $f->user = $redis->hLen('joinCircle:'.$f->id);
         }
         return $hotCircle;
     }
@@ -119,11 +119,45 @@ class CommunityController extends Controller
         $redis = $this->redis('login');
         foreach ($featuredCircle as $f){
             $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
-            $f->isJoin = $redis->sIsMember('participateCircle:'.$f->id,$uid) ? 1 : 0;
-            $f->user = $redis->sCard('participateCircle:'.$f->id);
+            $f->isJoin = $redis->hExists('joinCircle:'.$f->id,$uid) ? 1 : 0;
+            $f->user = $redis->hLen('joinCircle:'.$f->id);
         }
         $data['list'] = $featuredCircle;
         $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    //圈友列表
+    public function circleUserList(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $uid = $request->user()->id;
+        $validated = Validator::make($params,[
+            'id' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $page = $validated['page'];
+        $perPage = 16;
+        $offset = ($page-1)*$perPage;
+        $redis = $this->redis('login');
+        $dataList = $redis->hGetAll('joinCircle:'.$validated['id']);
+        $data = ['list'=>[],'hasMorePages'=>false];
+        $domainSync = self::getDomain(2);
+        if(!empty($dataList)){
+            $items = [];
+            foreach ($dataList as $userId => $jsonStr){
+                $arr = json_decode($jsonStr,true);
+                $arr['at_time'] = $this->mdate($arr['at_time']);
+                $arr['avatar'] = $domainSync.$arr['avatar'];
+                $items[] = ['uid' => $userId] + ['isJoin'=>$redis->hExists('joinCircle:'.$validated['id'],$uid)] + $arr;
+            }
+            $data['list'] = array_slice($items,$offset,$perPage);
+            $data['hasMorePages'] = count($items) > $perPage*$page;
+        }
         $res = [
             'state' => 0,
             'data' => $data,
@@ -156,8 +190,8 @@ class CommunityController extends Controller
         $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
         $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
         $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
-        $f->isJoin = $redis->sIsMember('participateCircle:'.$f->id,$uid) ? 1 : 0;
-        $f->user = $redis->sCard('participateCircle:'.$f->id);
+        $f->isJoin = $redis->hExists('joinCircle:'.$f->id,$uid) ? 1 : 0;
+        $f->user = $redis->hLen('joinCircle:'.$f->id);
         $res = [
             'state' => 0,
             'data' => $f,
@@ -191,7 +225,7 @@ class CommunityController extends Controller
             $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
             $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
             $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
-            $f->user = $redis->sCard('participateCircle:'.$f->id);
+            $f->user = $redis->hLen('joinCircle:'.$f->id);
         }
         $data['list'] = $featuredCircle;
         $data['hasMorePages'] = $hasMorePages;
@@ -265,7 +299,7 @@ class CommunityController extends Controller
             $item->tag_kv = json_decode($item->tag_kv,true) ?? [];
             $item->created_at = $this->mdate(strtotime($item->created_at));
             $item->avatar = $domain.$item->avatar;
-            $item->isJoin = $redis->sIsMember('participateCircle:'.$item->circle_id,$uid) ? 1 : 0;
+            $item->isJoin = $redis->hExists('joinCircle:'.$item->circle_id,$uid) ? 1 : 0;
             $item->isFocus = $redis->sIsMember('discussFocusUser:'.$uid,$item->id) ? 1 : 0;
             $item->isLike = $redis->sIsMember('discussLikesUser:'.$uid,$item->id) ? 1 : 0;
             $item->album = !$item->album ? [] : json_decode($item->album,true);
@@ -757,13 +791,19 @@ class CommunityController extends Controller
 
 //                $redis->expireAt($key,time()+30*24*3600);
                 if($action==1){
-                    $redis->sAdd('participateCircle:'.$id,$user->id);
+//                    $redis->sAdd('participateCircle:'.$id,$user->id);
+                    $redis->hSet('joinCircle:'.$id,$user->id,json_encode([
+                        'avatar'=>$user->avatar,
+                        'nickname'=>$user->nickname,
+                        'at_time'=>time(),
+                        'discuss_num'=>0, //todo
+                    ],JSON_UNESCAPED_UNICODE));
                 }else{
                     $redis->sAdd($key,$id);
                 }
             }else{ //取消
                 if($action==1){
-                    $redis->sRem('participateCircle:'.$id,$user->id);
+                    $redis->hDel('joinCircle:'.$id,$user->id);
                 }else{
                     $redis->sRem($key,$id);
                 }
