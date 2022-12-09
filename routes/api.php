@@ -119,6 +119,7 @@ Route::group([
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题
     Route::get('communityTopicInfo', 'CommunityController@topicInfo');  //话题信息
+    Route::post('communityCircleUserList', 'CommunityController@circleUserList');  //圈友列表
     Route::post('communityRankList', 'CommunityController@rankList');  //视频榜
     Route::post('communityCircleDetail', 'CommunityController@circleDetail');  //圈子详情
     Route::post('communityCollectionDetail', 'CommunityController@collectionDetail');  //合集详情

@@ -632,20 +632,20 @@ class CommunityController extends Controller
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
-            'uid' => 'required|integer',
+            'cid' => 'required|integer',
             'type' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
         $user = $request->user();
-        $uid = $validated['uid'];       //todo
+        $cid = $validated['cid'];
         $type = $validated['type'];
         $page = $validated['page'];
 
+        $ids = DB::table('circle')->where('id',$cid)->value('collection_ids');
         $build = DB::table('circle_collection')
             ->where('type',$type)
-            ->orderByDesc('id')
-//            ->where('uid',$uid)
-        ;
+            ->whereIn('id',$ids)
+            ->orderByDesc('id');
         $paginator = $build->simplePaginate(8,['id','name','cover','views','gold','created_at'],'collection',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
