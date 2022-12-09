@@ -653,13 +653,21 @@ class CommunityController extends Controller
             $hasMorePages = $paginator->hasMorePages();
             $data['list'] = $paginator->items();
             $domain = env('RESOURCE_DOMAIN');
+            $_v = date('ymd');
             $redis = $this->redis('login');
             $key = 'unlockCollectionUser:'.$user->id;
             foreach ($data['list'] as $item){
                 $item->created_at = $this->mdate(strtotime($item->created_at));
                 $item->views = $this->generateRandViews($item->views,50000);
                 $item->isBuy = (int)$redis->sIsMember($key,$item->id);
-                !empty($item->cover) && $item->cover = $domain.$item->cover;
+                if(!empty($item->cover)){
+                    $cover = json_decode($item->cover,true);
+                    $coverImg = [];
+                    foreach ($cover as $img){
+                        $coverImg[] = $this->transferImgOut($img,$domain,$_v);
+                    }
+                    $item->cover = $coverImg;
+                }
             }
 
             $data['hasMorePages'] = $hasMorePages;
