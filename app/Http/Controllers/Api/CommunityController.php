@@ -299,7 +299,7 @@ class CommunityController extends Controller
     }
 
     //话题列表
-    public function topicList(): \Illuminate\Http\JsonResponse
+    public function topicList(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
