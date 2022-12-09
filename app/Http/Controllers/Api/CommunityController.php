@@ -206,7 +206,7 @@ class CommunityController extends Controller
             $vidArr = array_slice($vidArr,0,3);
             $vidNum = count($vidArr);
             for ($i=0;$i<$vidNum;$i++){
-                $video[] = DB::table('video')->where('id',$vidArr[$i])->get(['id','name']);
+                $video[] = DB::table('video')->where('id',$vidArr[$i])->first(['id','name']);
             }
         }
 
