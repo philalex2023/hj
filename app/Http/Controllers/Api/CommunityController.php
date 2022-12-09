@@ -174,10 +174,8 @@ class CommunityController extends Controller
             'id' => 'required|integer'
         ])->validated();
         $id = $validated['id'];
-        $field = ['id','uid','name','video_num','participate','avatar','introduction as des','background as imgUrl'];
-        $f= DB::table('circle')
-            ->where('id',$id)
-            ->first($field);
+        $field = ['id','uid','name','video_num','collection_ids','participate','avatar','introduction as des','background as imgUrl'];
+        $f= DB::table('circle')->where('id',$id)->first($field);
 
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
@@ -194,9 +192,33 @@ class CommunityController extends Controller
         $f->user = $redis->hLen('joinCircle:'.$f->id);
         //帖子数
         $f->discuss_num = DB::table('circle_discuss')->where('circle_id',$id)->count();
+        //推荐视频三个 collection_ids
+        $video = [];
+        if(!empty($f->collection_ids)){
+            $collectionIds = explode(',',$f->collection_ids);
+            $vidArr = [];
+            $collections = DB::table('circle_collection')->whereIn('id',$collectionIds)->get('vids');
+            foreach ($collections as $collection){
+                $vidArr = [...$vidArr, ...explode(',',$collection->vids)];
+            }
+            $vidArr = array_unique($vidArr);
+            shuffle($vidArr);//暂时随机
+            $vidArr = array_slice($vidArr,0,3);
+            $vidNum = count($vidArr);
+            for ($i=0;$i<$vidNum;$i++){
+                $video[] = DB::table('video')->where('id',$vidArr[$i])->get(['id','name']);
+            }
+        }
+
+        //当前话题
+        $topic = DB::table('circle_topic')->where('circle_id',$id)->get(['id','name']);
         $res = [
             'state' => 0,
-            'data' => $f,
+            'data' => [
+                'detail' => $f,
+                'topic' => $topic,
+                'video' => $video,
+            ],
         ];
         return response()->json($res);
     }
@@ -338,9 +360,7 @@ class CommunityController extends Controller
         $filter = $validated['filter']; //1按最多播放、2按最新 todo
         $page = $validated['page'];
         $uid = $request->user()->id;
-
-        $build = DB::table('circle_discuss')
-            ->where('circle_id',$cid);
+        $build = DB::table('circle_discuss')->where('circle_id',$cid);
         /*if($filter==1){
 
         }else{
@@ -348,9 +368,7 @@ class CommunityController extends Controller
         }*/
         $paginator = $build->simplePaginate(7,$this->discussField,'discuss',$page);
         $data['list'] = $paginator->items();
-
         $data['list'] = $this->handleDiscussItem($data['list'],$uid);
-
         $data['hasMorePages'] = $paginator->hasMorePages();
         $res = [
             'state' => 0,
