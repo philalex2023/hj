@@ -309,7 +309,7 @@ class CommunityController extends Controller
         $cid = $validated['cid'];
         $page = $validated['page'];
         $perPage = 16;
-        $field = ['id','uid','name','circle_name','avatar','circle_id','interactive as inter'];
+        $field = ['id','uid','name','avatar','circle_id','participate','interactive as inter'];
         $paginator = DB::table('circle_topic')->where('cid',$cid)->simplePaginate($perPage,$field,'topicList',$page);
         $data['list'] = $paginator->items();
         $data['hasMorePages'] = $paginator->hasMorePages();
