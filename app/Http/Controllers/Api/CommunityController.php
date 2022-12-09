@@ -642,28 +642,33 @@ class CommunityController extends Controller
         $page = $validated['page'];
 
         $ids = DB::table('circle')->where('id',$cid)->value('collection_ids');
-        $build = DB::table('circle_collection')
-            ->where('type',$type)
-            ->whereIn('id',$ids)
-            ->orderByDesc('id');
-        $paginator = $build->simplePaginate(8,['id','name','cover','views','gold','created_at'],'collection',$page);
-        $hasMorePages = $paginator->hasMorePages();
-        $data['list'] = $paginator->items();
-        $domain = env('RESOURCE_DOMAIN');
-        $redis = $this->redis('login');
-        $key = 'unlockCollectionUser:'.$user->id;
-        foreach ($data['list'] as $item){
-            $item->created_at = $this->mdate(strtotime($item->created_at));
-            $item->views = $this->generateRandViews($item->views,50000);
-            $item->isBuy = (int)$redis->sIsMember($key,$item->id);
-            !empty($item->cover) && $item->cover = $domain.$item->cover;
+        $res = ['state' => 0,'data'=>['list'=>[],'hasMorePages'=>false]];
+        if(!empty($ids)){
+            $idArr = explode(',',$ids);
+            $build = DB::table('circle_collection')
+                ->where('type',$type)
+                ->whereIn('id',$idArr)
+                ->orderByDesc('id');
+            $paginator = $build->simplePaginate(8,['id','name','cover','views','gold','created_at'],'collection',$page);
+            $hasMorePages = $paginator->hasMorePages();
+            $data['list'] = $paginator->items();
+            $domain = env('RESOURCE_DOMAIN');
+            $redis = $this->redis('login');
+            $key = 'unlockCollectionUser:'.$user->id;
+            foreach ($data['list'] as $item){
+                $item->created_at = $this->mdate(strtotime($item->created_at));
+                $item->views = $this->generateRandViews($item->views,50000);
+                $item->isBuy = (int)$redis->sIsMember($key,$item->id);
+                !empty($item->cover) && $item->cover = $domain.$item->cover;
+            }
+
+            $data['hasMorePages'] = $hasMorePages;
+            $res = [
+                'state' => 0,
+                'data' => $data,
+            ];
         }
 
-        $data['hasMorePages'] = $hasMorePages;
-        $res = [
-            'state' => 0,
-            'data' => $data,
-        ];
         return response()->json($res);
     }
 
