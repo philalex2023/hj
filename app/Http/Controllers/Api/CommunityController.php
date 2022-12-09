@@ -72,7 +72,9 @@ class CommunityController extends Controller
     public function getHotCircle($uid): \Illuminate\Support\Collection
     {
         //热门圈子
-        $hotCircle = DB::table('circle')->orderByDesc('many_friends')->limit(8)->get(['id','uid','name','avatar']);
+        $hotCircle = DB::table('circle')
+            ->orderByDesc('id') //todo
+            ->limit(8)->get(['id','uid','name','avatar']);
         //封面图处理
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
@@ -108,7 +110,7 @@ class CommunityController extends Controller
         ])->validated();
         $cid = $validated['cid'];
         $page = $validated['page'];
-        $field = ['id','uid','name','participate','avatar','introduction as des','many_friends as user'];
+        $field = ['id','uid','name','participate','avatar','introduction as des'];
         $paginator= DB::table('circle')
 //            ->where('cid',$cid)
             ->simplePaginate(8,$field,'circleFeatured',$page);
@@ -235,7 +237,7 @@ class CommunityController extends Controller
         $filter = $validated['filter'];
         $page = $validated['page'];
 
-        $field = ['id','uid','cname','name','scan','avatar','introduction as des','background as imgUrl','many_friends as user'];
+        $field = ['id','uid','cname','name','scan','avatar','introduction as des','background as imgUrl'];
         $paginator= DB::table('circle')->simplePaginate(8,$field,'circleFeatured',$page);
         $hasMorePages = $paginator->hasMorePages();
         $featuredCircle = $paginator->items();
@@ -472,12 +474,12 @@ class CommunityController extends Controller
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
-            'uid' => 'required|integer',
+            'cid' => 'required|integer',
             'filter' => 'required|integer',
             'type' => 'required|integer',
             'page' => 'required|integer'
         ])->validated();
-        $uid = $validated['uid'];       //todo
+        $cid = $validated['cid'];       //todo
         $filter = $validated['filter']; //todo
         $type = $validated['type'];
         $page = $validated['page'];
