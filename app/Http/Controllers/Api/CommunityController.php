@@ -847,7 +847,7 @@ class CommunityController extends Controller
         $validated = Validator::make($params,[
             'id' => 'required|integer',
             'hit' => 'required|integer', //1点击 0 取消点击
-            'action' => 'required|integer', //1加入圈子 2关注帖子 3喜欢帖子 4关注话题
+            'action' => 'required|integer', //1加入圈子 2关注帖子 3喜欢帖子 4关注话题 5关注用户
         ])->validated();
         $id = $validated['id'];
         $hit = $validated['hit'];
@@ -866,6 +866,9 @@ class CommunityController extends Controller
                 break;
             case 4:
                 $key = 'topicFocusUser:'.$user->id;
+                break;
+            case 5:
+                $key = 'userFocusUser:'.$user->id;
                 break;
         }
         if(isset($key)){
