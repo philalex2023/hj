@@ -243,8 +243,8 @@ class PayController extends Controller
             $return = $this->format(0, ['url' => $url], 'ok');
         } else {
             Order::query()->where('id',$orderInfo->id)->update(['status'=>2]);
-            $return = $this->format(-1, $resJson, $resJson['message']??'');
-            $this->RobotSendMsg($payName.'通道'.$channelNo.' 未拉起异常:'.($resJson['message']??''));
+            $return = $this->format(-1, $resJson, $resJson['respDesc']??'');
+            $this->RobotSendMsg($payName.'通道'.$channelNo.' 订单号:'.$resJson['orderId'].' 系统订单号:'.$resJson['sysOrderId'].' 未拉起异常:'.($resJson['respDesc']??''));
         }
         return response()->json($return);
     }
