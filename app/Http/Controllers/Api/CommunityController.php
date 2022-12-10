@@ -119,7 +119,7 @@ class CommunityController extends Controller
         $redis = $this->redis('login');
         foreach ($data['list'] as $item){
             $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
-            $item->isJoin = $redis->sIsMember('topicFocusUser:'.$uid,$item->id) ? 1 : 0;
+            $item->isFocus = $redis->sIsMember('topicFocusUser:'.$uid,$item->id) ? 1 : 0;
         }
         $res = [
             'state' => 0,
