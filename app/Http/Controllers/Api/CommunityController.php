@@ -100,6 +100,40 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //todo 任务统计
+    public function circleRank(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $uid = $request->user()->id;
+        $validated = Validator::make($params,[
+            'page' => 'required|integer'
+        ])->validated();
+        $redis = $this->redis('login');
+        $page = $validated['page'];
+        $field = ['id','uid','name','avatar'];
+        $paginator= DB::table('circle')
+//            ->where('cid',$cid)
+            ->simplePaginate(8,$field,'circleFeatured',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $featuredCircle = $paginator->items();
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
+        $redis = $this->redis('login');
+        foreach ($featuredCircle as $f){
+            $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
+            $f->isJoin = $redis->hExists('joinCircle:'.$f->id,$uid) ? 1 : 0;
+            $f->participate = $redis->hLen('joinCircle:'.$f->id);
+            $f->discuss_num = 0; //todo
+        }
+        $data['list'] = $featuredCircle;
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     public function circle(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
