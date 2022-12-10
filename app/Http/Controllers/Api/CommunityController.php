@@ -100,6 +100,34 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //话题榜
+    public function topicRank(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $uid = $request->user()->id;
+        $validated = Validator::make($params,[
+            'page' => 'required|integer'
+        ])->validated();
+        $page = $validated['page'];
+        $perPage = 16;
+        $field = ['id','uid','name','avatar','circle_id','participate','interactive as inter'];
+        $paginator = DB::table('circle_topic')->orderByDesc('id')->simplePaginate($perPage,$field,'topicList',$page);
+        $data['list'] = $paginator->items();
+        $data['hasMorePages'] = $paginator->hasMorePages();
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
+        $redis = $this->redis('login');
+        foreach ($data['list'] as $item){
+            $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
+            $item->isJoin = $redis->sIsMember('topicFocusUser:'.$uid,$item->id) ? 1 : 0;
+        }
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     //todo 任务统计
     public function circleRank(Request $request): \Illuminate\Http\JsonResponse
     {
