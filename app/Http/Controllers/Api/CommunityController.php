@@ -148,8 +148,8 @@ class CommunityController extends Controller
                     'uid'=>$item['key'],
                     'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
                     'work_num'=>$item['doc_count'],
-                    'author' => $one['author'],
-                    'auth_avatar' => $this->transferImgOut($one['auth_avatar'],$domainSync,$_v)
+                    'author' => $one->author,
+                    'auth_avatar' => $this->transferImgOut($one->auth_avatar,$domainSync,$_v)
                 ];
             }
         }
