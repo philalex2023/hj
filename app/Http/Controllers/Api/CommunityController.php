@@ -229,6 +229,11 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function personalInfo(Request $request)
+    {
+
+    }
+
     public function myCreatedCircle(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -335,7 +340,7 @@ class CommunityController extends Controller
             foreach ($dataList as $userId => $jsonStr){
                 $arr = json_decode($jsonStr,true);
                 $arr['at_time'] = $this->mdate($arr['at_time']);
-                $arr['avatar'] = $domainSync.$arr['avatar'];
+                $arr['avatar'] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
                 $items[] = ['uid' => $userId] + ['isJoin'=>$redis->hExists('joinCircle:'.$validated['id'],$uid)] + $arr;
             }
             $data['list'] = array_slice($items,$offset,$perPage);
