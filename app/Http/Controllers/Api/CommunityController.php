@@ -24,8 +24,10 @@ class CommunityController extends Controller
 
     public array $upVideoFields = ['id','name','dev_type','gold','tag_kv','duration','restricted','cover_img','circle','circle_topic','views'];
 
+    public array $circleFields = ['id','uid','name','participate','avatar','introduction as des'];
+
     //创建话题
-    public function addCircleTopic(Request $request)
+    public function addCircleTopic(Request $request): \Illuminate\Http\JsonResponse
     {
         $upMasterId = $this->getUpMasterId($request->user()->id);
         if(!$upMasterId){
@@ -227,6 +229,69 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function myCreatedCircle(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $uid = $request->user()->id;
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $page = $validated['page'];
+        $field = ['id','uid','name','cname','participate','avatar','background as imgUrl','introduction as des'];
+        $paginator = DB::table('circle')->where('uid',$validated['uid'])->simplePaginate(8,$field,'myCreatedCircle',$page);
+        $data = $this->handleCircleItems($uid,$paginator);
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    public function myJoinedCircle(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $uid = $request->user()->id;
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $page = $validated['page'];
+        $field = ['id','uid','name','cname','participate','avatar','background as imgUrl','introduction as des'];
+        $paginator = DB::table('circle')
+//            ->where('uid',$validated['uid'])
+            ->simplePaginate(8,$field,'myCreatedCircle',$page);
+        $data = $this->handleCircleItems($uid,$paginator);
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    public function handleCircleItems($uid,$paginator): array
+    {
+        $hasMorePages = $paginator->hasMorePages();
+        $featuredCircle = $paginator->items();
+        $domainSync = self::getDomain(2);
+        $_v = date('ymd');
+        $redis = $this->redis('login');
+        foreach ($featuredCircle as $f){
+            $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
+            if(isset($f->imgUrl)){
+                $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
+                $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+                $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+                $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+            }
+            $f->isJoin = $redis->hExists('joinCircle:'.$f->id,$uid) ? 1 : 0;
+            $f->user = $redis->hLen('joinCircle:'.$f->id);
+        }
+        $data['list'] = $featuredCircle;
+        $data['hasMorePages'] = $hasMorePages;
+        return $data;
+    }
+
     public function circle(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -241,18 +306,7 @@ class CommunityController extends Controller
         $paginator= DB::table('circle')
 //            ->where('cid',$cid)
             ->simplePaginate(8,$field,'circleFeatured',$page);
-        $hasMorePages = $paginator->hasMorePages();
-        $featuredCircle = $paginator->items();
-        $domainSync = self::getDomain(2);
-        $_v = date('Ymd');
-        $redis = $this->redis('login');
-        foreach ($featuredCircle as $f){
-            $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
-            $f->isJoin = $redis->hExists('joinCircle:'.$f->id,$uid) ? 1 : 0;
-            $f->user = $redis->hLen('joinCircle:'.$f->id);
-        }
-        $data['list'] = $featuredCircle;
-        $data['hasMorePages'] = $hasMorePages;
+        $data = $this->handleCircleItems($uid,$paginator);
         $res = [
             'state' => 0,
             'data' => $data,

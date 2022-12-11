@@ -131,6 +131,8 @@ Route::group([
     Route::post('communityActionEvent', 'CommunityController@actionEvent');  //加入、喜欢、关注事件
     Route::post('fromMeFocusCircle', 'CommunityController@fromMeFocusCircle');  //来自我关注的圈子
     Route::post('circleFeatured', 'CommunityController@circleFeatured');  //圈子精选
+    Route::post('myCreatedCircle', 'CommunityController@myCreatedCircle');  //创建的圈子
+    Route::post('myJoinedCircle', 'CommunityController@myJoinedCircle');  //加入的圈子
     Route::post('communityDiscuss', 'CommunityController@discuss');  //讨论
     Route::post('communityVideo', 'CommunityController@video');  //视频
     Route::post('communityWorkVideo', 'CommunityController@workVideo');  //我的作品-视频/短视频
