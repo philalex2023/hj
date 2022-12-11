@@ -121,6 +121,7 @@ Route::group([
     Route::post('communityTopicList', 'CommunityController@topicList');  //话题列表
     Route::post('communityTopicDetail', 'CommunityController@topicDetail');  //话题详情
     Route::post('communityCircleUserList', 'CommunityController@circleUserList');  //圈友列表
+    Route::post('communityUpMasterRank', 'CommunityController@upMasterRank');  //UP主人气榜
     Route::post('communityTopicRank', 'CommunityController@topicRank');  //话题榜
     Route::post('communityCircleRank', 'CommunityController@circleRank');  //圈子榜
     Route::post('communityRankList', 'CommunityController@rankList');  //视频榜

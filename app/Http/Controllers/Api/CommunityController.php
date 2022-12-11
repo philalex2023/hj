@@ -100,6 +100,62 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //UP主人气榜 todo 缓存优化
+    public function upMasterRank(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $user = $request->user();
+        $validated = Validator::make($params,[
+            'page' => 'required|integer'
+        ])->validated();
+        $perPage = 16;
+        $page = $validated['page'];
+        $offset = ($page-1)*$perPage;
+        $asField = 'work_num';
+        $searchParams = [
+            'index' => 'video_index',
+            'body' => [
+                'size' => 0,
+                'aggs' => [
+                    $asField=>[
+                        'terms' => [
+                            'field' => 'uid',
+                            'order' => ['_count'=>"desc"],
+                        ],
+                    ]
+                ]
+            ]
+        ];
+        $es = $this->esClient();
+        $response = $es->search($searchParams);
+        $uidWorkNum = [];
+        if(isset($response['aggregations']) && isset($response['aggregations'][$asField])){
+            //$total = $response['hits']['total']['value'];
+            $uidWorkNum = $response['aggregations'][$asField]['buckets'];
+            unset($response);
+        }
+
+        $dataList = [];
+        $uidWorkNum = array_slice($uidWorkNum,$offset,$perPage);
+        if(!empty($uidWorkNum)){
+            $build = DB::table('video');
+            $redis = $this->redis('login');
+            $domainSync = self::getDomain(2);
+            $_v = date('Ymd');
+            foreach ($uidWorkNum as $item){
+                $one = $build->where('uid',$item['key'])->first(['uid','author','auth_avatar']);
+                $dataList[] = [
+                    'uid'=>$item['key'],
+                    'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
+                    'work_num'=>$item['doc_count'],
+                    'author' => $one['author'],
+                    'auth_avatar' => $this->transferImgOut($one['auth_avatar'],$domainSync,$_v)
+                ];
+            }
+        }
+        return response()->json(['state' => 0, 'data' => ['list'=>$dataList,'hasMorePages'=>false]]);
+    }
+
     //话题榜
     public function topicRank(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -128,7 +184,7 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    //todo 任务统计
+    //圈子排行
     public function circleRank(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -930,13 +986,12 @@ class CommunityController extends Controller
                 $key = 'topicFocusUser:'.$user->id;
                 break;
             case 5:
-                $key = 'userFocusUser:'.$user->id;
+                $key = 'upMasterFocusUser:'.$user->id;
                 break;
         }
         if(isset($key)){
             $redis = $this->redis('login');
             if($hit==1){ //命中
-
 //                $redis->expireAt($key,time()+30*24*3600);
                 if($action==1){
 //                    $redis->sAdd('participateCircle:'.$id,$user->id);
