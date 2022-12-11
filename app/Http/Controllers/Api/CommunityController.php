@@ -136,21 +136,30 @@ class CommunityController extends Controller
         }
 
         $dataList = [];
+        foreach ($uidWorkNum as $key=>$item){
+            if($item['key']==0){
+                unset($uidWorkNum[$key]);
+                break;
+            }
+        }
         $uidWorkNum = array_slice($uidWorkNum,$offset,$perPage);
         if(!empty($uidWorkNum)){
-            $build = DB::table('video');
+//            $build = DB::table('video');
             $redis = $this->redis('login');
             $domainSync = self::getDomain(2);
             $_v = date('Ymd');
             foreach ($uidWorkNum as $item){
-                $one = $build->where('uid',$item['key'])->first(['uid','author','auth_avatar']);
-                $dataList[] = [
-                    'uid'=>$item['key'],
-                    'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
-                    'work_num'=>$item['doc_count'],
-                    'author' => $one->author,
-                    'auth_avatar' => $this->transferImgOut($one->auth_avatar,$domainSync,$_v)
-                ];
+                if($item['key']>0){
+                    $one = DB::table('video')->where('uid',$item['key'])->first(['uid','author','auth_avatar']);
+//                    Log::info('TEST',[$item['key'],$one]);
+                    $dataList[] = [
+                        'uid'=>$item['key'],
+                        'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
+                        'work_num'=>$item['doc_count'],
+                        'author' => $one->author,
+                        'auth_avatar' => $this->transferImgOut($one->auth_avatar,$domainSync,$_v)
+                    ];
+                }
             }
         }
         return response()->json(['state' => 0, 'data' => ['list'=>$dataList,'hasMorePages'=>false]]);
