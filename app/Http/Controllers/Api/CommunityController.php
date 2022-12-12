@@ -229,8 +229,28 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function personalInfo(Request $request)
+    //个人资料页面
+    public function personalInfo(Request $request): \Illuminate\Http\JsonResponse
     {
+        $params = self::parse($request->params??'');
+//        $uid = $request->user()->id;
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $domainSync = self::getDomain(2);
+        $userInfo = DB::table('users')->where('id',$validated['uid'])->first(['id','nickname','avatar']);
+        $userInfo->remark = '海角射区，成人第一射区';
+        $userInfo->likes = 0;
+        $userInfo->focus = 0;
+        $userInfo->fans = 0;
+        $userInfo->isFocus = 0;
+        $userInfo->avatar = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $res = [
+            'state' => 0,
+            'data' => $userInfo,
+        ];
+        return response()->json($res);
 
     }
 
@@ -310,7 +330,7 @@ class CommunityController extends Controller
         $field = ['id','uid','name','participate','avatar','introduction as des'];
         $paginator= DB::table('circle')
 //            ->where('cid',$cid)
-            ->simplePaginate(8,$field,'circleFeatured',$page);
+            ->simplePaginate(8,$field,'circle',$page);
         $data = $this->handleCircleItems($uid,$paginator);
         $res = [
             'state' => 0,
