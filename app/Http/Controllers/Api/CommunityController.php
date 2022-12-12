@@ -236,7 +236,6 @@ class CommunityController extends Controller
 //        $uid = $request->user()->id;
         $validated = Validator::make($params,[
             'uid' => 'required|integer',
-            'page' => 'required|integer'
         ])->validated();
         $domainSync = self::getDomain(2);
         $userInfo = DB::table('users')->where('id',$validated['uid'])->first(['id','nickname','avatar']);
