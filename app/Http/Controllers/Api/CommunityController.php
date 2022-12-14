@@ -244,6 +244,70 @@ class CommunityController extends Controller
 
     }*/
 
+    //搜索综合界面
+    public function searchMix(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params, [
+            'words' => 'nullable',
+        ])->validate();
+        $words = $validated['words']??false;
+        if(empty($words)){
+            return response()->json([
+                'state' => -1,
+                'msg' => '请输入关键词',
+                'data' => ['list'=>[]]
+            ]);
+        }
+
+        $words = substr($words,0,40);
+        $domainSync = self::getDomain(2);
+        $_v = date('ymd');
+        $redis = $this->redis('login');
+        $uid = $request->user()->id;
+        $circleItems = DB::table('circle')
+            ->where('name', 'like', $words.'%')
+            ->take(3)->orderByDesc('id')->get(['id','name','avatar']);
+
+        foreach ($circleItems as $item){
+            $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
+        }
+
+        $topicItems = DB::table('circle_topic')
+            ->where('name', 'like', $words.'%')
+            ->take(2)->orderByDesc('id')->get(['id','name','avatar','interactive as inter','participate']);
+        foreach ($topicItems as $item){
+            $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
+            $item->isFocus = $redis->sIsMember('topicFocusUser:'.$uid,$item->id) ? 1 : 0;
+        }
+
+        $long_videos = DB::table('video')
+            ->where('dev_type',0)
+            ->where('status',1)
+            ->where('name', 'like', $words.'%')
+            ->take(4)->orderByDesc('id')->get($this->upVideoFields);
+        $long_videos = $this->handleUpVideoItems($long_videos);
+        $short_videos = DB::table('video')
+            ->where('dev_type',0)
+            ->where('status',1)
+            ->where('name', 'like', $words.'%')
+            ->take(4)->orderByDesc('id')->get($this->upVideoFields);
+        $short_videos = $this->handleUpVideoItems($short_videos);
+
+        $data['circle'] = $circleItems;
+        $data['topic'] = $topicItems;
+        $data['video'] = [
+            'long' => $long_videos,
+            'short' => $short_videos,
+        ];
+
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     //个人动态
     public function personalDynamic(Request $request): \Illuminate\Http\JsonResponse
     {
