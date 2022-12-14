@@ -342,7 +342,7 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function personalLikes(Request $request)
+    public function personalLikes(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
