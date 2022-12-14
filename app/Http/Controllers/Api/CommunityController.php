@@ -255,7 +255,7 @@ class CommunityController extends Controller
     }
 
     //个人作品
-    public function personalWork(): \Illuminate\Http\JsonResponse
+    public function personalWork(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params,[
