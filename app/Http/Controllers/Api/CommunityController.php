@@ -229,6 +229,21 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    /*public function searchCircle()
+    {
+
+    }
+
+    public function searchTopic()
+    {
+
+    }
+
+    public function searchVideo()
+    {
+
+    }*/
+
     //个人动态
     public function personalDynamic(Request $request): \Illuminate\Http\JsonResponse
     {
