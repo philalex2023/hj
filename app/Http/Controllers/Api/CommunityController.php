@@ -266,7 +266,7 @@ class CommunityController extends Controller
         $redis = $this->redis('login');
         $uid = $request->user()->id;
         $circleItems = DB::table('circle')
-            ->where('name', 'like', $words.'%')
+            ->where('name', 'like', '%'.$words.'%')
             ->take(3)->orderByDesc('id')->get(['id','name','avatar']);
 
         foreach ($circleItems as $item){
@@ -274,7 +274,7 @@ class CommunityController extends Controller
         }
 
         $topicItems = DB::table('circle_topic')
-            ->where('name', 'like', $words.'%')
+            ->where('name', 'like', '%'.$words.'%')
             ->take(2)->orderByDesc('id')->get(['id','name','avatar','interactive as inter','participate']);
         foreach ($topicItems as $item){
             $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
@@ -284,13 +284,13 @@ class CommunityController extends Controller
         $long_videos = DB::table('video')
             ->where('dev_type',0)
             ->where('status',1)
-            ->where('name', 'like', $words.'%')
+            ->where('name', 'like', '%'.$words.'%')
             ->take(4)->orderByDesc('id')->get($this->upVideoFields);
         $long_videos = $this->handleUpVideoItems($long_videos);
         $short_videos = DB::table('video')
-            ->where('dev_type',0)
+            ->where('dev_type',1)
             ->where('status',1)
-            ->where('name', 'like', $words.'%')
+            ->where('name', 'like', '%'.$words.'%')
             ->take(4)->orderByDesc('id')->get($this->upVideoFields);
         $short_videos = $this->handleUpVideoItems($short_videos);
 
