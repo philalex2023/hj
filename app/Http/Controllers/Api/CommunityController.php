@@ -229,6 +229,148 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //个人动态
+    public function personalDynamic(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $uid = $this->getUpMasterId($validated['uid']);
+        $page = $validated['page'];
+        $uid = $request->user()->id;
+        $build = DB::table('circle_discuss');
+//            ->where('uid',$uid); todo
+
+        $paginator = $build->simplePaginate(7,$this->discussField,'discuss',$page);
+        $data['list'] = $paginator->items();
+        $data['list'] = $this->handleDiscussItem($data['list'],$uid);
+        $data['hasMorePages'] = $paginator->hasMorePages();
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    //个人作品
+    public function personalWork(): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'type' => 'required|integer',
+            'filter' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $uid = $validated['uid'];
+        $filter = $validated['filter']; //1最多播放 2最新发布
+        $page = $validated['page'];
+
+        $build = DB::table('video');
+        /*if($uid>0){ //todo
+            $uid = $this->getUpMasterId($uid);
+            $build = $build->where('uid',$uid)->where('dev_type',$validated['type'])->orderByDesc('created_at');
+        }*/
+
+        $paginator = $build->simplePaginate(8,['id','name','dev_type','likes','author','auth_avatar','gold','tag_kv','duration','restricted','cover_img','circle','circle_topic','views'],'video',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $data['list'] = $paginator->items();
+        $data['list'] = $this->handleUpVideoItems($data['list']);
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    //个人合集
+    public function personalCollection(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'type' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $user = $request->user();
+        $uid = $this->getUpMasterId($validated['uid']);
+        $type = $validated['type'];
+        $page = $validated['page'];
+
+        $ids = DB::table('circle')
+//            ->where('uid',$uid)
+            ->value('collection_ids');
+        $res = ['state' => 0,'data'=>['list'=>[],'hasMorePages'=>false]];
+        if(!empty($ids)){
+            $idArr = explode(',',$ids);
+            $build = DB::table('circle_collection')
+                ->where('type',$type)
+                ->whereIn('id',$idArr)
+                ->orderByDesc('id');
+            $data['total'] = $build->count();
+            $paginator = $build->simplePaginate(8,['id','name','cover','views','gold','created_at'],'collection',$page);
+            $hasMorePages = $paginator->hasMorePages();
+            $data['list'] = $paginator->items();
+            $domain = env('RESOURCE_DOMAIN');
+            $_v = date('ymd');
+            $redis = $this->redis('login');
+            $key = 'unlockCollectionUser:'.$user->id;
+            foreach ($data['list'] as $item){
+                $item->created_at = $this->mdate(strtotime($item->created_at));
+                $item->views = $this->generateRandViews($item->views,50000);
+                $item->isBuy = (int)$redis->sIsMember($key,$item->id);
+                if(!empty($item->cover)){
+                    $cover = json_decode($item->cover,true);
+                    $coverImg = [];
+                    foreach ($cover as $img){
+                        $coverImg[] = $this->transferImgOut($img,$domain,$_v);
+                    }
+                    $item->cover = $coverImg;
+                }
+            }
+
+            $data['hasMorePages'] = $hasMorePages;
+            $res = [
+                'state' => 0,
+                'data' => $data,
+            ];
+        }
+
+        return response()->json($res);
+    }
+
+    public function personalLikes(Request $request)
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'uid' => 'required|integer',
+            'type' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $uid = $validated['uid'];
+        $page = $validated['page'];
+
+        $build = DB::table('video');
+        /*if($uid>0){ //todo
+            $uid = $this->getUpMasterId($uid);
+            $build = $build->where('uid',$uid)->where('dev_type',$validated['type'])->orderByDesc('created_at');
+        }*/
+
+        $paginator = $build->simplePaginate(8,['id','name','dev_type','likes','author','auth_avatar','gold','tag_kv','duration','restricted','cover_img','circle','circle_topic','views'],'video',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $data['list'] = $paginator->items();
+        $data['list'] = $this->handleUpVideoItems($data['list']);
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     //个人资料页面
     public function personalInfo(Request $request): \Illuminate\Http\JsonResponse
     {
