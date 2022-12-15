@@ -320,6 +320,7 @@ class CommunityController extends Controller
         $words = substr($words,0,40);
         $build = DB::table('video')
             ->where('dev_type',$type)
+            ->where('status',1)
             ->where('name', 'like', '%'.$words.'%')
             ->orderByDesc('id');
         $paginator = $build->simplePaginate(8,$this->upVideoFields,'video',$page);
