@@ -258,9 +258,40 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function searchTopic()
+    public function searchTopic(Request $request)
     {
-
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params, [
+            'words' => 'nullable',
+            'page' => 'required|integer'
+        ])->validate();
+        $words = $validated['words']??false;
+        if(empty($words)){
+            return response()->json([
+                'state' => -1,
+                'msg' => '请输入关键词',
+                'data' => ['list'=>[]]
+            ]);
+        }
+        $words = substr($words,0,40);
+        $page = $validated['page'];
+        $perPage = 16;
+        $field = ['id','uid','name','avatar','circle_id','participate','interactive as inter'];
+        $paginator = DB::table('circle_topic')
+            ->where('name', 'like', '%'.$words.'%')
+            ->simplePaginate($perPage,$field,'topicList',$page);
+        $data['list'] = $paginator->items();
+        $data['hasMorePages'] = $paginator->hasMorePages();
+        $domainSync = self::getDomain(2);
+        $_v = date('Ymd');
+        foreach ($data['list'] as $item){
+            $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
+        }
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
     }
 
     public function searchVideo()
