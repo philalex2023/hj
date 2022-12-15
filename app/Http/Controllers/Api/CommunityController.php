@@ -203,7 +203,6 @@ class CommunityController extends Controller
         $validated = Validator::make($params,[
             'page' => 'required|integer'
         ])->validated();
-        $redis = $this->redis('login');
         $page = $validated['page'];
         $field = ['id','uid','name','avatar'];
         $paginator= DB::table('circle')
@@ -229,9 +228,34 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    /*public function searchCircle()
+    public function searchCircle(Request $request): \Illuminate\Http\JsonResponse
     {
-
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params, [
+            'words' => 'nullable',
+            'page' => 'required|integer'
+        ])->validate();
+        $words = $validated['words']??false;
+        if(empty($words)){
+            return response()->json([
+                'state' => -1,
+                'msg' => '请输入关键词',
+                'data' => ['list'=>[]]
+            ]);
+        }
+        $words = substr($words,0,40);
+        $page = $validated['page'];
+        $uid = $request->user()->id;
+        $field = ['id','uid','name','participate','avatar','introduction as des'];
+        $paginator= DB::table('circle')
+            ->where('name', 'like', '%'.$words.'%')
+            ->simplePaginate(8,$field,'circle',$page);
+        $data = $this->handleCircleItems($uid,$paginator);
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
     }
 
     public function searchTopic()
@@ -242,7 +266,7 @@ class CommunityController extends Controller
     public function searchVideo()
     {
 
-    }*/
+    }
 
     //搜索综合界面
     public function searchMix(Request $request): \Illuminate\Http\JsonResponse
