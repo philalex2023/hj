@@ -249,6 +249,7 @@ class CommunityController extends Controller
         $field = ['id','uid','name','participate','avatar','introduction as des'];
         $paginator= DB::table('circle')
             ->where('name', 'like', '%'.$words.'%')
+            ->orderByDesc('id')
             ->simplePaginate(8,$field,'circle',$page);
         $data = $this->handleCircleItems($uid,$paginator);
         $res = [
@@ -279,6 +280,7 @@ class CommunityController extends Controller
         $field = ['id','uid','name','avatar','circle_id','participate','interactive as inter'];
         $paginator = DB::table('circle_topic')
             ->where('name', 'like', '%'.$words.'%')
+            ->orderByDesc('id')
             ->simplePaginate($perPage,$field,'topicList',$page);
         $data['list'] = $paginator->items();
         $data['hasMorePages'] = $paginator->hasMorePages();
@@ -296,9 +298,40 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function searchVideo()
+    public function searchVideo(Request $request): \Illuminate\Http\JsonResponse
     {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'words' => 'nullable',
+            'type' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
 
+        $type = $validated['type'];
+        $page = $validated['page'];
+        $words = $validated['words']??false;
+        if(empty($words)){
+            return response()->json([
+                'state' => -1,
+                'msg' => '请输入关键词',
+                'data' => ['list'=>[]]
+            ]);
+        }
+        $words = substr($words,0,40);
+        $build = DB::table('video')
+            ->where('dev_type',$type)
+            ->where('name', 'like', '%'.$words.'%')
+            ->orderByDesc('id');
+        $paginator = $build->simplePaginate(8,$this->upVideoFields,'video',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $data['list'] = $paginator->items();
+        $data['list'] = $this->handleUpVideoItems($data['list']);
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
     }
 
     //搜索综合界面
