@@ -258,7 +258,7 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function searchTopic(Request $request)
+    public function searchTopic(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
         $validated = Validator::make($params, [
@@ -284,8 +284,10 @@ class CommunityController extends Controller
         $data['hasMorePages'] = $paginator->hasMorePages();
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
+        $redis = $this->redis('login');
         foreach ($data['list'] as $item){
             $item->avatar = $this->transferImgOut($item->avatar,$domainSync,$_v);
+            $item->isFocus = $redis->sIsMember('topicFocusUser:'.$request->user()->id,$item->id) ? 1 : 0;
         }
         $res = [
             'state' => 0,
