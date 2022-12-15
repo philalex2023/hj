@@ -118,6 +118,7 @@ Route::group([
     Route::get('communityFocus', 'CommunityController@focus');  //社区关注
     Route::get('communitySquare', 'CommunityController@square');  //社区广场
     Route::get('communityTopic', 'CommunityController@topic');  //社区话题
+    Route::post('communitySearchCircle', 'CommunityController@searchCircle');  //搜索圈子
     Route::post('communitySearchMix', 'CommunityController@searchMix');  //搜索综合
     Route::post('communityPersonalLikes', 'CommunityController@personalLikes');  //喜欢
     Route::post('communityPersonalCollection', 'CommunityController@personalCollection');  //合集
