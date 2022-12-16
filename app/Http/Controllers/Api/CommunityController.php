@@ -76,7 +76,7 @@ class CommunityController extends Controller
         //热门圈子
         $hotCircle = DB::table('circle')
             ->orderByDesc('id') //todo
-            ->limit(8)->get(['id','uid','name','avatar']);
+            ->limit(8)->get(['id','uid','name','participate','avatar']);
         //封面图处理
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
