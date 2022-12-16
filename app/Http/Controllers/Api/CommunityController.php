@@ -559,6 +559,10 @@ class CommunityController extends Controller
         $userInfo->fans = 0;
         $userInfo->isFocus = 0;
         $userInfo->avatar = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $userInfo->fansRank[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $userInfo->fansRank[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $userInfo->fansRank[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+        $userInfo->isUpRank = 0;
         $res = [
             'state' => 0,
             'data' => $userInfo,
