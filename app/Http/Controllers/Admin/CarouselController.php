@@ -25,6 +25,9 @@ class CarouselController extends BaseCurlController
         16001 => ['id'=>16001,'name'=>'固定|我的'],
         16002 => ['id'=>16002,'name'=>'固定|社区'],
         16003 => ['id'=>16003,'name'=>'固定|小视频'],
+        16004 => ['id'=>16004,'name'=>'固定|榜单'],
+        16005 => ['id'=>16005,'name'=>'固定|精选'],
+        16006 => ['id'=>16006,'name'=>'固定|圈子'],
     ];
 
     public function setModel(): Carousel
