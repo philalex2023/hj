@@ -1370,6 +1370,22 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //猜你喜欢
+    public function popularLikes(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $user = $request->user();
+        if(!$user){
+            return response()->json([]);
+        }
+        $data = DB::table('video')->inRandomOrder()->take(8)->get($this->upVideoFields);
+        $data = $this->handleUpVideoItems($data);
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     //热门圈子
     public function popularCircle(Request $request): \Illuminate\Http\JsonResponse
     {
