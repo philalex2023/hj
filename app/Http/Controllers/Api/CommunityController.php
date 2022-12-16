@@ -108,6 +108,7 @@ class CommunityController extends Controller
         $params = self::parse($request->params??'');
         $user = $request->user();
         $validated = Validator::make($params,[
+            'filter' => 'required|integer', //1原创巨星榜 2最热人物榜
             'page' => 'required|integer'
         ])->validated();
         $perPage = 16;
@@ -158,6 +159,7 @@ class CommunityController extends Controller
                         'uid'=>$item['key'],
                         'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
                         'work_num'=>$item['doc_count'],
+                        'fans'=>0,
                         'author' => $one->author,
                         'auth_avatar' => $this->transferImgOut($one->auth_avatar,$domainSync,$_v)
                     ];
