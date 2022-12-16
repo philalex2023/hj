@@ -151,11 +151,13 @@ class CommunityController extends Controller
             $redis = $this->redis('login');
             $domainSync = self::getDomain(2);
             $_v = date('Ymd');
+//            $this->getUpMasterId()
             foreach ($uidWorkNum as $item){
                 if($item['key']>0){
                     $one = DB::table('video')->where('uid',$item['key'])->first(['uid','author','auth_avatar']);
 //                    Log::info('TEST',[$item['key'],$one]);
                     $dataList[] = [
+                        'id'=>1908969,
                         'uid'=>$item['key'],
                         'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
                         'work_num'=>$item['doc_count'],
