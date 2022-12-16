@@ -151,13 +151,14 @@ class CommunityController extends Controller
             $redis = $this->redis('login');
             $domainSync = self::getDomain(2);
             $_v = date('Ymd');
-//            $this->getUpMasterId()
+            $uid_upId = $this->redis()->hGetAll('MemberUpMaster');
+            $upId_uid = array_flip($uid_upId);
             foreach ($uidWorkNum as $item){
                 if($item['key']>0){
                     $one = DB::table('video')->where('uid',$item['key'])->first(['uid','author','auth_avatar']);
 //                    Log::info('TEST',[$item['key'],$one]);
                     $dataList[] = [
-                        'id'=>1908969,
+                        'id'=> $upId_uid[$item['key']] ?? 1908969,
                         'uid'=>$item['key'],
                         'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
                         'work_num'=>$item['doc_count'],
@@ -555,6 +556,9 @@ class CommunityController extends Controller
         ])->validated();
         $domainSync = self::getDomain(2);
         $userInfo = DB::table('users')->where('id',$validated['uid'])->first(['id','nickname','avatar']);
+        if(!$userInfo){
+            return response()->json(['state' => -1,'msg'=>'该up主未绑定']);
+        }
         $userInfo->remark = '海角射区，成人第一射区';
         $userInfo->likes = 0;
         $userInfo->focus = 0;
