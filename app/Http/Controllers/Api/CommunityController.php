@@ -1358,6 +1358,21 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //热门圈子
+    public function popularCircle(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $user = $request->user();
+        if(!$user){
+            return response()->json([]);
+        }
+        $hotCircle = $this->getHotCircle($user->id);
+        $res = [
+            'state' => 0,
+            'data' => $hotCircle,
+        ];
+        return response()->json($res);
+    }
+
     public function actionEvent(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
