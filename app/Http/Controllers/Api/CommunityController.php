@@ -907,7 +907,7 @@ class CommunityController extends Controller
             $f->avatar = $this->transferImgOut($f->avatar,$domainSync,$_v);
             $f->imgUrl = $this->transferImgOut($f->imgUrl,$domainSync,$_v);
 
-            $videoItems = DB::table('video')->where('name',$f->name)->take(4)->get($this->upVideoFields);
+            $videoItems = DB::table('video')->where('circle',$f->name)->take(4)->get($this->upVideoFields);
             $videoItems = $this->handleUpVideoItems($videoItems);
             $f->videoList = $videoItems;
         }
