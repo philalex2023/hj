@@ -899,9 +899,9 @@ class CommunityController extends Controller
         $featuredCircle = $paginator->items();
         $domainSync = self::getDomain(2);
         $_v = date('Ymd');
-//        $redis = $this->redis('login');
+        $redis = $this->redis('login');
         foreach ($featuredCircle as $f){
-            //$f->user_avatar = [];//圈友头像（三个，不足三个有多少给多少）todo
+            $f->user = $redis->hLen('joinCircle:'.$f->id);
             $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
             $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
             $f->user_avatar[] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
