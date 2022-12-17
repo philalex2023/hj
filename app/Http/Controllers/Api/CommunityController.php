@@ -342,10 +342,11 @@ class CommunityController extends Controller
         $build = DB::table('video')
             ->where('cid',$cid)
             ->orderByDesc('id');
-        $paginator = $build->simplePaginate(8,$this->upVideoFields,'video',$page);
+        $paginator = $build->simplePaginate(8,['id','name','author','auth_avatar','dev_type','gold','tag_kv','duration','restricted','cover_img','circle','circle_topic','likes','views'],'video',$page);
         $hasMorePages = $paginator->hasMorePages();
         $data['list'] = $paginator->items();
-        $data['list'] = $this->handleUpVideoItems($data['list']);
+        $videoRedis = $this->redis('video');
+        $data['list'] = $this->handleUpVideoItems($data['list'],$request->user()->id,$videoRedis);
         $data['hasMorePages'] = $hasMorePages;
         $res = [
             'state' => 0,
@@ -1106,7 +1107,7 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
-    public function handleUpVideoItems($dataList)
+    public function handleUpVideoItems($dataList,$uid=0,$redis=false)
     {
         $domainSync = self::getDomain(2);
         foreach ($dataList as $item) {
@@ -1114,11 +1115,15 @@ class CommunityController extends Controller
             $item->tag_kv = json_decode($item->tag_kv,true)??[];
             $item->gold = $item->gold * 0.01;
             $item->cover_img = $this->transferImgOut($item->cover_img,$domainSync);
+            if($uid > 0){
+                $item->is_love = $redis->sIsMember('videoLove_'.$uid,$item->id) ? 1 : 0;
+            }
             if(isset($item->likes)){
                 $item->likes = $this->generateRandViews($item->likes,5000);
             }
             if(isset($item->auth_avatar)){
-                $item->auth_avatar = $domainSync.$item->auth_avatar;
+//                $item->auth_avatar = $domainSync.$item->auth_avatar;
+                $item->up_avatar = $domainSync.$item->auth_avatar;
             }
             if(!empty($item->circle_topic)){
                 $item->circle_topic = json_decode($item->circle_topic,true);
