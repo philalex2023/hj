@@ -233,6 +233,35 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //热门搜索
+    public function popularSearchVideo(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $field = ['id','name','views'];
+        $paginator = DB::table('video')->inRandomOrder()->take(10)->get($field);
+        $data['list'] = $paginator->items();
+        $data['hasMorePages'] = $paginator->hasMorePages();
+        foreach ($data['list'] as $item) {
+            $item->views = $this->generateRandViews($item->views);
+        }
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
+    //热搜词
+    public function popularSearchWords(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $res = [
+            'state' => 0,
+            'data' => [
+                ['偷拍','原创','少妇人妻']
+            ],
+        ];
+        return response()->json($res);
+    }
+
     public function searchCircle(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
