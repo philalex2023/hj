@@ -330,6 +330,30 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    public function searchVideoByCate(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $validated = Validator::make($params,[
+            'cid' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $cid = $validated['cid'];
+        $page = $validated['page'];
+        $build = DB::table('video')
+            ->where('cid',$cid)
+            ->orderByDesc('id');
+        $paginator = $build->simplePaginate(8,$this->upVideoFields,'video',$page);
+        $hasMorePages = $paginator->hasMorePages();
+        $data['list'] = $paginator->items();
+        $data['list'] = $this->handleUpVideoItems($data['list']);
+        $data['hasMorePages'] = $hasMorePages;
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     public function searchVideo(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
