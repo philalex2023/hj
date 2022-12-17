@@ -1437,8 +1437,14 @@ class CommunityController extends Controller
     //猜你喜欢
     public function popularLikes(Request $request): \Illuminate\Http\JsonResponse
     {
-        $params = self::parse($request->params??'');
-        $page = $params['page'] ?? 0;
+        $page = 0;
+        if(isset($request->params)){
+            $params = self::parse($request->params);
+            $validated = Validator::make($params,[
+                'page' => 'required|integer'
+            ])->validated();
+            $page = $validated['page'];
+        }
         $user = $request->user();
         if(!$user){
             return response()->json([]);
