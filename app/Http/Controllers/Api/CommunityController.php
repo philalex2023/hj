@@ -711,7 +711,8 @@ class CommunityController extends Controller
         $redis = $this->redis('login');
 //        $dataList = $redis->hGetAll('joinCircle:'.$validated['id']);
 
-        $dataList = $redis->hGetAll('upMasterFocusUser:'.$validated['id']);
+        $key = 'upMasterFocusUser:'.$validated['id'];
+        $dataList = $redis->hGetAll($key);
         $data = ['list'=>[],'hasMorePages'=>false];
         $domainSync = self::getDomain(2);
         if(!empty($dataList)){
@@ -720,7 +721,7 @@ class CommunityController extends Controller
                 $arr = json_decode($jsonStr,true);
                 $arr['at_time'] = $this->mdate($arr['at_time']);
                 $arr['avatar'] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
-                $items[] = ['uid' => $userId] + ['isJoin'=>$redis->hExists('joinCircle:'.$validated['id'],$uid)] + $arr;
+                $items[] = ['uid' => $userId] + ['isJoin'=>$redis->hExists($key,$uid)] + $arr;
             }
             $data['list'] = array_slice($items,$offset,$perPage);
             $data['hasMorePages'] = count($items) > $perPage*$page;
