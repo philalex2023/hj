@@ -254,7 +254,7 @@ class CommunityController extends Controller
         $res = [
             'state' => 0,
             'data' => [
-                ['偷拍','原创','少妇人妻']
+                '偷拍','原创','少妇人妻'
             ],
         ];
         return response()->json($res);
