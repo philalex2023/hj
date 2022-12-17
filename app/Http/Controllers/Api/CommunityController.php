@@ -237,10 +237,8 @@ class CommunityController extends Controller
     public function popularSearchVideo(Request $request): \Illuminate\Http\JsonResponse
     {
         $field = ['id','name','views'];
-        $paginator = DB::table('video')->inRandomOrder()->take(10)->get($field);
-        $data['list'] = $paginator->items();
-        $data['hasMorePages'] = $paginator->hasMorePages();
-        foreach ($data['list'] as $item) {
+        $data = DB::table('video')->inRandomOrder()->take(10)->get($field);
+        foreach ($data as $item) {
             $item->views = $this->generateRandViews($item->views);
         }
         $res = [
