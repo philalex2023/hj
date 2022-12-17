@@ -54,7 +54,7 @@ class AppConfigController extends BaseCurlController
                         'name' => '公告内容',
 //                        'must' => 1,
                         'verify' => '',
-                        'tips' => '我支持simple编辑器,还支持截图上传'
+                        'tips' => '公告内容'
                     ],
                     [
                         'field' => 'announcement_action_type',
@@ -86,6 +86,15 @@ class AppConfigController extends BaseCurlController
                         'verify' => '',
                         'default' => 1,
                         'tips' => '公告视频ID'
+                    ],
+                    [
+                        'field' => 'community_announcement',
+                        'type' => 'text',
+                        //'editor_type' => 'simple',//编辑器类型指定，默认是
+                        'name' => '社区公告',
+//                        'must' => 1,
+                        'verify' => '',
+                        'tips' => '社区公告内容'
                     ],
                 ]
             ],
