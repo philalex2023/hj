@@ -696,6 +696,42 @@ class CommunityController extends Controller
         return response()->json($res);
     }
 
+    //粉丝列表
+    public function fansList(Request $request): \Illuminate\Http\JsonResponse
+    {
+        $params = self::parse($request->params??'');
+        $uid = $request->user()->id;
+        $validated = Validator::make($params,[
+            'id' => 'required|integer',
+            'page' => 'required|integer'
+        ])->validated();
+        $page = $validated['page'];
+        $perPage = 16;
+        $offset = ($page-1)*$perPage;
+        $redis = $this->redis('login');
+//        $dataList = $redis->hGetAll('joinCircle:'.$validated['id']);
+
+        $dataList = $redis->hGetAll('upMasterFocusUser:'.$validated['id']);
+        $data = ['list'=>[],'hasMorePages'=>false];
+        $domainSync = self::getDomain(2);
+        if(!empty($dataList)){
+            $items = [];
+            foreach ($dataList as $userId => $jsonStr){
+                $arr = json_decode($jsonStr,true);
+                $arr['at_time'] = $this->mdate($arr['at_time']);
+                $arr['avatar'] = $domainSync.'/upload/encImg/'.rand(1,43).'.htm?ext=png';
+                $items[] = ['uid' => $userId] + ['isJoin'=>$redis->hExists('joinCircle:'.$validated['id'],$uid)] + $arr;
+            }
+            $data['list'] = array_slice($items,$offset,$perPage);
+            $data['hasMorePages'] = count($items) > $perPage*$page;
+        }
+        $res = [
+            'state' => 0,
+            'data' => $data,
+        ];
+        return response()->json($res);
+    }
+
     //圈子详情
     public function circleDetail(Request $request): \Illuminate\Http\JsonResponse
     {
@@ -1413,46 +1449,58 @@ class CommunityController extends Controller
         $hit = $validated['hit'];
         $action = $validated['action'];
         $user = $request->user();
-
+        $redis = $this->redis('login');
         switch($action){
             case 1:
-                //$key = 'circleJoinUser:'.$user->id;
-                break;
-            case 2:
-                $key = 'discussFocusUser:'.$user->id;
-                break;
-            case 3:
-                $key = 'discussLikesUser:'.$user->id;
-                break;
-            case 4:
-                $key = 'topicFocusUser:'.$user->id;
-                break;
-            case 5:
-                $key = 'upMasterFocusUser:'.$user->id;
-                break;
-        }
-        if(isset($key)){
-            $redis = $this->redis('login');
-            if($hit==1){ //命中
-//                $redis->expireAt($key,time()+30*24*3600);
-                if($action==1){
-//                    $redis->sAdd('participateCircle:'.$id,$user->id);
-                    $redis->hSet('joinCircle:'.$id,$user->id,json_encode([
+                $key = 'joinCircle:'.$id;
+                if($hit==1){
+                    $redis->hSet($key,$user->id,json_encode([
                         'avatar'=>$user->avatar,
                         'nickname'=>$user->nickname,
                         'at_time'=>time(),
                         'discuss_num'=>0, //todo
                     ],JSON_UNESCAPED_UNICODE));
                 }else{
-                    $redis->sAdd($key,$id);
+                    $redis->hDel($key,$user->id);
                 }
-            }else{ //取消
-                if($action==1){
-                    $redis->hDel('joinCircle:'.$id,$user->id);
+                break;
+            case 2:
+                $key = 'discussFocusUser:'.$user->id;
+                if($hit==1){
+                    $redis->sAdd($key,$id);
                 }else{
                     $redis->sRem($key,$id);
                 }
-            }
+                break;
+            case 3:
+                $key = 'discussLikesUser:'.$user->id;
+                if($hit==1){
+                    $redis->sAdd($key,$id);
+                }else{
+                    $redis->sRem($key,$id);
+                }
+                break;
+            case 4:
+                $key = 'topicFocusUser:'.$user->id;
+                if($hit==1){
+                    $redis->sAdd($key,$id);
+                }else{
+                    $redis->sRem($key,$id);
+                }
+                break;
+            case 5:
+                $key = 'upMasterFocusUser:'.$id;
+                if($hit==1){
+                    $redis->hSet($key,$user->id,json_encode([
+                        'avatar'=>$user->avatar,
+                        'nickname'=>$user->nickname,
+                        'at_time'=>time(),
+                        'discuss_num'=>0, //todo
+                    ],JSON_UNESCAPED_UNICODE));
+                }else{
+                    $redis->hDel($key,$user->id);
+                }
+                break;
         }
         return response()->json([
             'state' => 0,
