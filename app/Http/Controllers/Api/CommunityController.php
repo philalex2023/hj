@@ -1129,7 +1129,7 @@ class CommunityController extends Controller
                 $item->circle_topic = json_decode($item->circle_topic,true);
             }
             if(!empty($item->circle)){
-                $item->circle = json_decode($item->circle,true);
+                $item->circle = json_decode($item->circle,true)??'';
             }
         }
         return $dataList;
