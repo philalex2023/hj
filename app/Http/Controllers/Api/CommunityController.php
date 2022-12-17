@@ -1122,7 +1122,7 @@ class CommunityController extends Controller
                 $item->likes = $this->generateRandViews($item->likes,5000);
             }
             if(isset($item->auth_avatar)){
-//                $item->auth_avatar = $domainSync.$item->auth_avatar;
+                $item->auth_avatar = $domainSync.$item->auth_avatar;
                 $item->up_avatar = $domainSync.$item->auth_avatar;
             }
             if(!empty($item->circle_topic)){
