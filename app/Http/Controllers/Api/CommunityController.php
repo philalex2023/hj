@@ -1439,12 +1439,22 @@ class CommunityController extends Controller
     //猜你喜欢
     public function popularLikes(Request $request): \Illuminate\Http\JsonResponse
     {
+        $params = self::parse($request->params??'');
+        $page = $params['page'] ?? 0;
         $user = $request->user();
         if(!$user){
             return response()->json([]);
         }
-        $data = DB::table('video')->inRandomOrder()->take(8)->get($this->upVideoFields);
-        $data = $this->handleUpVideoItems($data);
+        $data = [];
+        if($page>0){ //更多
+            $paginator = DB::table('video')->inRandomOrder()->simplePaginate(8,$this->upVideoFields,'popularLikes',$page);
+            $data['list'] = $paginator->items();
+            $data['list'] = $this->handleUpVideoItems($data['list']);
+            $data['hasMorePages'] = $paginator->hasMorePages();
+        }else{
+            $data = DB::table('video')->inRandomOrder()->take(8)->get($this->upVideoFields);
+            $data = $this->handleUpVideoItems($data);
+        }
         $res = [
             'state' => 0,
             'data' => $data,

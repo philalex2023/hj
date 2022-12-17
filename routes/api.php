@@ -111,6 +111,8 @@ Route::group([
     Route::post('commRes', 'CommMiscController@res');  //发送资源
     Route::post('commBbs', 'CommContentController@post');  //发贴
 
+    Route::get('communityPopularSearchVideo', 'CommunityController@popularSearchVideo');  //热门搜索
+    Route::get('communityPopularSearchWords', 'CommunityController@popularSearchWords');  //热搜词
     Route::get('myData', 'CommunityController@myData');  //我的数据
     Route::get('communityRankingCate', 'CommunityController@rankingCate');  //视频榜分类
     Route::get('communityCircleCate', 'CommunityController@circleCate');  //圈子分类
@@ -124,8 +126,6 @@ Route::group([
     Route::post('communitySearchTopic', 'CommunityController@searchTopic');  //搜索话题
     Route::post('communitySearchCircle', 'CommunityController@searchCircle');  //搜索圈子
     Route::post('communitySearchMix', 'CommunityController@searchMix');  //搜索综合
-    Route::post('communityPopularSearchVideo', 'CommunityController@popularSearchVideo');  //热门搜索
-    Route::post('communityPopularSearchWords', 'CommunityController@popularSearchWords');  //热搜词
     Route::post('communityPersonalLikes', 'CommunityController@personalLikes');  //喜欢
     Route::post('communityPersonalCollection', 'CommunityController@personalCollection');  //合集
     Route::post('communityPersonalWork', 'CommunityController@personalWork');  //作品
