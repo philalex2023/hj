@@ -1260,7 +1260,7 @@ class CommunityController extends Controller
                 unset($response);
             }
             if(!empty($catVideoList)){
-                foreach ($catVideoList as &$it){
+                foreach ($catVideoList as $it){
                     if($it['dev_type']!=$validated['type']){
                         unset($it);
                     }
