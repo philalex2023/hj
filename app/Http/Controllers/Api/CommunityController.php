@@ -1408,9 +1408,9 @@ class CommunityController extends Controller
         $redis = $this->redis('login');
         $key = 'unlockCollectionUser:'.$user->id;
         $isBuy = (int)$redis->sIsMember($key,$validated['id']);
-        $vids = DB::table('circle_collection')->where('id',$validated['id'])->value('vids');
-        if(!empty($vids)){
-            $videoIds = explode(',',$vids);
+        $one = DB::table('circle_collection')->where('id',$validated['id'])->first(['id','name','desc','vids','cover','views','gold','created_at']);
+        if($one && !empty($one->vids)){
+            $videoIds = explode(',',$one->vids);
             $body = [
                 'size' => 10000,
                 '_source' => ['id','name','dev_type','gold','restricted','cover_img','views','created_at'],
