@@ -1280,7 +1280,6 @@ class CommunityController extends Controller
                 $res['list'] = [];
                 $res['hasMorePages'] = false;
             }
-
             if(isset($res['list']) && !empty($res['list'])){
                 $domain = env('RESOURCE_DOMAIN2');
                 foreach ($res['list'] as &$d){
