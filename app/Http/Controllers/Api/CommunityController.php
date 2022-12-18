@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\ExtendClass\CacheUser;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\TraitClass\AdTrait;
 use App\TraitClass\ApiParamsTrait;
 use App\TraitClass\CommunityTrait;
 use App\TraitClass\EsTrait;
@@ -19,7 +20,7 @@ use Illuminate\Support\Facades\Validator;
 
 class CommunityController extends Controller
 {
-    use ApiParamsTrait,CommunityTrait,PHPRedisTrait,VideoTrait,EsTrait;
+    use ApiParamsTrait,CommunityTrait,PHPRedisTrait,VideoTrait,EsTrait,AdTrait;
 
     public array $discussField = ['id','vid','uid','circle_id','circle_topic_id','content','circle_name','circle_topic_name','avatar','album','author','tag_kv','scan','comments','likes','created_at'];
 
