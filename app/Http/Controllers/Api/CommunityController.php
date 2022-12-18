@@ -1185,6 +1185,7 @@ class CommunityController extends Controller
                 $params = self::parse($request->params);
                 $validated = Validator::make($params,[
                     'cid' => 'required',
+                    'type' => 'required|integer', //0长视频 1短视频
                     'page' => 'required|integer',
                 ])->validated();
                 $user = $request->user();
@@ -1198,12 +1199,21 @@ class CommunityController extends Controller
                 if(!$tid){
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
-                $containVidStr = $this->getTopicVideoIdsById($tid);
-                if(!$containVidStr){
+                $one = DB::table('topic')->where('id',$tid)->first(['name','contain_vids','data_source_id']);
+
+                if(!$one){
                     Log::info('SearchNoCat',[$tid]);
                     return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
                 }
-                $ids = explode(',',$containVidStr);
+                $res['detail'] = [
+                    'name' => $one->name,
+                    'desc' => '人性伦理的性爱体验 惊艳你的眼球',
+                    'videoNum' => count(explode(',',DB::table('data_source')->where('id',$one->data_source_id)->value('contain_vids'))),
+                    'views' => $this->generateRandViews(30),
+                    'collect' => 365,
+                    'rank' => 18,
+                ];
+                $ids = explode(',',$one->contain_vids);
                 $idParams = [];
                 $length = count($ids);
                 foreach ($ids as $key => $id) {
@@ -1256,6 +1266,8 @@ class CommunityController extends Controller
                     unset($catVideoList);
                     $res['list'] = $this->handleVideoItems($pageLists,false,$user->id);
                     unset($pageLists);
+                    $first = current($res['list']);
+                    $res['detail']['tag'] = $first['tag_kv'];
                     //广告
                     $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
                     //Log::info('==CatList==',$res['list']);
