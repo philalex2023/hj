@@ -1178,7 +1178,21 @@ class CommunityController extends Controller
     public function purchasedVideos(Request $request): JsonResponse
     {
         if(isset($request->params)){
+            $params = self::parse($request->params);
+            $validated = Validator::make($params,[
+                'type' => 'required|integer',
+                'page' => 'required|integer'
+            ])->validated();
+            $page = $validated['page'];
+            $user = $request->user();
+            $videoRedis = $this->redis('video');
+            $buyVideoKey = 'buyGoldVideo_' . $user->id;
+            $ids = $videoRedis->sMembers($buyVideoKey);
+            $build = DB::table('video')->where('type',1)->whereIn('id',$ids);
+            $paginator = $build->simplePaginate(8,$this->upVideoFields,'purchasedVideos',$page);
             $res = [];
+            $res['list'] = $paginator->items();
+            $res['hasMorePages'] = $paginator->hasMorePages();
             return response()->json([
                 'state'=>0,
                 'data'=>$res
