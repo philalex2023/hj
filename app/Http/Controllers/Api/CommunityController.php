@@ -1260,6 +1260,11 @@ class CommunityController extends Controller
                     unset($response);
                 }
                 if(!empty($catVideoList)){
+                    foreach ($catVideoList as &$it){
+                        if($it['dev_type']!=$validated['type']){
+                            unset($it);
+                        }
+                    }
                     $res['total'] = $total;
                     $pageLists = array_slice($catVideoList,$offset,$perPage);
                     $hasMorePages = count($catVideoList) > $perPage*$page;
