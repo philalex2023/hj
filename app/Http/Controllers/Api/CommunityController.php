@@ -1188,10 +1188,12 @@ class CommunityController extends Controller
             $videoRedis = $this->redis('video');
             $buyVideoKey = 'buyGoldVideo_' . $user->id;
             $ids = $videoRedis->sMembers($buyVideoKey);
+            Log::info('TESTiDS',$ids);
             $build = DB::table('video')->where('dev_type',$validated['type'])->whereIn('id',$ids);
             $paginator = $build->simplePaginate(8,$this->upVideoFields,'purchasedVideos',$page);
             $res = [];
             $res['list'] = $paginator->items();
+            $res['list'] = $this->handleUpVideoItems($res['list']);
             $res['hasMorePages'] = $paginator->hasMorePages();
             return response()->json([
                 'state'=>0,
