@@ -106,6 +106,7 @@ class UserController extends Controller
                 $res=[
                     'member_card' => $member_card,
                     'saol_gold' => $user->gold ?:0,
+                    'movie_ticket' => $user->movie_ticket ?:0,
                     'video_times' => $user->long_vedio_times ??0,
                     'kf_url' => $this->generateChatUrl([
                         'account' => $user->account,

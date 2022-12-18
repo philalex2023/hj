@@ -41,7 +41,7 @@ class VipController extends \App\Http\Controllers\Controller
         }else{
             $build = $build->orderBy('sort');
         }
-        $memberCard = $build->get(['id','name','sort','bg_img','remark','value','rights','hours','real_value','status','name_day','remain_hours'])->toArray();
+        $memberCard = $build->get(['id','name','sort','bg_img','remark','value','rights','hours','real_value','status','name_day','remain_hours','tickets'])->toArray();
         $ascItem = [];
         $registerTime = strtotime($user->created_at);
         $nowTime = time();
