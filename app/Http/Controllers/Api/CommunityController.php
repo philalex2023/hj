@@ -1495,6 +1495,7 @@ class CommunityController extends Controller
                 $item->isBuy = (int)$redis->sIsMember($key,$item->id);
                 $item->desc = '合集描述';
                 $item->videoNum = count(explode(',',$item->vids)??[]);
+                unset($item->vids);
                 if(!empty($item->cover)){
                     $cover = json_decode($item->cover,true);
                     $coverImg = [];
