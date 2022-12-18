@@ -54,7 +54,10 @@ class CommunityController extends Controller
     //我的数据
     public function myData(Request $request): \Illuminate\Http\JsonResponse
     {
-        $params = self::parse($request->params??'');
+        if(isset($request->params)){
+            $params = self::parse($request->params);
+        }
+
         /*$validated = Validator::make($params,[
             'time' => 'required|integer', //时间戳
         ])->validated();*/
