@@ -307,8 +307,6 @@ class UserController extends Controller
             $hasMorePages = count($result) > $perPage*$page;
             //路径处理
             $res['list'] = $this->handleVideoItems($pageLists,true, true);
-            //时长转秒
-            $res['list'] = self::transferSeconds($res['list']);
             $res['hasMorePages'] = $hasMorePages;
             return response()->json([
                 'state'=>0,

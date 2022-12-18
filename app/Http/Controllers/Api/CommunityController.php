@@ -1174,11 +1174,23 @@ class CommunityController extends Controller
 //        return response()->json(['state' => -1, 'msg' => '系统错误']);
     }
 
-    //更多 todo
+    //我购买的视频
+    public function purchasedVideos(Request $request): JsonResponse
+    {
+        if(isset($request->params)){
+            $res = [];
+            return response()->json([
+                'state'=>0,
+                'data'=>$res
+            ]);
+        }
+        return response()->json([
+            'state'=>-1,
+            'data'=>'参数错误'
+        ]);
+    }
 
-    /**
-     * @throws \Illuminate\Validation\ValidationException
-     */
+    //更多
     public function more(Request $request): JsonResponse
     {
         if(isset($request->params)){
