@@ -10,6 +10,7 @@ use App\TraitClass\CommunityTrait;
 use App\TraitClass\EsTrait;
 use App\TraitClass\PHPRedisTrait;
 use App\TraitClass\VideoTrait;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\DB;
@@ -1168,6 +1169,116 @@ class CommunityController extends Controller
 //        return response()->json(['state' => -1, 'msg' => '系统错误']);
     }
 
+    //更多 todo
+
+    /**
+     * @throws \Illuminate\Validation\ValidationException
+     */
+    public function more(Request $request): JsonResponse
+    {
+        try {
+            if(isset($request->params)){
+                $params = self::parse($request->params);
+                $validated = Validator::make($params,[
+                    'cid' => 'required',
+                    'page' => 'required|integer',
+                ])->validated();
+                $user = $request->user();
+                $tid = $validated['cid'];
+                $page = $validated['page'];
+                $perPage = 16;
+                $offset = ($page-1)*$perPage;
+
+//                $containVidStr = DB::table('topic')->where('id',$tid)->value('contain_vids');
+
+                if(!$tid){
+                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+                }
+                $containVidStr = $this->getTopicVideoIdsById($tid);
+                if(!$containVidStr){
+                    Log::info('SearchNoCat',[$tid]);
+                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+                }
+                $ids = explode(',',$containVidStr);
+                $idParams = [];
+                $length = count($ids);
+                foreach ($ids as $key => $id) {
+                    $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+                }
+
+                $searchParams = [
+                    'index' => 'video_index',
+                    'body' => [
+//                        'track_total_hits' => true,
+                        'size' => 500,
+                        '_source' => $this->videoFields,
+                        'query' => [
+                            'function_score' => [
+                                'query' => [
+                                    'bool'=>[
+                                        'must' => [
+                                            ['terms' => ['id'=>$ids]],
+                                        ]
+                                    ]
+                                ],
+                                'script_score' => [
+                                    'script' => [
+                                        //'lang' => 'painless',
+                                        'params' => [
+                                            'scoring' => $idParams
+                                        ],
+                                        'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
+                                    ]
+                                ]
+                            ]
+                        ]
+                    ],
+                ];
+                $es = $this->esClient();
+                $response = $es->search($searchParams);
+                $catVideoList = [];
+                $total = 0;
+                if(isset($response['hits']) && isset($response['hits']['hits'])){
+                    $total = $response['hits']['total']['value'];
+                    foreach ($response['hits']['hits'] as $item) {
+                        $catVideoList[] = $item['_source'];
+                    }
+                    unset($response);
+                }
+                if(!empty($catVideoList)){
+                    $res['total'] = $total;
+                    $pageLists = array_slice($catVideoList,$offset,$perPage);
+                    $hasMorePages = count($catVideoList) > $perPage*$page;
+                    unset($catVideoList);
+                    $res['list'] = $this->handleVideoItems($pageLists,false,$user->id);
+                    unset($pageLists);
+                    //广告
+                    $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
+                    //Log::info('==CatList==',$res['list']);
+                    $res['hasMorePages'] = $hasMorePages;
+                }else{
+                    $res['list'] = [];
+                    $res['hasMorePages'] = false;
+                }
+
+                if(isset($res['list']) && !empty($res['list'])){
+                    $domain = env('RESOURCE_DOMAIN2');
+                    foreach ($res['list'] as &$d){
+                        if(!empty($d['ad_list'])){
+                            $this->frontFilterAd($d['ad_list'],$domain);
+                        }else{
+                            $d['ad_list'] = [];
+                        }
+                    }
+                }
+                return response()->json(['state'=>0, 'data'=>$res??[]]);
+            }
+        }catch (\Exception $exception){
+            return $this->returnExceptionContent($exception->getMessage());
+        }
+        return response()->json([]);
+    }
+
     public function video(Request $request): \Illuminate\Http\JsonResponse
     {
         $params = self::parse($request->params??'');
@@ -1371,7 +1482,7 @@ class CommunityController extends Controller
                 ->whereIn('id',$idArr)
                 ->orderByDesc('id');
             $data['total'] = $build->count();
-            $paginator = $build->simplePaginate(8,['id','name','cover','views','gold','created_at'],'collection',$page);
+            $paginator = $build->simplePaginate(8,['id','name','desc','vids','cover','views','gold','created_at'],'collection',$page);
             $hasMorePages = $paginator->hasMorePages();
             $data['list'] = $paginator->items();
             $domain = env('RESOURCE_DOMAIN');
@@ -1382,6 +1493,8 @@ class CommunityController extends Controller
                 $item->created_at = $this->mdate(strtotime($item->created_at));
                 $item->views = $this->generateRandViews($item->views,50000);
                 $item->isBuy = (int)$redis->sIsMember($key,$item->id);
+                $item->desc = '合集描述';
+                $item->videoNum = count(explode(',',$item->vids)??[]);
                 if(!empty($item->cover)){
                     $cover = json_decode($item->cover,true);
                     $coverImg = [];
