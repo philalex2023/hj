@@ -55,7 +55,7 @@ class CommunityController extends Controller
     public function myPurse(Request $request): JsonResponse
     {
         $user = $request->user();
-        return response()->json(['state' => -1,'data'=>['movie_ticket'=>$user->movie_ticket,'income'=>0]]);
+        return response()->json(['state' => 0,'data'=>['movie_ticket'=>$user->movie_ticket,'income'=>0]]);
     }
 
     //我的数据
