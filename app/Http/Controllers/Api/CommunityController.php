@@ -1180,123 +1180,124 @@ class CommunityController extends Controller
      */
     public function more(Request $request): JsonResponse
     {
-        try {
-            if(isset($request->params)){
-                $params = self::parse($request->params);
-                $validated = Validator::make($params,[
-                    'cid' => 'required',
-                    'type' => 'required|integer', //0长视频 1短视频
-                    'page' => 'required|integer',
-                ])->validated();
-                $user = $request->user();
-                $tid = $validated['cid'];
-                $page = $validated['page'];
-                $perPage = 16;
-                $offset = ($page-1)*$perPage;
+        if(isset($request->params)){
+            $params = self::parse($request->params);
+            $validated = Validator::make($params,[
+                'cid' => 'required',
+                'type' => 'required|integer', //0长视频 1短视频
+                'page' => 'required|integer',
+            ])->validated();
+            $user = $request->user();
+            $tid = $validated['cid'];
+            $page = $validated['page'];
+            $perPage = 16;
+            $offset = ($page-1)*$perPage;
 
 //                $containVidStr = DB::table('topic')->where('id',$tid)->value('contain_vids');
 
-                if(!$tid){
-                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
-                }
-                $one = DB::table('topic')->where('id',$tid)->first(['name','contain_vids','data_source_id']);
+            if(!$tid){
+                return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+            }
+            $one = DB::table('topic')->where('id',$tid)->first(['name','contain_vids','data_source_id']);
 
-                if(!$one){
-                    Log::info('SearchNoCat',[$tid]);
-                    return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
-                }
-                $res['detail'] = [
-                    'name' => $one->name,
-                    'desc' => '人性伦理的性爱体验 惊艳你的眼球',
-                    'videoNum' => count(explode(',',DB::table('data_source')->where('id',$one->data_source_id)->value('contain_vids'))),
-                    'views' => $this->generateRandViews(30),
-                    'collect' => 365,
-                    'rank' => 18,
-                ];
-                $ids = explode(',',$one->contain_vids);
-                $idParams = [];
-                $length = count($ids);
-                foreach ($ids as $key => $id) {
-                    $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
-                }
+            if(!$one){
+                Log::info('SearchNoCat',[$tid]);
+                return response()->json(['state'=>0, 'data'=>['list'=>[], 'hasMorePages'=>false]]);
+            }
+            $res['detail'] = [
+                'name' => $one->name,
+                'desc' => '人性伦理的性爱体验 惊艳你的眼球',
+                'videoNum' => count(explode(',',DB::table('data_source')->where('id',$one->data_source_id)->value('contain_vids'))),
+                'views' => $this->generateRandViews(30),
+                'collect' => 365,
+                'rank' => 18,
+            ];
+            $ids = explode(',',$one->contain_vids);
+            $idParams = [];
+            $length = count($ids);
+            foreach ($ids as $key => $id) {
+                $idParams[] = ['id' => (int)$id, 'score' => $length - $key];
+            }
 
-                $searchParams = [
-                    'index' => 'video_index',
-                    'body' => [
+            $searchParams = [
+                'index' => 'video_index',
+                'body' => [
 //                        'track_total_hits' => true,
-                        'size' => 500,
-                        '_source' => $this->videoFields,
-                        'query' => [
-                            'function_score' => [
-                                'query' => [
-                                    'bool'=>[
-                                        'must' => [
-                                            ['terms' => ['id'=>$ids]],
-                                        ]
+                    'size' => 500,
+                    '_source' => $this->videoFields,
+                    'query' => [
+                        'function_score' => [
+                            'query' => [
+                                'bool'=>[
+                                    'must' => [
+                                        ['terms' => ['id'=>$ids]],
                                     ]
-                                ],
-                                'script_score' => [
-                                    'script' => [
-                                        //'lang' => 'painless',
-                                        'params' => [
-                                            'scoring' => $idParams
-                                        ],
-                                        'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
-                                    ]
+                                ]
+                            ],
+                            'script_score' => [
+                                'script' => [
+                                    //'lang' => 'painless',
+                                    'params' => [
+                                        'scoring' => $idParams
+                                    ],
+                                    'source' => "for(i in params.scoring) { if(doc['id'].value == i.id ) return i.score; } return 0;"
                                 ]
                             ]
                         ]
-                    ],
-                ];
-                $es = $this->esClient();
-                $response = $es->search($searchParams);
-                $catVideoList = [];
-                $total = 0;
-                if(isset($response['hits']) && isset($response['hits']['hits'])){
-                    $total = $response['hits']['total']['value'];
-                    foreach ($response['hits']['hits'] as $item) {
-                        $catVideoList[] = $item['_source'];
-                    }
-                    unset($response);
+                    ]
+                ],
+            ];
+            $es = $this->esClient();
+            $response = $es->search($searchParams);
+            $catVideoList = [];
+            $total = 0;
+            if(isset($response['hits']) && isset($response['hits']['hits'])){
+                $total = $response['hits']['total']['value'];
+                foreach ($response['hits']['hits'] as $item) {
+                    $catVideoList[] = $item['_source'];
                 }
-                if(!empty($catVideoList)){
-                    foreach ($catVideoList as &$it){
-                        if($it['dev_type']!=$validated['type']){
-                            unset($it);
-                        }
-                    }
-                    $res['total'] = $total;
-                    $pageLists = array_slice($catVideoList,$offset,$perPage);
-                    $hasMorePages = count($catVideoList) > $perPage*$page;
-                    unset($catVideoList);
-                    $res['list'] = $this->handleVideoItems($pageLists,false,$user->id);
-                    unset($pageLists);
-                    $first = current($res['list']);
-                    $res['detail']['tag'] = $first['tag_kv'];
-                    //广告
-                    $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
-                    //Log::info('==CatList==',$res['list']);
-                    $res['hasMorePages'] = $hasMorePages;
-                }else{
-                    $res['list'] = [];
-                    $res['hasMorePages'] = false;
-                }
-
-                if(isset($res['list']) && !empty($res['list'])){
-                    $domain = env('RESOURCE_DOMAIN2');
-                    foreach ($res['list'] as &$d){
-                        if(!empty($d['ad_list'])){
-                            $this->frontFilterAd($d['ad_list'],$domain);
-                        }else{
-                            $d['ad_list'] = [];
-                        }
-                    }
-                }
-                return response()->json(['state'=>0, 'data'=>$res??[]]);
+                unset($response);
             }
+            if(!empty($catVideoList)){
+                foreach ($catVideoList as &$it){
+                    if($it['dev_type']!=$validated['type']){
+                        unset($it);
+                    }
+                }
+                $res['total'] = $total;
+                $pageLists = array_slice($catVideoList,$offset,$perPage);
+                $hasMorePages = count($catVideoList) > $perPage*$page;
+                unset($catVideoList);
+                $res['list'] = $this->handleVideoItems($pageLists,false,$user->id);
+                unset($pageLists);
+                $first = current($res['list']);
+                $res['detail']['tag'] = $first['tag_kv'];
+                //广告
+                $res['list'] = $this->insertAds($res['list'],'more_page',true, $page, $perPage);
+                //Log::info('==CatList==',$res['list']);
+                $res['hasMorePages'] = $hasMorePages;
+            }else{
+                $res['list'] = [];
+                $res['hasMorePages'] = false;
+            }
+
+            if(isset($res['list']) && !empty($res['list'])){
+                $domain = env('RESOURCE_DOMAIN2');
+                foreach ($res['list'] as &$d){
+                    if(!empty($d['ad_list'])){
+                        $this->frontFilterAd($d['ad_list'],$domain);
+                    }else{
+                        $d['ad_list'] = [];
+                    }
+                }
+            }
+            return response()->json(['state'=>0, 'data'=>$res??[]]);
+        }
+        /*try {
+
         }catch (\Exception $exception){
             return $this->returnExceptionContent($exception->getMessage());
-        }
+        }*/
         return response()->json([]);
     }
 
