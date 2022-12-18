@@ -114,6 +114,7 @@ Route::group([
     Route::get('communityPopularSearchVideo', 'CommunityController@popularSearchVideo');  //热门搜索
     Route::get('communityPopularSearchWords', 'CommunityController@popularSearchWords');  //热搜词
     Route::get('myData', 'CommunityController@myData');  //我的数据
+    Route::get('myPurse', 'CommunityController@myPurse');  //我的钱包
     Route::get('communityRankingCate', 'CommunityController@rankingCate');  //视频榜分类
     Route::get('communityCircleCate', 'CommunityController@circleCate');  //圈子分类
     Route::get('communityCircle', 'CommunityController@circle');  //圈子更多列表
