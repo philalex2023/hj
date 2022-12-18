@@ -63,6 +63,7 @@ class CommunityController extends Controller
         ])->validated();*/
         $time = $params['time'] ?? time();
         $upMasterId = $this->getUpMasterId($request->user()->id);
+
         //todo
         $data = [
             'playTimes' => 0, //视频播放次数
