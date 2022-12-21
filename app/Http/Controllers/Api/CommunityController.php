@@ -1213,8 +1213,6 @@ class CommunityController extends Controller
             }
 
             $filter = $params['filter'] ?? 0;
-            $vidArrAll = [];
-            $ids = [];
             if($filter==0){
                 //
                 $vidArrAll = $videoRedis->zRevRange($videoCollectsKey,0,-1,true);
