@@ -41,7 +41,7 @@ class CommunityController extends Controller
     }
 
     //创建圈子
-    public function addCircle(Request $request)
+    public function addCircle(Request $request): JsonResponse
     {
         $upMasterId = $this->getUpMasterId($request->user()->id);
         if(!$upMasterId){
@@ -1178,6 +1178,108 @@ class CommunityController extends Controller
             return response()->json(['state' => 0, 'data' => $data]);
 //        }
 //        return response()->json(['state' => -1, 'msg' => '系统错误']);
+    }
+
+    //我的收藏
+    public function myCollect(Request $request): JsonResponse
+    {
+        if(isset($request->params)){
+            $perPage = 10;
+            $res = [];
+            $params = self::parse($request->params);
+            $user = $request->user();
+            $videoRedis = $this->redis('video');
+            $videoCollectsKey = 'videoCollects_'.$user->id;
+            $shortCollectsKey = 'shortCollects_'.$user->id;
+            if(isset($params['delete']) && $params['delete']==1){
+                $vid = $params['vid'] ?? [];
+                if(!empty($vid)){
+                    //清除相关redis中的key
+                    $videoRedis->zRem($videoCollectsKey,...$vid);
+                    $videoRedis->zRem($shortCollectsKey,...$vid);
+                }
+                return response()->json([
+                    'state'=>0,
+                    'msg' => '删除成功',
+                    'data'=>[
+                        "list"=>[],
+                        "hasMorePages"=>false,
+                    ]
+                ]);
+            }
+            $page = $params['page'] ?? 1;
+            if(isset($params['pageSize']) && ($params['pageSize']<$perPage)){
+                $perPage = $params['pageSize'];
+            }
+
+            $filter = $params['filter'] ?? 0;
+            $vidArrAll = [];
+            $ids = [];
+            if($filter==0){
+                //
+                $vidArrAll = $videoRedis->zRevRange($videoCollectsKey,0,-1,true);
+            }else{
+                $vidArrAll = $videoRedis->zRevRange($shortCollectsKey,0,-1,true);
+            }
+            $ids = $vidArrAll ? array_keys($vidArrAll) : [];
+
+            if(empty($vidArrAll)){
+                Log::info('myCollect==',[$vidArrAll]);
+                return response()->json([
+                    'state'=>0,
+                    'data'=>[
+                        "list"=>[],
+                        "hasMorePages"=>false,
+                    ],
+                ]);
+            }
+
+//            $ids = [...$videoIds,...$shortVideoIds];
+
+//            $videoList = DB::table('video')->select($this->videoFields)->whereIn('id',$ids)->get()->toArray();
+            $videoList = $this->getVideoByIdsForEs($ids,$this->videoFields);
+
+            foreach ($videoList as &$iv){
+                $iv = (array)$iv;
+                $iv['usage'] = 1;
+                $iv['score'] = $vidArrAll[$iv['id']] ?? 0;
+                $iv['updated_at'] = date('Y-m-d H:i:s',$iv['score']);
+                $restricted = (int)$iv['restricted'];
+                $iv['limit'] = 0;
+                switch ($restricted){
+                    case 2: //金币
+                        if(!isset($rights[4])){ //如果没有免费观看金币视频的权益
+                            $buy = $this->isBuyShortVideo($iv,$user);
+                            !$buy && $iv['limit'] = 2;
+                        }
+                        break;
+                    case 1: //vip会员
+                        if ($iv['restricted'] == 1  && (!isset($rights[1]))) {
+                            $iv['limit'] = 1;
+                        }
+                        break;
+                }
+            }
+
+            $result = [...$videoList];
+            unset($videoList);
+            $score = array_column($result,'score');
+            array_multisort($score,SORT_DESC,$result);
+            $offset = ($page-1)*$perPage;
+            $pageLists = array_slice($result,$offset,$perPage);
+            $hasMorePages = count($result) > $perPage*$page;
+            //路径处理
+            $res['list'] = $this->handleVideoItems($pageLists,true, true);
+            $res['hasMorePages'] = $hasMorePages;
+            return response()->json([
+                'state'=>0,
+                'data'=>$res
+            ]);
+        }
+        return response()->json([
+            'state'=>-1,
+            'data'=>'参数错误'
+        ]);
     }
 
     //我购买的视频

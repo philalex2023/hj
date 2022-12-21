@@ -124,6 +124,7 @@ Route::group([
     Route::get('communityPopularLikes', 'CommunityController@popularLikes');  //猜你喜欢
     Route::get('communityPopularCircle', 'CommunityController@popularCircle');  //热门圈子
     Route::post('communityPurchasedVideos', 'CommunityController@purchasedVideos');  //购买的视频
+    Route::post('communityMyCollect', 'CommunityController@myCollect');  //收藏的视频
     Route::post('communityMore', 'CommunityController@more');  //更多
     Route::post('communityCircleFeaturedWithVideo', 'CommunityController@circleFeaturedWithVideo');  //圈子精选视频
     Route::post('communitySearchVideoByCate', 'CommunityController@searchVideoByCate');  //根据分类搜索视频
