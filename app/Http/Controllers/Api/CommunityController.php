@@ -1212,8 +1212,8 @@ class CommunityController extends Controller
                 $perPage = $params['pageSize'];
             }
 
-            $filter = $params['filter'] ?? 0;
-            if($filter==0){
+            $type = $params['type'] ?? 0;
+            if($type==0){
                 //
                 $vidArrAll = $videoRedis->zRevRange($videoCollectsKey,0,-1,true);
             }else{
