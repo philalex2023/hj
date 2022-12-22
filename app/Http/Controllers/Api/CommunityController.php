@@ -169,10 +169,13 @@ class CommunityController extends Controller
                 if($item['key']>0){
                     $one = DB::table('video')->where('uid',$item['key'])->first(['uid','author','auth_avatar']);
 //                    Log::info('TEST',[$item['key'],$one]);
+                    $id = $upId_uid[$item['key']] ?? 1908969;
+                    $key = 'upMasterFocusUser:'.$id;
                     $dataList[] = [
-                        'id'=> $upId_uid[$item['key']] ?? 1908969,
+                        'id'=> $id,
                         'uid'=>$item['key'],
-                        'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
+//                        'isFocus'=>$redis->sIsMember('topicFocusUser:'.$user->id,$item['key']) ? 1 : 0,
+                        'isFocus'=>$redis->hExists($key,$user->id),
                         'work_num'=>$item['doc_count'],
                         'fans'=>0,
                         'author' => $one->author,
