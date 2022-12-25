@@ -653,8 +653,12 @@ class CommunityController extends Controller
             'page' => 'required|integer'
         ])->validated();
         $page = $validated['page'];
+        $mid = $this->getUpMasterId($validated['uid']);
         $field = ['id','uid','name','cname','participate','avatar','background as imgUrl','introduction as des'];
-        $paginator = DB::table('circle')->where('uid',$validated['uid'])->simplePaginate(8,$field,'myCreatedCircle',$page);
+        $paginator = DB::table('circle')
+//            ->where('uid',$mid)
+            ->where('uid',1)
+            ->simplePaginate(8,$field,'myCreatedCircle',$page);
         $data = $this->handleCircleItems($uid,$paginator);
         $res = [
             'state' => 0,
