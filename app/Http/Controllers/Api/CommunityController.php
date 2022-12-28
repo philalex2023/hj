@@ -1142,7 +1142,7 @@ class CommunityController extends Controller
             }
             if(isset($item->auth_avatar)){
                 $item->auth_avatar = $domainSync.$item->auth_avatar;
-                $item->up_avatar = $domainSync.$item->auth_avatar;
+                $item->up_avatar = $item->auth_avatar;
             }
             if(!empty($item->circle_topic)){
                 $item->circle_topic = json_decode($item->circle_topic,true);
