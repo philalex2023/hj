@@ -26,7 +26,6 @@ trait AdTrait
             //Log::info('==ConfigAnnouncement==',[$appConfig['announcement']]);
             isset($appConfig['open_screen_logo']) && $res['open_screen_logo'] = $this->transferImgOut($appConfig['open_screen_logo']);
             isset($appConfig['announcement']) && $res['announcement'] = stripslashes(addslashes($appConfig['announcement']));
-            $res['community_announcement'] = stripslashes(addslashes($appConfig['community_announcement']));
             $res['anActionType'] = $appConfig['announcement_action_type'];
             //视频ID
             $res['videoId'] = $appConfig['announcement_video_id'];
