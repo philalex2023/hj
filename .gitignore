@@ -28,4 +28,4 @@ _testmain.go
 /public/upload/*
 /public/storage/*
 /vendor/*
-composer.*
+composer.lock
